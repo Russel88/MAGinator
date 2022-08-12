@@ -1,0 +1,46 @@
+{% set name = "maginator" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256:  
+
+requirements:
+  host:
+    - pip
+    - python =3.5
+  run:
+    - python =3.5
+    - numpy >=1
+    - pandas >=1
+    - biopython
+    - multiprocess
+    - parallel
+    - samtools >=1.10
+    - mafft >=7
+    - fasttree =2
+    - perl >=5
+    - iqtree >=2
+    - gtdbtk >=2
+    - minimap2
+    - mmseqs
+    - snakemake
+    - ete3 >=3
+    - bbmap >=38.90
+    - java-jdk >=7
+
+test:
+  commands:
+    - maginator -h
+
+about:
+  home: https://github.com/Russel88/MAGinator
+  license: MIT
+  summary: MAGinator - Accurate strain and functional profiling of MAGs 
+
+build:
+  number: 0
