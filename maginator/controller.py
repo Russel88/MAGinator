@@ -2,7 +2,7 @@ import os
 import logging
 import sys
 import pkg_resources
-
+import re
 
 class Controller(object):
 
@@ -11,9 +11,12 @@ class Controller(object):
         self.vamb = args.vamb
         self.reads = args.reads
         self.output = args.output
-        self.keep_tmp = args.keep_tmp
+        self.system = args.system
+        self.max_jobs = args.max_jobs
+        self.max_cores = args.max_cores
+        self.max_mem = args.max_mem
         self.log_lvl = args.log_lvl
-        self.cores = args.cores
+        self.cluster_info = args.cluster_info
 
         # Logger
         logging.basicConfig(format='\033[36m'+'[%(asctime)s] %(levelname)s:'+'\033[0m'+' %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=self.log_lvl)
@@ -21,6 +24,11 @@ class Controller(object):
 
         # Force consistency
         self.output = os.path.join(self.output, '')
+
+        # Check info input
+        if len(self.cluster_info) > 0:
+            if not bool(re.match('^[a-zA-Z0-9-_ ]+$', self.cluster_info)):
+                sys.exit('cluster_info argument contains invalid characters. Only alphanumeric, dash, underscore, and space allowed')
 
         # Check input and output
         self.check_out()

@@ -1,5 +1,5 @@
 bam_dir: bam
 
-cores: 4
+cores: 1
 memory: 32000
 
