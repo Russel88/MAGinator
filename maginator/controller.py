@@ -6,12 +6,14 @@ import re
 
 class Controller(object):
 
-    def __init__(self, args):
-       
+    def __init__(self, ap):
+     
+        args = ap.parse_args()
+
         self.vamb = args.vamb
         self.reads = args.reads
         self.output = args.output
-        self.system = args.system
+        self.cluster = args.cluster
         self.max_jobs = args.max_jobs
         self.max_cores = args.max_cores
         self.max_mem = args.max_mem

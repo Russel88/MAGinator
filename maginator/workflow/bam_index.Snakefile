@@ -15,6 +15,8 @@ rule index:
         bai=os.path.join(BAM_DIR, "{sample}.bam.bai")
     log:
         os.path.join(WD, "logs/bam_index/{sample}.log")
+    conda:
+        "envs/bam_index.yaml"
     shell:
         """
         samtools index {input.bam} {output.bai} > {log} 2>&1
