@@ -12,26 +12,13 @@ source:
 requirements:
   host:
     - pip
-    - python =3.5
+    - python >=3.5
   run:
-    - python =3.5
+    - python >=3.5
     - numpy >=1
     - pandas >=1
-    - biopython
-    - multiprocess
-    - parallel
-    - samtools >=1.10
-    - mafft >=7
-    - fasttree =2
-    - perl >=5
-    - iqtree >=2
-    - gtdbtk >=2
-    - minimap2
-    - mmseqs
     - snakemake
-    - ete3 >=3
-    - bbmap >=38.90
-    - java-jdk >=7
+    - mamba
 
 test:
   commands:
