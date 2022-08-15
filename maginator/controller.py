@@ -27,8 +27,8 @@ class Controller(object):
 
         # Check info input
         if len(self.cluster_info) > 0:
-            if not bool(re.match('^[a-zA-Z0-9-_ ]+$', self.cluster_info)):
-                sys.exit('cluster_info argument contains invalid characters. Only alphanumeric, dash, underscore, and space allowed')
+            if not bool(re.match('^[a-zA-Z0-9-_ =]+$', self.cluster_info)):
+                sys.exit('cluster_info argument contains invalid characters. Only alphanumeric, dash, underscore, eq, and space allowed')
 
         # Check input and output
         self.check_out()

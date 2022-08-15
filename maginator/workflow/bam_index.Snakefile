@@ -14,8 +14,8 @@ rule index:
     output:
         bai=os.path.join(BAM_DIR, "{sample}.bam.bai")
     log:
-        "logs/bam_index/{sample}.log"
+        os.path.join(WD, "logs/bam_index/{sample}.log")
     shell:
         """
-        samtools index {input.bam} {output.bai} 2> {log}
+        samtools index {input.bam} {output.bai} > {log} 2>&1
         """
