@@ -10,7 +10,7 @@ class Controller(object):
      
         args = ap.parse_args()
 
-        self.vamb = args.vamb
+        self.vamb_clusters = args.vamb_clusters
         self.reads = args.reads
         self.output = args.output
         self.cluster = args.cluster
@@ -27,10 +27,20 @@ class Controller(object):
         # Force consistency
         self.output = os.path.join(self.output, '')
 
-        # Check info input
-        if len(self.cluster_info) > 0:
-            if not bool(re.match('^[a-zA-Z0-9-_ =]+$', self.cluster_info)):
-                sys.exit('cluster_info argument contains invalid characters. Only alphanumeric, dash, underscore, eq, and space allowed')
+        # Check cluster info input
+        if self.cluster is not None:
+            if len(self.cluster_info) > 0:
+                if len(re.findall('{cores}|{memory}|{runtime}', self.cluster_info)) != 3 or len(re.findall('{.*?}', self.cluster_info)) != 3: 
+                    logging.error('cluster_info has to contain the following special strings: {cores}, {memory}, and {runtime}')
+                    sys.exit()
+                else:
+                    tmp_info = re.sub('{cores}|{memory}|{runtime}','',self.cluster_info)
+                    if not bool(re.match('^[a-zA-Z0-9-_ =:,.]+$', tmp_info)):
+                        logging.error('Invalid characters in cluster_info')
+                        sys.exit()
+            else:
+                logging.error('cluster_info is required when running on a compute cluster')
+                sys.exit()
 
         # Check input and output
         self.check_out()
@@ -41,16 +51,14 @@ class Controller(object):
         '''
         Creates output directory unless it exists already
         '''
-        if False:
-            try:
-                os.mkdir(self.out)
-            except FileExistsError:
-                logging.error('Directory '+self.out+' already exists')
-                sys.exit()
+        try:
+            os.mkdir(self.output)
+        except FileExistsError:
+            logging.warning('Output directory '+self.output+' already exists')
 
     def check_vamb(self):
         '''
-        Check that the expected VAMB output files are present in the correct format
+        Check the vamb input file
         '''
         logging.debug('Checking VAMB input')
         pass
