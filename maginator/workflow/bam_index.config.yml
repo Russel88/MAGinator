@@ -1,6 +1,2 @@
 bam_dir: bam
 
-cores: 1
-memory: 8
-runtime: '00:30:00'
-

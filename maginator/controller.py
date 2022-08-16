@@ -52,7 +52,7 @@ class Controller(object):
         Creates output directory unless it exists already
         '''
         try:
-            os.mkdir(self.output)
+            os.makedirs(self.output+'logs')
         except FileExistsError:
             logging.warning('Output directory '+self.output+' already exists')
 
