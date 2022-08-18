@@ -15,8 +15,9 @@ from maginator.workflow import Workflow
 
 # Snakefiles
 _ROOT = os.path.abspath(os.path.dirname(__file__))
-WORKFLOW_BAM_INDEX_SNAKEFILE = os.path.join(_ROOT, 'workflow', 'bam_index.Snakefile')
-WORKFLOW_BAM_INDEX_CONFIG = os.path.join(_ROOT, 'workflow', 'bam_index.config.yml')
+WORKFLOW_CONFIG = os.path.join(_ROOT, 'workflow', 'snakemake.config.yml')
+WORKFLOW_FILTER_SNAKEFILE = os.path.join(_ROOT, 'workflow', 'filter.Snakefile')
+WORKFLOW_PRODIGAL_SNAKEFILE = os.path.join(_ROOT, 'workflow', 'prodigal.Snakefile')
 
 def cli():
     
@@ -26,25 +27,36 @@ def cli():
     # Required
     apr = ap.add_argument_group('required arguments')
     apr.add_argument('--vamb_clusters', help='Path to VAMB clusters.tsv file', required=True)
-    apr.add_argument('--reads', help='Comma-delimited file with format: SampleName,AbsolutePathToForwardReads,AbsolutePathToReverseReads', required=True)
+    apr.add_argument('--reads', help='Comma-delimited file with format: SampleName,AbsolutePathToForwardReads,AbsolutePathToReverseReads. SampleNames should match the 1st column in clusters.tsv with the pattern SampleName_{clusternumber}', required=True)
+    apr.add_argument('--contigs', help='Fasta file with contig sequences. Fasta headers should match the 2nd column in the clusters.tsv file', required=True)
     apr.add_argument('--output', help='Prefix for output directory', required=True)
 
+    # Cluster arguments
+    apc = ap.add_argument_group('compute cluster arguments')
+    apc.add_argument('--cluster', help='Cluster compute structure [%(default)s]', default=None, type=str, choices=[None,'qsub','slurm','drmaa'])
+    apc.add_argument('--cluster_info', help='Cluster scheduler arguments when submitting cluster jobs.\nHas to contain the following special strings:\n{memory}, {cores}, and {runtime}.\nThese special strings will be substituted by maginator to indicate resources for each job.\n{memory} is substituted for the memory in GB.\n{runtime} is substituted with the time in the following format: DD:HH:MM:SS.\nCan also contain user names, groups, etc. required by the cluster scheduler', default='', type=str)
+    apc.add_argument('--max_jobs', help='Maximum number of cluster jobs [%(default)s]', default=500, type=int)
+    
     # Optional
     apo = ap.add_argument_group('optional arguments')
     apo.add_argument("-h", "--help", action="help", help="show this help message and exit")
-    apo.add_argument('--cluster', help='Cluster compute structure [%(default)s]', default=None, type=str, choices=[None,'qsub','slurm','drmaa'])
-    apo.add_argument('--cluster_info', help='Cluster scheduler arguments when submitting cluster jobs.\nHas to contain the following special strings:\n{memory}, {cores}, and {runtime}.\nThese special strings will be substituted by maginator to indicate resources for each job.\n{memory} is substituted for the memory in GB.\n{runtime} is substituted with the time in the following format: DD:HH:MM:SS.\nCan also contain user names, groups, etc. required by the cluster scheduler', default='', type=str)
-    apo.add_argument('--max_jobs', help='Maximum number of cluster jobs [%(default)s]', default=500, type=int)
     apo.add_argument('--max_cores', help='Maximum number of cores [%(default)s]', default=40, type=int)
     apo.add_argument('--max_mem', help='Maximum memory in GB [%(default)s]', default=180, type=int)
     apo.add_argument('--log_lvl', help='Logging level [%(default)s].', default='INFO', type=str, choices=['DEBUG','INFO','WARNING','ERROR'])
+
+    # Parameters
+    app = ap.add_argument_group('parameters')
+    app.add_argument('--binsize', help='Minimum bin size for inclusion [%(default)s].', default=200000, type=int)
 
     ########## Workflow ##########
     master = Controller(ap)
     
     wf = Workflow(master)
-    logging.info('Indexing BAM files')
-    wf.run(snakefile=WORKFLOW_BAM_INDEX_SNAKEFILE, configfile = WORKFLOW_BAM_INDEX_CONFIG)
+    logging.info('Filtering bins')
+    wf.run(snakefile=WORKFLOW_FILTER_SNAKEFILE, configfile = WORKFLOW_CONFIG)
+
+    logging.info('Calling genes')
+    wf.run(snakefile=WORKFLOW_PRODIGAL_SNAKEFILE, configfile = WORKFLOW_CONFIG)
 
 if __name__ == '__main__':
     cli()

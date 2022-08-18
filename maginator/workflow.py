@@ -15,8 +15,8 @@ class Workflow(object):
     def run(self, snakefile, configfile):
 
         if self.cluster == None:
-            cmd = 'snakemake --use_conda -s {snakefile} --config wd={output} --configfile {configfile} --cores {cores} --resources mem_gb={maxmemory}'
-            cmd = cmd.format(snakefile=snakefile, configfile=configfile, output=self.output, cores=self.max_cores, maxmemory=self.max_mem)
+            cmd = 'snakemake --use-conda -s {snakefile} --config wd={output} reads={reads} contigs={contigs} vamb={vamb} --configfile {configfile} --cores {cores} --resources mem_gb={maxmemory}'
+            cmd = cmd.format(snakefile=snakefile, configfile=configfile, output=self.output, cores=self.max_cores, maxmemory=self.max_mem, reads=self.reads, contigs=self.contigs, vamb=self.vamb_clusters)
 
         # If run on a cluster
         else:
@@ -53,8 +53,8 @@ class Workflow(object):
             cluster_cmd = re.sub('{runtime}', '{resources.runtime}', cluster_cmd)
            
             # Format final snakemake command
-            cmd = 'snakemake --use-conda --cluster {cluster_cmd} --jobs {clusterjobs} -s {snakefile} --config wd={output} --configfile {configfile} --local-cores {cores} --resources mem_gb={maxmemory}'
-            cmd = cmd.format(cluster_cmd=cluster_cmd, snakefile=snakefile, configfile=configfile, output=self.output, clusterjobs=self.max_jobs, cores=self.max_cores, maxmemory=self.max_mem)
+            cmd = 'snakemake --use-conda --cluster {cluster_cmd} --jobs {clusterjobs} -s {snakefile} --config wd={output} reads={reads} contigs={contigs} vamb={vamb} --configfile {configfile} --local-cores {cores} --resources mem_gb={maxmemory}'
+            cmd = cmd.format(cluster_cmd=cluster_cmd, snakefile=snakefile, configfile=configfile, output=self.output, clusterjobs=self.max_jobs, cores=self.max_cores, maxmemory=self.max_mem, reads=self.reads, contigs=self.contigs, vamb=self.vamb_clusters)
 
         if self.cluster == 'slurm':
             
@@ -68,8 +68,8 @@ class Workflow(object):
             cluster_cmd = re.sub('{runtime}', '{resources.runtime}', cluster_cmd)
 
             # Format final snakemake command
-            cmd = 'snakemake --use-conda --cluster {cluster_cmd} --jobs {clusterjobs} -s {snakefile} --config wd={output} --configfile {configfile} --local-cores {cores} --resources mem_gb={maxmemory}'
-            cmd = cmd.format(cluster_cmd=cluster_cmd, snakefile=snakefile, configfile=configfile, output=self.output, clusterjobs=self.max_jobs, cores=self.max_cores, maxmemory=self.max_mem)
+            cmd = 'snakemake --use-conda --cluster {cluster_cmd} --jobs {clusterjobs} -s {snakefile} --config wd={output} reads={reads} contigs={contigs} vamb={vamb} --configfile {configfile} --local-cores {cores} --resources mem_gb={maxmemory}'
+            cmd = cmd.format(cluster_cmd=cluster_cmd, snakefile=snakefile, configfile=configfile, output=self.output, clusterjobs=self.max_jobs, cores=self.max_cores, maxmemory=self.max_mem, reads=self.reads, contigs=self.contigs, vamb=self.vamb_clusters)
         
         if self.cluster == 'drmaa':
             
@@ -81,8 +81,8 @@ class Workflow(object):
             cluster_cmd = re.sub('{runtime}', '{resources.runtime}', cluster_cmd)
             
             # Format final snakemake command
-            cmd = 'snakemake --use-conda --drmaa {cluster_cmd} --jobs {clusterjobs} -s {snakefile} --config wd={output} --configfile {configfile} --drmaa-log-dir {logdir} --local-cores {cores} --resources mem_gb={maxmemory}'
-            cmd = cmd.format(cluster_cmd=cluster_cmd, snakefile=snakefile, configfile=configfile, output=self.output, clusterjobs=self.max_jobs, logdir=self.output+'logs/cluster', cores=self.max_cores, maxmemory=self.max_mem)
+            cmd = 'snakemake --use-conda --drmaa {cluster_cmd} --jobs {clusterjobs} -s {snakefile} --config wd={output} reads={reads} contigs={contigs} vamb={vamb} --configfile {configfile} --drmaa-log-dir {logdir} --local-cores {cores} --resources mem_gb={maxmemory}'
+            cmd = cmd.format(cluster_cmd=cluster_cmd, snakefile=snakefile, configfile=configfile, output=self.output, clusterjobs=self.max_jobs, logdir=self.output+'logs/cluster', cores=self.max_cores, maxmemory=self.max_mem, reads=self.reads, contigs=self.contigs, vamb=self.vamb_clusters)
         
         snakemake_output = subprocess.run(cmd, capture_output=True, text=True, shell=True)
         logging.debug(snakemake_output) 

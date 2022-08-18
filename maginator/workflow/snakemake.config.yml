@@ -1,0 +1,5 @@
+bam_dir: bam
+fasta_dir: clusters
+prodigal_dir: genes
+
+binsize: 200000
