@@ -20,6 +20,10 @@ class Controller(object):
         self.max_mem = args.max_mem
         self.log_lvl = args.log_lvl
         self.cluster_info = args.cluster_info
+        self.only_conda = args.only_conda
+        self.gtdb_db = args.gtdb_db
+        self.binsize = args.binsize
+        self.annotation_prevalence = args.annotation_prevalence
 
         # Logger
         logging.basicConfig(format='\033[36m'+'[%(asctime)s] %(levelname)s:'+'\033[0m'+' %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=self.log_lvl)
@@ -30,7 +34,7 @@ class Controller(object):
 
         # Check cluster info input
         if self.cluster is not None:
-            if len(self.cluster_info) > 0:
+            if self.cluster_info is not None:
                 if len(re.findall('{cores}|{memory}|{runtime}', self.cluster_info)) != 3 or len(re.findall('{.*?}', self.cluster_info)) != 3: 
                     logging.error('cluster_info has to contain the following special strings: {cores}, {memory}, and {runtime}')
                     sys.exit()
@@ -48,6 +52,7 @@ class Controller(object):
         self.check_vamb()
         self.check_reads()
         self.check_contigs()
+        self.write_params(args)
 
     def check_out(self):
         '''
@@ -73,7 +78,7 @@ class Controller(object):
         
         try:
             self.cluster_set = set([int(re.sub('.*_', '', x)) for x in self.bin_set])
-        except:
+        except Exception:
             logging.error('Cluster names should be numeric. 1st column in the VAMB input file should be of the form SampleName_ClusterName')
             sys.exit()
 
@@ -125,4 +130,14 @@ class Controller(object):
             logging.error('Contig names in fasta file do not match contig names in VAMB clusters.tsv file')
             sys.exit()
             
+    def write_params(self, args):
+        '''
+        Write parameters for snakemake workflows to a file
+        '''
 
+        pars = vars(args)
+        self.params = self.output+'parameters.tab'
+        fh = open(self.params, 'w')
+        for k, v in pars.items():
+            fh.write('{}\t{}\n'.format(k, v))
+        fh.close()

@@ -3,7 +3,12 @@ import os
 WD = config['wd']
 CONTIGS = config['contigs']
 VAMB = config['vamb']
-F_DIR = os.path.join(WD, config['fasta_dir'])
+F_DIR = os.path.join(WD, 'clusters')
+PARAMS = config['params']
+
+with open(PARAMS, 'r') as fh:   
+    fl = [x.strip().split() for x in fh.readlines()]
+param_dict = {x[0]: x[1] for x in fl}
 
 rule all:
     input:
@@ -16,9 +21,9 @@ rule bin_filter:
     output:
         directory(F_DIR),
     params:
-        binsize=config['binsize']
+        binsize=param_dict['binsize']
     conda:
-        "envs/filter_prodigal.yaml"
+        "envs/filter_gtdbtk.yaml"
     resources:
         cores=1,
         memory=32,

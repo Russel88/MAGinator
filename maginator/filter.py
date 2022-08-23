@@ -1,6 +1,7 @@
 import os
 import sys
 import re
+import logging
 
 from Bio import SeqIO
 
@@ -24,7 +25,7 @@ with open(snakemake.input[1], 'r') as fh:
         bin_id = vamb_dict[fa.id]
         try:
             bin_contigs[bin_id].append(fa)
-        except:
+        except Exception:
             bin_contigs[bin_id] = [fa]
 
 # Filter by length
@@ -36,7 +37,7 @@ cluster_set = set([int(re.sub('.*_', '', x)) for x in bin_filter])
 
 try:
     os.mkdir(snakemake.output[0])
-except:
+except Exception:
     pass
 
 for cluster in cluster_set:
@@ -45,7 +46,7 @@ for cluster in cluster_set:
 
     try:
         os.mkdir(clust_path)
-    except:
+    except Exception:
         pass
 
     for bin_id in bins:
