@@ -22,10 +22,6 @@ setuptools.setup(
         "Development Status :: 2 - Pre-alpha"],
     python_requires='>=3.5',
     install_requires=[
-        "numpy >= 1",
-        "pandas >= 1",
-        "biopython >= 1.76",
-        "multiprocess",
         "setuptools"],
     entry_points = {
         'console_scripts': ['maginator = maginator.main:cli']
