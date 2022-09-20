@@ -34,16 +34,21 @@ tax_list = []
 gene_path_list = []
 for clust in os.listdir(snakemake.input[0]):
 
-    # Try reading both bacterial and archaeal summaries. Assume both are never present together
-    tax = None
+    # Try reading both bacterial and archaeal summaries.
     try:
-        tax = pd.read_csv(os.path.join(snakemake.input[0], clust, 'gtdbtk.bac120.summary.tsv'), sep='\t', header=0)  
+        tax_bac = pd.read_csv(os.path.join(snakemake.input[0], clust, 'gtdbtk.bac120.summary.tsv'), sep='\t', header=0)  
     except FileNotFoundError:
-        pass   
+        tax_bac = None
     try: 
-        tax = pd.read_csv(os.path.join(snakemake.input[0], clust, 'gtdbtk.ar122.summary.tsv'), sep='\t', header=0)  
+        tax_ar = pd.read_csv(os.path.join(snakemake.input[0], clust, 'gtdbtk.ar122.summary.tsv'), sep='\t', header=0)  
     except FileNotFoundError:
-        pass
+        tax_ar = None
+
+    # Combine
+    try:
+        tax = pd.concat([tax_bac, tax_ar])
+    except Exception:
+        tax = None
 
     if tax is not None:
         

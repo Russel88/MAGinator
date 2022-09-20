@@ -44,8 +44,6 @@ class Workflow(object):
 
     def add_info(self, x):
         
-        #x = '"' + x + '"'
-        
         # Substitute resource information
         x = re.sub('{cores}', '{resources.cores}', x)
         x = re.sub('{memory}', '{resources.memory}', x)
