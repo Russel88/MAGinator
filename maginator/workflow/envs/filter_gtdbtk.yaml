@@ -5,3 +5,5 @@ dependencies:
  - gtdbtk=2.1
  - biopython=1.79
  - pandas=1.4
+ - mmseqs2=13.45111
+ - bbmap=38.96

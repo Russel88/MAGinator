@@ -11,10 +11,7 @@ param_dict = {x[0]: x[1] for x in fl}
 rule all:
     input:
         os.path.join(WD, 'tabs', 'metagenomicspecies.tab'),
-        os.path.join(WD, 'genes', 'all_genes.fna'),
-        os.path.join(WD, 'phylo', 'intermediate', 'gtdb_markers.tab'),
-        os.path.join(WD, 'phylo', 'intermediate', 'gtdb_unique_bac_markers.tab'),
-        os.path.join(WD, 'phylo', 'intermediate', 'gtdb_unique_ar_markers.tab')
+        os.path.join(WD, 'genes', 'all_genes95_cluster.tsv')
 
 rule parse_gtdbtk:
     input:
@@ -37,4 +34,24 @@ rule parse_gtdbtk:
         runtime='10:00:00'
     script:
         "../parse_gtdbtk.py"
+
+
+# Get representative genes from all genes.
+rule repres_genes:
+    input:
+        os.path.join(WD, 'genes', 'all_genes.fna'),
+    output:
+        fasta = os.path.join(WD, 'genes', 'all_genes95_rep_seq.fasta'),
+        tsv = os.path.join(WD, 'genes', 'all_genes95_cluster.tsv')
+    resources:
+        cores = 14,
+        memory = 50,
+        runtime = '2:00:00:00' 
+    params:
+        tmp_dir = os.path.join(WD, 'tmp'),
+        out_prefix = os.path.join(WD, 'genes', 'all_genes95')
+    conda:
+        "envs/filter_gtdbtk.yaml"
+    shell:
+        "mmseqs easy-linclust --min-seq-id 0.95 -c 0.95 --threads {threads} {input} {params.out_prefix} {params.tmp_dir}; rm -r {params.tmp_dir};"
 

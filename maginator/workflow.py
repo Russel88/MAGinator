@@ -42,6 +42,14 @@ class Workflow(object):
                     n_mgs += 1
             logging.info(str(n_clust) + ' clusters merged into ' + str(n_mgs) + ' metagenomic species')
 
+            with open(os.path.join(self.output, 'genes', 'all_genes.fna')) as gf:
+                genefile=gf.read()
+            logging.info(f'Before clustering, the number of genes is: {len(re.findall(r">", genefile))}')
+    
+            with open(os.path.join(self.output, 'genes', 'all_genes95_rep_seq.fasta')) as cf:
+                clusterfile=cf.read()     
+            logging.info(f'The number of gene clusters is: {len(re.findall(r">", clusterfile))}')
+
     def add_info(self, x):
         
         # Substitute resource information
@@ -102,6 +110,7 @@ class Workflow(object):
 
             # Final snakemake command
             cmd += ['--cluster', cluster_cmd]
+            cmd += ['--unlock']
 
         if self.cluster == 'slurm':
             
