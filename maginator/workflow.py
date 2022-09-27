@@ -110,7 +110,6 @@ class Workflow(object):
 
             # Final snakemake command
             cmd += ['--cluster', cluster_cmd]
-            cmd += ['--unlock']
 
         if self.cluster == 'slurm':
             
