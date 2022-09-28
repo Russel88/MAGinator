@@ -27,7 +27,7 @@ class Workflow(object):
                     n_clust += 1
                 for f in files:
                     n_bins += 1
-            logging.info(str(n_bins) + ' bins in ' + str(n_clust) + ' clusters left after filtering')
+            logging.info(str(n_bins) + ' bins in ' + str(n_clust) + ' VAMB clusters left after filtering')
 
         if 'workflow/gtdbtk.Snakefile' in last:
             n_clust = len(glob.glob(self.output+'gtdbtk/*/classify/'))
@@ -40,15 +40,13 @@ class Workflow(object):
                 for line in fh:
                     n_clust += len(line.strip().split('\t')[2].split(','))
                     n_mgs += 1
-            logging.info(str(n_clust) + ' clusters merged into ' + str(n_mgs) + ' metagenomic species')
+            logging.info(str(n_clust) + ' VAMB clusters merged into ' + str(n_mgs) + ' metagenomic species')
 
             with open(os.path.join(self.output, 'genes', 'all_genes.fna')) as gf:
                 genefile=gf.read()
-            logging.info(f'Before clustering, the number of genes is: {len(re.findall(r">", genefile))}')
-    
             with open(os.path.join(self.output, 'genes', 'all_genes95_rep_seq.fasta')) as cf:
                 clusterfile=cf.read()     
-            logging.info(f'The number of gene clusters is: {len(re.findall(r">", clusterfile))}')
+            logging.info(f'{len(re.findall(r">", genefile))} genes were clustered into {len(re.findall(r">", clusterfile))} gene clusters')
 
     def add_info(self, x):
         
