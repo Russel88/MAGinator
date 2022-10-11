@@ -32,6 +32,7 @@ empty_tax = ['d__', 'p__', 'c__', 'o__', 'f__', 'g__', 's__']
 # Get consensus annotation for clusters
 tax_list = []
 gene_path_list = []
+gene_path_prot_list = []
 for clust in os.listdir(snakemake.input[0]):
 
     # Try reading both bacterial and archaeal summaries.
@@ -78,8 +79,10 @@ for clust in os.listdir(snakemake.input[0]):
 
     # Collect gene sequence paths
     gene_path = os.path.join(snakemake.input[0], clust, 'identify', 'intermediate_results', 'marker_genes')
+
     for bin_id in os.listdir(gene_path):
         gene_path_list.append(os.path.join(gene_path, bin_id, bin_id+'_protein.fna'))
+        gene_path_prot_list.append(os.path.join(gene_path, bin_id, bin_id+'_protein.faa'))
 
 # If similar at species level, then aggregate
 species_list = []
@@ -107,6 +110,13 @@ with open(snakemake.output[1], 'wb') as wfh:
     for f in gene_path_list:
         with open(f, 'rb') as rfh:
             shutil.copyfileobj(rfh, wfh)
+
+#write genes as proteins
+with open(snakemake.output[5], 'wb') as wfh:
+    for f in gene_path_prot_list:
+        with open(f, 'rb') as rfh:
+            shutil.copyfileobj(rfh, wfh)
+
 
 # Collect marker gene info for phylogenetic analyses
 ## Get contig-bin info

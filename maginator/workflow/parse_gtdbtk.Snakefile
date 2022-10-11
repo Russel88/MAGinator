@@ -22,7 +22,8 @@ rule parse_gtdbtk:
         os.path.join(WD, 'genes', 'all_genes.fna'),
         os.path.join(WD, 'phylo', 'intermediate', 'gtdb_markers.tab'),
         os.path.join(WD, 'phylo', 'intermediate', 'gtdb_unique_bac_markers.tab'),
-        os.path.join(WD, 'phylo', 'intermediate', 'gtdb_unique_ar_markers.tab')
+        os.path.join(WD, 'phylo', 'intermediate', 'gtdb_unique_ar_markers.tab'),
+        os.path.join(WD, 'genes', 'all_genes.faa')
     params:
         param_dict['annotation_prevalence'],
         VAMB
@@ -39,7 +40,7 @@ rule parse_gtdbtk:
 # Get representative genes from all genes.
 rule repres_genes:
     input:
-        os.path.join(WD, 'genes', 'all_genes.fna'),
+        os.path.join(WD, 'genes', 'all_genes.faa'),
     output:
         fasta = os.path.join(WD, 'genes', 'all_genes95_rep_seq.fasta'),
         tsv = os.path.join(WD, 'genes', 'all_genes95_cluster.tsv')

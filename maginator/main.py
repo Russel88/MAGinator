@@ -18,6 +18,7 @@ _ROOT = os.path.abspath(os.path.dirname(__file__))
 WORKFLOW_FILTER_SNAKEFILE = os.path.join(_ROOT, 'workflow', 'filter.Snakefile')
 WORKFLOW_GTDBTK_SNAKEFILE = os.path.join(_ROOT, 'workflow', 'gtdbtk.Snakefile')
 WORKFLOW_PARSE_GTDBTK_SNAKEFILE = os.path.join(_ROOT, 'workflow', 'parse_gtdbtk.Snakefile')
+WORKFLOW_FILTER_GENE_CLUSTERS = os.path.join(_ROOT, 'workflow', 'filter_geneclusters.Snakefile')
 
 def cli():
     
@@ -63,6 +64,9 @@ def cli():
 
     logging.info('Parsing GTDB-tk results')
     wf.run(snakefile=WORKFLOW_PARSE_GTDBTK_SNAKEFILE)
+
+    logging.info('Filtering of the gene clusters and readmapping')
+    wf.run(snakefile=WORKFLOW_FILTER_GENE_CLUSTERS)
 
 if __name__ == '__main__':
     cli()

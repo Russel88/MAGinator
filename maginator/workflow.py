@@ -50,6 +50,10 @@ class Workflow(object):
                 clusterfile=cf.read()     
             logging.info(f'The number of gene clusters is: {len(re.findall(r">", clusterfile))}')
 
+        if 'workflow/filter_geneclusters.Snakefile' in last:
+            logging.info('LOGGING COMES LATER - Filtering the clustered genes and readmapping')
+
+
     def add_info(self, x):
         
         # Substitute resource information
@@ -132,6 +136,7 @@ class Workflow(object):
         if self.only_conda:
             cmd.append(' --conda-create-envs-only')
 
+        logging.debug(cmd)
         # Start snakemake process and read stdout and stderr (also save in logger)
         process = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, text=True)
         if self.log_lvl == 'DEBUG':
