@@ -62,7 +62,7 @@ def cli():
     logging.info('Classifying genomes with GTDB-tk')
     wf.run(snakefile=WORKFLOW_GTDBTK_SNAKEFILE)
 
-    logging.info('Parsing GTDB-tk results')
+    logging.info('Clustering genes and parsing GTDB-tk results')
     wf.run(snakefile=WORKFLOW_PARSE_GTDBTK_SNAKEFILE)
 
     logging.info('Filtering of the gene clusters and readmapping')
