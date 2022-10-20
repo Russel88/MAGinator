@@ -1,0 +1,15 @@
+channels:
+ - conda-forge
+ - bioconda
+ - defaults
+dependencies:
+ - r-base=4.1.1
+ - r-ggplot2=3.3.5
+ - r-mass=7.3
+ - r-stringr=1.4.1
+ - r-vcd=1.4
+ - r-plyr=1.8.7
+ - r-vgam=1.1
+ - bioconductor-phyloseq =1.38
+ - r-gridextra=2.3
+ - r-matrixstats=0.62.0

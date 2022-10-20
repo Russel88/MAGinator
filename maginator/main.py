@@ -19,6 +19,8 @@ WORKFLOW_FILTER_SNAKEFILE = os.path.join(_ROOT, 'workflow', 'filter.Snakefile')
 WORKFLOW_GTDBTK_SNAKEFILE = os.path.join(_ROOT, 'workflow', 'gtdbtk.Snakefile')
 WORKFLOW_PARSE_GTDBTK_SNAKEFILE = os.path.join(_ROOT, 'workflow', 'parse_gtdbtk.Snakefile')
 WORKFLOW_FILTER_GENE_CLUSTERS = os.path.join(_ROOT, 'workflow', 'filter_geneclusters.Snakefile')
+WORKFLOW_GENE_COUNT_MAT = os.path.join(_ROOT, 'workflow', 'gene_count_mat.Snakefile')
+WORKFLOW_SIGNATURE_GENES = os.path.join(_ROOT, 'workflow', 'signature_genes.Snakefile')
 
 def cli():
     
@@ -67,6 +69,12 @@ def cli():
 
     logging.info('Filtering of the gene clusters and readmapping')
     wf.run(snakefile=WORKFLOW_FILTER_GENE_CLUSTERS)
+
+    logging.info('Creating a gene count matrix of the readmappings')
+    wf.run(snakefile=WORKFLOW_GENE_COUNT_MAT)
+
+    logging.info('Identifying the signature genes')
+    wf.run(snakefile=WORKFLOW_SIGNATURE_GENES)
 
 if __name__ == '__main__':
     cli()
