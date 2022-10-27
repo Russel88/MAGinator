@@ -35,7 +35,7 @@ rule parse_gtdbtk:
         memory=32,
         runtime='10:00:00'
     script:
-        "../parse_gtdbtk.py"
+        "scripts/parse_gtdbtk.py"
 
 
 # Get representative genes from all genes.

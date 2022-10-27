@@ -29,5 +29,5 @@ rule bin_filter:
         memory=32,
         runtime='02:00:00'
     script:
-        "../filter.py"
+        "scripts/filter.py"
 
