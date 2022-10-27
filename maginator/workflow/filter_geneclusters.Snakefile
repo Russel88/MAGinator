@@ -38,7 +38,7 @@ rule nonredundant_catalogue:
         "envs/filter_gtdbtk.yaml"
     resources:
         cores = 1,
-        mem_gb = 50,
+        memory = 50,
         runtime = '12:00:00'
     shell:
         "perl -ne 'if(/^>(\S+)/){{$c=$i{{$1}}}}$c?print:chomp;$i{{$_}}=1 if @ARGV' <(cut -f1 {input.clusters} | uniq) {input.genecat} | awk '{{print $1}}' > {output}"
@@ -52,7 +52,7 @@ rule bwa_index:
         "envs/filter_gtdbtk.yaml" 
     resources:
         cores = 40,
-        mem_gb = 188, 
+        memory = 188, 
         runtime = '1:00:00:00'
     shell:
         "bwa-mem2 index {input}; samtools faidx {input}; touch {output.gene_lengths}"
@@ -72,7 +72,7 @@ rule bwa_readmap:
         "envs/filter_gtdbtk.yaml"
     resources:
         cores = 40,
-        mem_gb = 188,
+        memory = 188,
         runtime = '1:00:00:00'
     shell:
         "bwa-mem2 mem -t {resources.cores} {input.gene_cat} {input[2]} {input[3]} | samtools view -T {input.gene_cat} -F 3584  -b --threads {resources.cores} | samtools sort --threads {resources.cores} > {output.bam};"

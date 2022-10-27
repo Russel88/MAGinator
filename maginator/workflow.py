@@ -66,6 +66,7 @@ class Workflow(object):
         # Define core snakemake command
         cmd = ['snakemake',
                '--use-conda',
+               '--latency-wait', '20',
                '-s', snakefile,
                '--resources', 
                'mem_gb='+str(self.max_mem),

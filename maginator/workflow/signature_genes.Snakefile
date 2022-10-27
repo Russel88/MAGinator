@@ -34,7 +34,7 @@ rule geneID_collectionID:
         "envs/signature_genes.yaml"
     resources:
         cores = 1,
-        mem_gb = 188,
+        memory = 188,
         runtime = '12:00:00'
     script: 
         "scripts/species_collections.py"
@@ -50,7 +50,7 @@ rule sort_genes_across_MGS:
        	"envs/signature_genes.yaml" 
     resources:
         cores = 1, 
-        mem_gb = 188,
+        memory = 188,
         runtime = '12:00:00'
     script:
         "scripts/sort_gene_mat.py"
@@ -69,7 +69,7 @@ rule format_conversion:
        	"envs/signature_genes.yaml" 
     resources:
         cores = 1,
-        mem_gb = 188,
+        memory = 188,
         runtime = '24:00:00'
     script:
         "scripts/matrix2SG_formatconversion.R"
@@ -87,7 +87,7 @@ rule SG_refinement:
        	"envs/signature_genes.yaml" 
     resources:
         cores = 8,
-        mem_gb = 188,
+        memory = 188,
         runtime = '5:00:00:00' 
     params:
         functions = "Functions_v4.R"
@@ -111,7 +111,7 @@ rule abundance_profile:
        	"envs/signature_genes.yaml" 
     resources:
         cores = 6,
-        mem_gb = 188,
+        memory = 188,
         runtime = '12:00:00'
     script:
         "scripts/abundance_profiles.R"

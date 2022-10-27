@@ -26,7 +26,7 @@ rule count_genes:
         "envs/filter_geneclusters.yaml"
     resources:
         cores = 1,
-        mem_gb = 20,
+        memory = 20,
         runtime = '2:00:00'
     shell:
         "samtools idxstats {input} | cut -f3 > {output.readcounts}"
@@ -43,7 +43,7 @@ rule gene_names:
        	"envs/filter_geneclusters.yaml"
     resources:
         cores = 1,
-        mem_gb = 20,
+        memory = 20,
         runtime = '1:00:00'
     shell:
         "samtools idxstats {input} | cut -f1 > {output}"
@@ -57,7 +57,7 @@ rule create_header:
         header = temp(os.path.join(WD, 'mapped_reads', 'header.txt'))
     resources:
         cores = 1,
-        mem_gb = 188,
+        memory = 188,
         runtime = '1:00:00'
     run:
         header = "Gene"
@@ -81,7 +81,7 @@ rule gene_count_matrix:
        	"envs/filter_geneclusters.yaml"
     resources:
         cores = 1,
-        mem_gb = 188,
+        memory = 188,
         runtime = '1:00:00'
     shell:
         "paste {input.gene_names} {input.readcounts} | cat {input.header} - > {output}; sed -i '$d' {output}"
