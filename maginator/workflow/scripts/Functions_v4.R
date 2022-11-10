@@ -34,7 +34,7 @@ if(1==0){
 }
 
 # loading functions
-pois.plot <- function(Genes, Reads, mse, id, HGMGS){
+pois.plot <- function(Genes, Reads, mse, id){
   # Plotting the reads and mapped genes for each sample
   #
   # Args:
@@ -43,7 +43,6 @@ pois.plot <- function(Genes, Reads, mse, id, HGMGS){
   #           have the same length, greater than one, with no missing values
   #   mse:  The MSE of the MGS when compared to the expected distribution
   #   id is the ID of the species in the HGMGS object
-  #   HGMGS is the MGS object in use
   #
   # Returns:
   #   A plot of all samples with their corresponding genes and mapped reads (log)
@@ -107,8 +106,8 @@ rank.mat <- function(id, gene.names, step, phase, threshold, t.start, t.end, n.r
   
   rank.matrix <- matrix(NA, nrow=(t.end-t.start), ncol=length(mapped))
   
-  reads <- round(utuseq_MGSgeneCountsML[[id]][gene.names, names(mapped)] / 
-                   (present_genes[rownames(utuseq_MGSgeneCountsML[[id]][gene.names, ])] * 10^-3))
+  reads <- round(Clusterlist[[id]][gene.names, names(mapped)] / 
+                   (present_genes[rownames(Clusterlist[[id]][gene.names, ])] * 10^-3))
   
   # running goodfit on all samples, saving the model in the gf matrix
   gf.nbin <- apply(matrix(1:length(mapped), nrow = length(mapped), ncol = 1), 1, function(x) (goodfit(reads[, x], type = "nbinom", method = "ML", par = list(size = mean(reads[,x])))))
@@ -120,15 +119,15 @@ rank.mat <- function(id, gene.names, step, phase, threshold, t.start, t.end, n.r
     
   } else if (phase == "rotation") {
     new.reads <- matrix(NA, nrow = (t.end-t.start), ncol = length(mapped))
-    new.reads <- round(utuseq_MGSgeneCountsML[[id]][(t.start + 1):t.end, 1:length(names(mapped))] / 
-                         (present_genes[rownames(utuseq_MGSgeneCountsML[[id]][(t.start + 1):t.end, ])] * 10^-3))
+    new.reads <- round(Clusterlist[[id]][(t.start + 1):t.end, 1:length(names(mapped))] / 
+                         (present_genes[rownames(Clusterlist[[id]][(t.start + 1):t.end, ])] * 10^-3))
     
     # if a new gene have more reads than found in the good genes, then set the readcount to the max observed in the good genes
     for (i in 1:length(mapped)) new.reads[, i][new.reads[, i] > max(gf.nbin[[i]]$count)] = max(gf.nbin[[i]]$count)
     rank.matrix <- mapply(function(c) rank.matrix[, c] = rank((resid(gf.nbin[[c]])[gf.nbin[[c]]$count[new.reads[, c]+1]+1]), ties.method = "average"), 1:length(mapped)) 
   }
   
-  rownames(rank.matrix) <- names(utuseq_MGSgeneCountsML[[id]][(t.start + 1):t.end, 1]) # genes as rownames
+  rownames(rank.matrix) <- names(Clusterlist[[id]][(t.start + 1):t.end, 1]) # genes as rownames
   colnames(rank.matrix) <- names(mapped) # samples as colnames
   
   #######################################################################
@@ -159,7 +158,7 @@ rank.mat <- function(id, gene.names, step, phase, threshold, t.start, t.end, n.r
     n.replace <- length(low.prob.genes) # number of genes to replace
     good.genes <- gene.names[!(gene.names %in% low.prob.genes)] # the genes with rank below the threshold
     
-    genes_r <- utuseq_MGSgeneCountsML[[id]][c(names(good.genes),gene.names), ]
+    genes_r <- Clusterlist[[id]][c(names(good.genes),gene.names), ]
     
     
     final.reads <- round(genes_r / (present_genes[rownames(genes_r)] * 10^-3))
@@ -174,7 +173,7 @@ rank.mat <- function(id, gene.names, step, phase, threshold, t.start, t.end, n.r
       gene.performance <- rowQuantiles(rank.matrix, probs = seq(from = 0, to = 1, by = 0.05))[,20] #95percentile
     }
     
-    names(gene.performance) = names(utuseq_MGSgeneCountsML[[id]][(t.start + 1):t.end, 1]) 
+    names(gene.performance) = names(Clusterlist[[id]][(t.start + 1):t.end, 1]) 
     high.rank <- gene.performance 
     high.pos <- seq((t.start + 1), t.end)
     
@@ -185,7 +184,7 @@ rank.mat <- function(id, gene.names, step, phase, threshold, t.start, t.end, n.r
     # identifying the best replacement genes
     good.genes <- gene.selection(n.replace, high.rank, high.pos)
     
-    genes_r <- utuseq_MGSgeneCountsML[[id]][c(names(good.genes),gene.names), ]
+    genes_r <- Clusterlist[[id]][c(names(good.genes),gene.names), ]
     
     final.reads <- round(genes_r / (present_genes[rownames(genes_r)] * 10^-3))
 

@@ -51,11 +51,13 @@ rule repres_genes:
         runtime = '2:00:00:00' 
     params:
         tmp_dir = os.path.join(WD, 'tmp'),
-        out_prefix = os.path.join(WD, 'genes', 'all_genes95')
+        out_prefix = os.path.join(WD, 'genes', 'all_genes95'),
+        cov = param_dict["clustering_coverage"],
+        seq_id = param_dict["clustering_min_seq_id"]
     conda:
         "envs/filter_gtdbtk.yaml"
     shell:
-        "mmseqs easy-linclust --min-seq-id 0.95 -c 0.95 --threads {threads} {input} {params.out_prefix} {params.tmp_dir}; rm -r {params.tmp_dir};"
+        "mmseqs easy-linclust --min-seq-id {params.seq_id} -c {params.cov} --threads {threads} {input} {params.out_prefix} {params.tmp_dir}; rm -r {params.tmp_dir};"
 
 
 # Add gene clusters to GTDB-tk data

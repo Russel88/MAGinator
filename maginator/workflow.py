@@ -49,7 +49,24 @@ class Workflow(object):
             logging.info(f'{len(re.findall(r">", genefile))} genes were clustered into {len(re.findall(r">", clusterfile))} gene clusters')
 
         if 'workflow/filter_geneclusters.Snakefile' in last:
-            logging.info('LOGGING COMES LATER - Filtering the clustered genes and readmapping')
+            logging.info('Readmapping to the clustered genes has been done.')
+
+        if 'workflow/gene_count_mat.Snakefile' in last:
+            logging.info('A gene count matrix has been created - summarizing the readmappings for all genes in all samples')
+
+        if 'workflow/prescreening_genes.Snakefile' in last:
+            n_clust = len(glob.glob(self.output+'gtdbtk/*/classify/'))
+            total_clust=len(glob.glob(self.output+'signature_genes/clusters/'))
+            logging.info('A total of ' + str(total_clust) + ' clusters are included in the analysis, where ' + str(n_clust) + ' clusters are classified with a taxonomy.')            
+
+            with open(os.path.join(self.output, 'genes', 'small_gene_count_matrix.tsv')) as small_gf:
+                small_genes = sum(1 for line in small_gf if line.strip())
+            with open(os.path.join(self.output, 'genes', 'gene_count_matrix.tsv')) as gf:
+                genes = sum(1 for line in gf if line.strip())
+            logging.info(str(small_genes) + ' genes are included in the analysis, out of ' + str(genes) + ' genes as some of the genes was clustered across the metagenomic species')
+
+        if 'workflow/signature_genes.Snakefile' in last:
+            logging.info('LOGGING COMES LATER - identifying Signature Genes')
 
 
     def add_info(self, x):

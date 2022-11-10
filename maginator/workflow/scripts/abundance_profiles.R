@@ -7,9 +7,10 @@ library(stringr)
 
 # Loading relevant input
 GeneLengths <- readRDS(snakemake@input[["R_gene_lengths"]]) # The gene lengths
-load(snakemake@input[["MGS_object"]]) # contain the SGs of the Clusters
-outputs_parallel <-readRDS(snakemake@input[["screened_clusters"]])
-Clusterlist <- readRDS(snakemake@input[["R_clusters"]]) # read count matrices for the Clusters
+sg_files <- snakemake@input[["screened_clusters"]]
+screened_clusters <- do.call("rbind", lapply(sg_files, readRDS))
+#load(snakemake@input[["MGS_object"]]) # contain the SGs of the Clusters
+Clusterlist <- readRDS(snakemake@input[["R_clusters"]]) # read count mat ofclusters
 taxonomy <- read.csv(snakemake@input[["annotation"]], header=FALSE, sep="\t") # the taxonomy 
 colnames(taxonomy) <- c("Cluster","Taxonomy")
 
@@ -59,36 +60,16 @@ taxonomy$Cluster <- NULL #removing the column witht the clusterID
 
 
 # The read counts are normalized according to gene lengths
-init.read.matrix <- matrix(NA, nrow=dim(Clusterlist[[1]])[2], ncol=length(Clusterlist))
 final.read.matrix <- matrix(NA, nrow=dim(Clusterlist[[1]])[2], ncol=length(Clusterlist))
 sample.names <- colnames(Clusterlist[[1]]) 
-rownames(init.read.matrix) <- sample.names # setting the sample names as rownames
 rownames(final.read.matrix) <- sample.names
-colnames(init.read.matrix) <- names(Clusterlist) # setting the cluster ID's as colnames
 colnames(final.read.matrix) <- names(Clusterlist) 
 
-init.Clusterlist <- Clusterlist
 final.Clusterlist <- Clusterlist
 
-
-for (id in names(Clusterlist)){
-  #removing the samples, with less than 3 genes with mapped reads
-  init.gene.names <- outputs_parallel[[id]]$genes$init
-  init.colsum <- colSums(Clusterlist[[id]][init.gene.names, ])
-  init.mapped <- names(init.colsum[init.colsum >= n.mapped.minimum])
-  init.not_mapped <- sample.names[!sample.names %in% init.mapped]
-  init.Clusterlist[[id]][,init.not_mapped] <- 0 # setting the counts to 0 if less than n.mapped.minimum genes have reads that map
-  
-  # The readcounts are divided by the gene length
-  
-  init.reads <- init.Clusterlist[[id]][init.gene.names, ] / GeneLengths[init.gene.names] 
-  
-  # summing the read counts for the id/cluster/MGS
-  init.read.matrix[, id] <- colSums(init.reads)
-  
-  
+for (id in names(Clusterlist)){  
   # Repeat for the final SG
-  final.gene.names <- outputs_parallel[[id]]$genes$best
+  final.gene.names <- screened_clusters[,3][screened_clusters[,'id']==id][1][[1]]$best
   final.colsum <- colSums(Clusterlist[[id]][final.gene.names, ])
   final.mapped <- names(final.colsum[final.colsum >= n.mapped.minimum])
   final.not_mapped <- sample.names[!sample.names %in% final.mapped]
@@ -101,15 +82,11 @@ for (id in names(Clusterlist)){
   final.read.matrix[, id] <- colSums(final.reads)
 }
 
-init.abundance <- init.read.matrix/rowSums(init.read.matrix)
 final.abundance <- final.read.matrix/rowSums(final.read.matrix)
 
-init.otu.table <- otu_table(init.abundance, taxa_are_rows=FALSE) 
 final.otu.table <- otu_table(final.abundance, taxa_are_rows = FALSE)
 tax.table <- tax_table(taxmat)
 
-init.physeq <- phyloseq(init.otu.table, tax.table)
 final.physeq <-  phyloseq(final.otu.table, tax.table)
 
 save(final.physeq, file = snakemake@output[["physeq_abundance"]])
-save(init.physeq, file = snakemake@output[["init_physeq_abundance"]])

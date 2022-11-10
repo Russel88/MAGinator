@@ -36,7 +36,7 @@ rule gene_names:
     input:
         os.path.join(WD, 'mapped_reads', 'gene_counts_{sample}.bam')
     output:
-        os.path.join(WD, 'mapped_reads', 'gene_names_{sample}')
+        temp(os.path.join(WD, 'mapped_reads', 'gene_names_{sample}'))
     wildcard_constraints:
         sample=SAMPLES[0]
     conda:

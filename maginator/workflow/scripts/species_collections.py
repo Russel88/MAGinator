@@ -62,8 +62,6 @@ with open(gene_file) as f:
 # identifying the representative genes, which do not cover more than one cluster
 rep_to_keep = list(cluster_counter.difference(excluded_counter))
 
-print(len(rep_to_keep), len(cluster_counter), len(contig_gene))
-
 with open(outfile, "w") as out:
     out.write("\n".join(rep_to_keep))
 
@@ -72,5 +70,4 @@ with open(snakemake.output[1],'w') as f:
     w = csv.writer(f, delimiter='\t')
     for gene in rep_to_keep:
        w.writerow([gene, contig_gene[gene]])
-#    w.writerows(contig_gene.items())
 
