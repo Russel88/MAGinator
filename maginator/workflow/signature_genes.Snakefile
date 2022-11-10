@@ -18,6 +18,7 @@ rule all:
         expand(os.path.join(WD, 'signature_genes','counts', 'cluster_{cluster}_counts.RDS'), cluster=CLUSTERS),
         os.path.join(WD, 'abundance', 'abundance_phyloseq.RData')
 
+
 # Identifying the refined sets of signature genes using the gene count matrix and gene lengths
 rule SG_refinement:
     input:
@@ -29,12 +30,12 @@ rule SG_refinement:
     conda:
         "envs/signature_genes.yaml"
     resources:
-<<<<<<< Updated upstream
         cores = 1,
         memory = 188,
         runtime = '12:00:00'
     script: 
         "scripts/species_collections.py"
+
 
 # creating a gene count matrix only containing the genes, that does not cluster across metagenomic species / species collection
 rule sort_genes_across_MGS:
@@ -46,16 +47,11 @@ rule sort_genes_across_MGS:
     conda:
        	"envs/signature_genes.yaml" 
     resources:
-        cores = 1, 
-        memory = 188,
-        runtime = '12:00:00'
-=======
-        cores = 2,
+        cores = 1,
         memory = 188,
         runtime = '10:00:00'
     params:
         functions = "Functions_v4.R"
->>>>>>> Stashed changes
     script:
         "scripts/SG_refinement.R"
 
@@ -71,19 +67,13 @@ rule gene_counts:
     conda:
         "envs/signature_genes.yaml"
     resources:
-<<<<<<< Updated upstream
         cores = 1,
         memory = 188,
-        runtime = '24:00:00'
-=======
-        cores = 2,
-        memory = 188,
         runtime = '12:00:00'
->>>>>>> Stashed changes
     script:
         "scripts/MGS_counts.R"
 
-<<<<<<< Updated upstream
+
 # Identifying the refined sets of signature genes using the gene count matrix and gene lengths
 rule SG_refinement:
     input:
@@ -102,8 +92,6 @@ rule SG_refinement:
         functions = "Functions_v4.R"
     script:
         "scripts/SG_refinement.R"
-=======
->>>>>>> Stashed changes
 
 # Creating abundance profiles from the SG
 rule abundance_profile:
