@@ -31,7 +31,7 @@ rule all:
 rule nonredundant_catalogue:
     input:
         genecat = os.path.join(WD, 'genes', 'all_genes.fna'),
-        clusters = os.path.join(WD, 'genes', 'all_genes95_cluster.tsv')
+        clusters = os.path.join(WD, 'genes', 'all_genes_cluster.tsv')
     output:
         os.path.join(WD, 'genes', 'all_genes_nonredundant.fasta')
     conda:

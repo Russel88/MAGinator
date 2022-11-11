@@ -63,7 +63,7 @@ rule gene_counts:
         gene_lengths = os.path.join(WD, 'signature_genes', 'gene_lengths.RDS'),
         clusters_sorted = os.path.join(WD, 'signature_genes', 'clusters_sorted.RDS')
     output:
-        cluster_counts = os.path.join(WD, 'signature_genes','counts', 'cluster_{cluster}_counts.RDS')
+        cluster_counts = temp(os.path.join(WD, 'signature_genes','counts', 'cluster_{cluster}_counts.RDS'))
     conda:
         "envs/signature_genes.yaml"
     resources:

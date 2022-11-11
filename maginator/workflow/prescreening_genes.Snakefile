@@ -25,7 +25,7 @@ rule all:
 rule geneID_collectionID:
     input: 
         os.path.join(WD, 'tabs', 'metagenomicspecies.tab'),
-        os.path.join(WD, 'genes', 'all_genes95_cluster.tsv'),
+        os.path.join(WD, 'genes', 'all_genes_cluster.tsv'),
         param_dict['vamb_clusters']
     output:
         os.path.join(WD, 'genes', 'representative_genes.tsv'),

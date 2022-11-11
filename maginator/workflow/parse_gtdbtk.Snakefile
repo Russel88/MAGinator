@@ -43,15 +43,15 @@ rule repres_genes:
     input:
         os.path.join(WD, 'genes', 'all_genes.faa'),
     output:
-        fasta = os.path.join(WD, 'genes', 'all_genes95_rep_seq.fasta'),
-        tsv = os.path.join(WD, 'genes', 'all_genes95_cluster.tsv')
+        fasta = os.path.join(WD, 'genes', 'all_genes_rep_seq.fasta'),
+        tsv = os.path.join(WD, 'genes', 'all_genes_cluster.tsv')
     resources:
         cores = 14,
         memory = 50,
         runtime = '2:00:00:00' 
     params:
         tmp_dir = os.path.join(WD, 'tmp'),
-        out_prefix = os.path.join(WD, 'genes', 'all_genes95'),
+        out_prefix = os.path.join(WD, 'genes', 'all_genes'),
         cov = param_dict["clustering_coverage"],
         seq_id = param_dict["clustering_min_seq_id"]
     conda:
@@ -64,7 +64,7 @@ rule repres_genes:
 rule join:
     input:
         gtdb = os.path.join(WD, 'phylo', 'intermediate', 'gtdb_markers.tab'),
-        cluster = os.path.join(WD, 'genes', 'all_genes95_cluster.tsv')
+        cluster = os.path.join(WD, 'genes', 'all_genes_cluster.tsv')
     output:
         os.path.join(WD, 'phylo', 'intermediate', 'gtdb_markers_bins_geneID.tsv')
     resources:

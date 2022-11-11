@@ -63,10 +63,16 @@ class Workflow(object):
                 small_genes = sum(1 for line in small_gf if line.strip())
             with open(os.path.join(self.output, 'genes', 'gene_count_matrix.tsv')) as gf:
                 genes = sum(1 for line in gf if line.strip())
-            logging.info(str(small_genes) + ' genes are included in the analysis, out of ' + str(genes) + ' genes as some of the genes was clustered across the metagenomic species')
+            logging.info(str(small_genes) + ' out of ' + str(genes) + ' genes are included in the analysis as some of the genes was clustered across the metagenomic species')
 
         if 'workflow/signature_genes.Snakefile' in last:
-            logging.info('LOGGING COMES LATER - identifying Signature Genes')
+            no_SG = 0
+            for f in os.path.listdir(os.path.join(self.output, 'signature_genes/screened/')):
+                path = os.path.join(self.output, 'signature_genes/screened/', f)
+                if os.path.isfile(path):
+                    if (os.path.getsize(path)<50):
+                        no_SG += 1
+            logging.info('Too few genes was present in ' + str(no_SG) + ' MGSs in order to identify Signature Genes. The relative abundance has been set to 0.')
 
 
     def add_info(self, x):
