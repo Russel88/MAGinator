@@ -15,7 +15,7 @@ CLUSTERS = {x for x in CLUSTERS if x.isdigit()}
 
 rule all:
     input:
-        expand(os.path.join(WD, 'signature_genes','counts', 'cluster_{cluster}_counts.RDS'), cluster=CLUSTERS),
+#        expand(os.path.join(WD, 'signature_genes','counts', 'cluster_{cluster}_counts.RDS'), cluster=CLUSTERS),
         os.path.join(WD, 'abundance', 'abundance_phyloseq.RData')
 
 
@@ -34,26 +34,7 @@ rule refinement:
         memory = 188,
         runtime = '12:00:00'
     script: 
-        "scripts/species_collections.py"
-
-
-# creating a gene count matrix only containing the genes, that does not cluster across metagenomic species / species collection
-rule sort_genes_across_MGS:
-    input: 
-        os.path.join(WD, 'genes', 'gene_count_matrix.tsv'),
-        os.path.join(WD, 'genes', 'representative_genes.tsv')
-    output:
-        os.path.join(WD, 'genes', 'small_gene_count_matrix.tsv')
-    conda:
-       	"envs/signature_genes.yaml" 
-    resources:
-        cores = 1,
-        memory = 188,
-        runtime = '10:00:00'
-    params:
-        functions = "Functions_v4.R"
-    script:
-        "scripts/SG_refinement.R"
+        "scripts/SG_refinement.py"
 
 
 # insert rule for creating the MGS_object.RDS
@@ -74,24 +55,6 @@ rule gene_counts:
         "scripts/MGS_counts.R"
 
 
-# Identifying the refined sets of signature genes using the gene count matrix and gene lengths
-rule SG_refinement:
-    input:
-        R_clusters = os.path.join(WD, 'signature_genes', 'cluster.RDS'),
-        R_gene_lengths = os.path.join(WD, 'signature_genes', 'gene_lengths.RDS')
-    output:
-        screened_clusters = os.path.join(WD, 'signature_genes', 'clusters_screened.RDS'),
-        MGS_object = os.path.join(WD, 'signature_genes', 'MGS_object.Rdata')
-    conda:
-       	"envs/signature_genes.yaml" 
-    resources:
-        cores = 8,
-        memory = 188,
-        runtime = '5:00:00:00' 
-    params:
-        functions = "Functions_v4.R"
-    script:
-        "scripts/SG_refinement.R"
 
 # Creating abundance profiles from the SG
 rule abundance_profile:
