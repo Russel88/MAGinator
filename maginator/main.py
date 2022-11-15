@@ -20,7 +20,7 @@ WORKFLOW_GTDBTK_SNAKEFILE = os.path.join(_ROOT, 'workflow', 'gtdbtk.Snakefile')
 WORKFLOW_PARSE_GTDBTK_SNAKEFILE = os.path.join(_ROOT, 'workflow', 'parse_gtdbtk.Snakefile')
 WORKFLOW_FILTER_GENE_CLUSTERS = os.path.join(_ROOT, 'workflow', 'filter_geneclusters.Snakefile')
 WORKFLOW_GENE_COUNT_MAT = os.path.join(_ROOT, 'workflow', 'gene_count_mat.Snakefile')
-WORKFLOW_PRESCREENING_GENES = os.path.join(_ROOT, 'workflow', 'preescreening_genes.Snakefile')
+WORKFLOW_PRESCREENING_GENES = os.path.join(_ROOT, 'workflow', 'prescreening_genes.Snakefile')
 WORKFLOW_SIGNATURE_GENES = os.path.join(_ROOT, 'workflow', 'signature_genes.Snakefile')
 
 
@@ -31,11 +31,11 @@ def cli():
     
     # Required
     apr = ap.add_argument_group('required arguments')
-    apr.add_argument('--vamb_clusters', help='Path to VAMB clusters.tsv file', required=True)
-    apr.add_argument('--reads', help='Comma-delimited file with format: SampleName,AbsolutePathToForwardReads,AbsolutePathToReverseReads. SampleNames should match the 1st column in clusters.tsv with the pattern SampleName_{clusternumber}', required=True)
-    apr.add_argument('--contigs', help='Fasta file with contig sequences. Fasta headers should match the 2nd column in the clusters.tsv file', required=True)
-    apr.add_argument('--output', help='Prefix for output directory', required=True)
-    apr.add_argument('--gtdb_db', help='Path to GTDB-tk database', type=str, required=True)
+    apr.add_argument('-v', '--vamb_clusters', help='Path to VAMB clusters.tsv file', required=True)
+    apr.add_argument('-r', '--reads', help='Comma-delimited file with format: SampleName,AbsolutePathToForwardReads,AbsolutePathToReverseReads. SampleNames should match the 1st column in clusters.tsv with the pattern SampleName_{clusternumber}', required=True)
+    apr.add_argument('-c', '--contigs', help='Fasta file with contig sequences. Fasta headers should match the 2nd column in the clusters.tsv file', required=True)
+    apr.add_argument('-o', '--output', help='Prefix for output directory', required=True)
+    apr.add_argument('-g', '--gtdb_db', help='Path to GTDB-tk database', type=str, required=True)
 
     # Cluster arguments
     apc = ap.add_argument_group('compute cluster arguments')

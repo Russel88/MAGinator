@@ -44,7 +44,7 @@ class Workflow(object):
 
             with open(os.path.join(self.output, 'genes', 'all_genes.fna')) as gf:
                 genefile=gf.read()
-            with open(os.path.join(self.output, 'genes', 'all_genes95_rep_seq.fasta')) as cf:
+            with open(os.path.join(self.output, 'genes', 'all_genes_rep_seq.fasta')) as cf:
                 clusterfile=cf.read()     
             logging.info(f'{len(re.findall(r">", genefile))} genes were clustered into {len(re.findall(r">", clusterfile))} gene clusters')
 

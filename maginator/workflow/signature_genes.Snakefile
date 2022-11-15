@@ -20,7 +20,7 @@ rule all:
 
 
 # Identifying the refined sets of signature genes using the gene count matrix and gene lengths
-rule SG_refinement:
+rule refinement:
     input:
         clusters_dir = os.path.join(WD, 'signature_genes', 'clusters', 'Cluster{cluster}.RDS'),
         clusters_sorted = os.path.join(WD, 'signature_genes', 'clusters_sorted.RDS'),

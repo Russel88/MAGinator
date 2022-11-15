@@ -75,4 +75,4 @@ rule bwa_readmap:
         memory = 188,
         runtime = '1:00:00:00'
     shell:
-        "bwa-mem2 mem -t {resources.cores} {input.gene_cat} {input[2]} {input[3]} | samtools view -T {input.gene_cat} -F 3584  -b --threads {resources.cores} | samtools sort --threads {resources.cores} > {output.bam};"
+        "bwa-mem2 mem -t {resources.cores} {input.gene_cat} {input[2]} {input[3]} | samtools view -T {input.gene_cat} -F 3584  -b --threads {resources.cores} | samtools sort --threads {resources.cores} > {output.bam}; samtools index {output.bam}"

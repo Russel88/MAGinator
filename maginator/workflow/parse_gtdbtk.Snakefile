@@ -11,8 +11,9 @@ param_dict = {x[0]: x[1] for x in fl}
 rule all:
     input:
         os.path.join(WD, 'tabs', 'metagenomicspecies.tab'),
-        os.path.join(WD, 'genes', 'all_genes95_cluster.tsv'),
-        os.path.join(WD, 'phylo', 'intermediate', 'gtdb_markers_bins_geneID.tsv')
+        os.path.join(WD, 'genes', 'all_genes_cluster.tsv'),
+        os.path.join(WD, 'phylo', 'intermediate', 'gtdb_markers_bins_geneID.tsv'),
+        os.path.join(WD, 'phylo', 'intermediate', 'gtdbtk_summary.tsv')
 
 rule parse_gtdbtk:
     input:
@@ -21,7 +22,7 @@ rule parse_gtdbtk:
     output:
         os.path.join(WD, 'tabs', 'metagenomicspecies.tab'),
         os.path.join(WD, 'genes', 'all_genes.fna'),
-        os.path.join(WD, 'phylo', 'intermediate', 'gtdb_markers.tab'),
+        temp(os.path.join(WD, 'phylo', 'intermediate', 'gtdb_markers.tab')),
         os.path.join(WD, 'phylo', 'intermediate', 'gtdb_unique_bac_markers.tab'),
         os.path.join(WD, 'phylo', 'intermediate', 'gtdb_unique_ar_markers.tab'),
         os.path.join(WD, 'genes', 'all_genes.faa')
@@ -74,3 +75,15 @@ rule join:
     shell:
         "join -1 1 -2 2 <(sort -k1,1 {input.gtdb}) <(sort -k2,2 {input.cluster}) > {output}"
 
+# Collect GTDB-tk summary info
+rule collect:
+    input:
+        os.path.join(WD, 'gtdbtk')
+    output:
+        os.path.join(WD, 'phylo', 'intermediate', 'gtdbtk_summary.tsv')
+    resources:
+        cores = 1,
+        memory = 20,
+        runtime = '24:00:00'
+    shell:
+        "for i in {input}/*/*summary.tsv; do tail -n+2 $i; done | cut -f1,2 > {output}"
