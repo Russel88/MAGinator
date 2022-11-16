@@ -29,12 +29,14 @@ rule refinement:
         cluster_screened = os.path.join(WD, 'signature_genes', 'screened', 'cluster_{cluster}_screened.RDS'),
     conda:
         "envs/signature_genes.yaml"
+    params:
+        functions = "Functions_v4.R"
     resources:
         cores = 1,
         memory = 188,
         runtime = '12:00:00'
     script: 
-        "scripts/SG_refinement.py"
+        "scripts/SG_refinement.R"
 
 
 # insert rule for creating the MGS_object.RDS
