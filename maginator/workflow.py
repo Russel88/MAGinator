@@ -67,7 +67,7 @@ class Workflow(object):
 
         if 'workflow/signature_genes.Snakefile' in last:
             no_SG = 0
-            for f in os.path.listdir(os.path.join(self.output, 'signature_genes/screened/')):
+            for f in os.listdir(os.path.join(self.output, 'signature_genes/screened/')):
                 path = os.path.join(self.output, 'signature_genes/screened/', f)
                 if os.path.isfile(path):
                     if (os.path.getsize(path)<50):
