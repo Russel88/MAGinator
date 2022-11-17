@@ -32,12 +32,12 @@ mse.after <- (mse.before)  # MSE of the refined signature gene set
 mse.final <- (mse.before)  # MSE of the refined signature gene set after removal of outliers
 
 # identifying the names of genes in all MGS the dataset
-Cluster_gene_names <- c()
-for(Cluster in names(Clusterlist)){
-  Cluster_gene_names <- c(Cluster_gene_names, rownames(Clusterlist[[Cluster]]))
-}
+#Cluster_gene_names <- c()
+#for(cluster in names(Clusterlist)){
+#  Cluster_gene_names <- c(Cluster_gene_names, rownames(Clusterlist[[Cluster]]))
+#}
 
-present_genes <- GeneLengths[names(GeneLengths) %in% Cluster_gene_names]
+present_genes <- GeneLengths[names(GeneLengths) %in% rownames(Cluster)]
 
 
 best_threshold <- c()

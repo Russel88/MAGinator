@@ -8,13 +8,10 @@ gene_clusters <- read.table(snakemake@input[["gene_clusters"]], header = F, sep=
 clustercounts <- as.data.frame(table(gene_clusters[,2])) #counting the genes of all bins
 cluster_order <- unique(gene_clusters[,2])
 
-print(cluster_order)
-print(length(cluster_order))
 
 colnames(gene_clusters) <- c("SEQUENCEID", "CLUSTERID")
 cluster_names <- c()
 dir.create(snakemake@output[["clusters_dir"]])
-print(snakemake@output[["clusters_dir"]])
 
 for (i in cluster_order){
   gene_names <- gene_clusters[gene_clusters$CLUSTERID == i,1] # getting the gene names of the cluster
@@ -32,12 +29,11 @@ for (i in cluster_order){
   assign(m_name, ordered_AbuMatrix)
   cluster_names <- c(cluster_names, m_name)
 
-#  outdir <- strsplit(snakemake@output[["R_clusters"]], "/\\s*(?=[^/]+$)", perl=TRUE)[[1]][1]
   outfile <- paste(snakemake@output[["clusters_dir"]], '/', m_name, '.RDS', sep="")
   saveRDS(cluster_mat, file=outfile)
 }
 
-print(outfile)
+
  
 #combining the clusters into a large list
 clusterlist <- mget(cluster_names)
