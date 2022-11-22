@@ -85,6 +85,8 @@ for (id in names(Clusterlist)){
   # summing the read counts for the id/cluster/MGS
   final.read.matrix[, id] <- colSums(final.reads)
   if (length(final.gene.names)>0){
+  if (length(final.gene.names)!=100){
+  final.gene.names<-c(final.gene.names, rep("NA", (100-length(final.gene.names))))}
   sg_cluster[sg_cluster[,2]==id] <- matrix(c(final.gene.names, rep(id, length(final.gene.names))), ncol=2)
 }}
 
