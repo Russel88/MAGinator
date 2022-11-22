@@ -59,6 +59,10 @@ rownames(taxonomy) <- taxonomy$Cluster # set the clusterID as rownames (for the 
 taxonomy$Cluster <- NULL #removing the column witht the clusterID
 
 
+# Prepare a table containing the signature geneID's in column1 and the corresponding cluster in column2
+sg_cluster <- matrix("NA", nrow = length(names(Clusterlist))*100, ncol = 2)
+sg_cluster[,2]<- sort(rep(names(Clusterlist), 100))
+
 # The read counts are normalized according to gene lengths
 final.read.matrix <- matrix(NA, nrow=dim(Clusterlist[[1]])[2], ncol=length(Clusterlist))
 sample.names <- colnames(Clusterlist[[1]]) 
@@ -80,7 +84,9 @@ for (id in names(Clusterlist)){
   
   # summing the read counts for the id/cluster/MGS
   final.read.matrix[, id] <- colSums(final.reads)
-}
+  if (length(final.gene.names)>0){
+  sg_cluster[sg_cluster[,2]==id] <- matrix(c(final.gene.names, rep(id, length(final.gene.names))), ncol=2)
+}}
 
 final.abundance <- final.read.matrix/rowSums(final.read.matrix)
 
@@ -90,3 +96,4 @@ tax.table <- tax_table(taxmat)
 final.physeq <-  phyloseq(final.otu.table, tax.table)
 
 save(final.physeq, file = snakemake@output[["physeq_abundance"]])
+write.table(sg_cluster, file = snakemake@output[["sg_cluster"]], row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
