@@ -11,6 +11,12 @@ import csv
 import sys
 csv.field_size_limit(sys.maxsize) # I have large entries in my csv-file with gene-id's
 
+cluster_MGS_d = {}
+with open('test_parallel/tabs/metagenomicspecies.tab' , 'r') as csv_file:
+    for row in csv.reader(csv_file, delimiter='\t'):
+        for cluster in row[2].split(','):
+            cluster_MGS_d[cluster] = row[0]
+
 d = {}
 with open(snakemake.input[0], 'r') as csv_file:
     for row in csv.reader(csv_file, delimiter='\t'):
@@ -41,20 +47,22 @@ with open(gene_file) as f:
 
         repMGS = id_dict[rep] # mgsID of representative
         geneMGS = id_dict[gene] # mgsID of the gene
+        if (repMGS not in cluster_MGS_d):
+            cluster_MGS_d[repMGS]=repMGS
 
         if (rep==gene): #if the representative gene is same as clustered we keep it
             cluster_counter.add(raw_rep)
-            contig_gene[raw_rep] = repMGS
+            contig_gene[raw_rep] = cluster_MGS_d[repMGS]
         try:
             if ((d[geneMGS].find(repMGS)==0)): # if the MGS of the gene is included in the representative gene Metagenomic Species Collection
                 cluster_counter.add(raw_rep)
-                contig_gene[raw_rep] = repMGS
+                contig_gene[raw_rep] = cluster_MGS_d[repMGS]
         except KeyError:
             pass
 
         if (geneMGS==repMGS):  # if the MGS of the Gene is same as representative gene MGS
              cluster_counter.add(raw_rep)
-             contig_gene[raw_rep] = repMGS
+             contig_gene[raw_rep] = cluster_MGS_d[repMGS]
         else: # if the representative MGSid is not equal to the MGS of the gene it represents
             excluded_counter.add(raw_rep) 
             contig_gene.pop(raw_rep, None)
