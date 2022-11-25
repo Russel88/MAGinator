@@ -301,11 +301,12 @@ run_one_id <- function(id){
       mse <- c(mse, MSE)
       
       if (MSE < best.model$mse){
-        best.genes <- c(init.quant$good.genes, names(rot.quant$good.genes))
-        if (length(best.genes)<100){
+        tmp.best.genes <- c(init.quant$good.genes, names(rot.quant$good.genes))
+        if (length(tmp.best.genes)<100){
           print("There is not enough genes to rotate")
           break
         }
+        best.genes <- c(init.quant$good.genes, names(rot.quant$good.genes))
         best.model <- rot.quant
 
         genes_revised <- T
