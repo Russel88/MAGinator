@@ -13,15 +13,15 @@ with open(param_dict['reads']) as f:
 
 rule all:
     input:
-        os.path.join(WD, 'genes', 'gene_count_matrix.tsv')
+        os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
 
 
 # Use samtools to count the genes for each sample
 rule count_genes:
     input:
-        os.path.join(WD, 'mapped_reads', 'gene_counts_{sample}.bam')
+        os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.bam')
     output:
-        readcounts = temp(os.path.join(WD, 'mapped_reads', 'counts', '{sample}.counts'))
+        readcounts = os.path.join(WD, 'mapped_reads', 'counts', '{sample}.counts')
     conda:
         "envs/filter_geneclusters.yaml"
     resources:
@@ -34,9 +34,9 @@ rule count_genes:
 # Create the gene index
 rule gene_names:
     input:
-        os.path.join(WD, 'mapped_reads', 'gene_counts_{sample}.bam')
+        os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.bam')
     output:
-        temp(os.path.join(WD, 'mapped_reads', 'gene_names_{sample}'))
+        os.path.join(WD, 'mapped_reads', 'gene_names_{sample}')
     wildcard_constraints:
         sample=SAMPLES[0]
     conda:
@@ -54,7 +54,7 @@ rule create_header:
     input: 
         expand(os.path.join(WD, 'mapped_reads', 'counts', '{sample}.counts'), sample=SAMPLES)
     output:
-        header = temp(os.path.join(WD, 'mapped_reads', 'header.txt'))
+        header = os.path.join(WD, 'mapped_reads', 'header.txt')
     resources:
         cores = 1,
         memory = 188,
@@ -76,7 +76,7 @@ rule gene_count_matrix:
         gene_names = expand(os.path.join(WD, 'mapped_reads', 'gene_names_{sample}'), sample=SAMPLES[0]),
         header = os.path.join(WD, 'mapped_reads', 'header.txt')
     output:
-        os.path.join(WD, 'genes', 'gene_count_matrix.tsv')
+        os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
     conda:
        	"envs/filter_geneclusters.yaml"
     resources:

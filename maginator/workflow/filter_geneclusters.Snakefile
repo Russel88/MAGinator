@@ -1,5 +1,3 @@
-#!/bin/bash
-
 from itertools import product
 import os
 
@@ -25,7 +23,7 @@ with open(param_dict['reads']) as f:
 
 rule all:
     input:
-        expand(os.path.join(WD, 'mapped_reads', 'gene_counts_{sample}.bam'), sample=SAMPLES)
+        expand(os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.bam'), sample=SAMPLES)
 
 # Creating a nonredundant catalogue of all the genes
 rule nonredundant_catalogue:
@@ -67,7 +65,7 @@ rule bwa_readmap:
     params:
         sample = SAMPLES
     output:
-        bam = os.path.join(WD, 'mapped_reads', 'gene_counts_{sample}.bam')
+        bam = os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.bam')
     conda:
         "envs/filter_gtdbtk.yaml"
     resources:

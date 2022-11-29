@@ -12,7 +12,7 @@ import sys
 csv.field_size_limit(sys.maxsize) # I have large entries in my csv-file with gene-id's
 
 cluster_MGS_d = {}
-with open('test_parallel/tabs/metagenomicspecies.tab' , 'r') as csv_file:
+with open(snakemake.input[0] , 'r') as csv_file:
     for row in csv.reader(csv_file, delimiter='\t'):
         for cluster in row[2].split(','):
             cluster_MGS_d[cluster] = row[0]
@@ -20,7 +20,7 @@ with open('test_parallel/tabs/metagenomicspecies.tab' , 'r') as csv_file:
 d = {}
 with open(snakemake.input[0], 'r') as csv_file:
     for row in csv.reader(csv_file, delimiter='\t'):
-        d[row[0]] = row[2] # setting the MGS as key and it's included MGS-ids as value
+            d[row[0]] = row[2] # setting the MGS as key and it's included MGS-ids as value
 
 # importing the VAMB clustefile as dict with the geneid as key and it's corresonding MGS as value
 id_dict = {}

@@ -22,7 +22,7 @@ rule parse_gtdbtk:
     output:
         os.path.join(WD, 'tabs', 'metagenomicspecies.tab'),
         os.path.join(WD, 'genes', 'all_genes.fna'),
-        temp(os.path.join(WD, 'phylo', 'intermediate', 'gtdb_markers.tab')),
+        os.path.join(WD, 'phylo', 'intermediate', 'gtdb_markers.tab'),
         os.path.join(WD, 'phylo', 'intermediate', 'gtdb_unique_bac_markers.tab'),
         os.path.join(WD, 'phylo', 'intermediate', 'gtdb_unique_ar_markers.tab'),
         os.path.join(WD, 'genes', 'all_genes.faa')

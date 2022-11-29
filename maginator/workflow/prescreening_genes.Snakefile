@@ -29,7 +29,7 @@ rule geneID_collectionID:
         param_dict['vamb_clusters']
     output:
         os.path.join(WD, 'genes', 'representative_genes.tsv'),
-        os.path.join(WD, 'clusters', 'gene_lists', 'geneID_collectionID.tsv')
+        os.path.join(WD, 'genes', 'gene_lists', 'geneID_collectionID.tsv')
     conda:
         "envs/signature_genes.yaml"
     resources:
@@ -42,10 +42,10 @@ rule geneID_collectionID:
 # creating a gene count matrix only containing the genes, that does not cluster across metagenomic species / species collection
 rule sort_genes_across_MGS:
     input: 
-        os.path.join(WD, 'genes', 'gene_count_matrix.tsv'),
+        os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv'),
         os.path.join(WD, 'genes', 'representative_genes.tsv')
     output:
-        os.path.join(WD, 'genes', 'small_gene_count_matrix.tsv')
+        os.path.join(WD, 'genes', 'matrix', 'small_gene_count_matrix.tsv')
     conda:
        	"envs/signature_genes.yaml" 
     resources:
@@ -59,8 +59,8 @@ rule sort_genes_across_MGS:
 #Converting the gene count matrix to cluster-matrices in R dataformat 
 rule format_conversion:
     input:
-        gene_clusters = os.path.join(WD, 'clusters', 'gene_lists', 'geneID_collectionID.tsv'),
-        matrix = os.path.join(WD, 'genes', 'small_gene_count_matrix.tsv'),
+        gene_clusters = os.path.join(WD, 'genes', 'gene_lists', 'geneID_collectionID.tsv'),
+        matrix = os.path.join(WD, 'genes', 'matrix', 'small_gene_count_matrix.tsv'),
         gene_lengths = os.path.join(WD, 'genes', 'all_genes_nonredundant.fasta.fai')
     output:
         R_clusters = os.path.join(WD, 'signature_genes', 'cluster.RDS'),

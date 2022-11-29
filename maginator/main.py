@@ -15,14 +15,18 @@ from maginator.workflow import Workflow
 
 # Snakefiles
 _ROOT = os.path.abspath(os.path.dirname(__file__))
-WORKFLOW_FILTER_SNAKEFILE = os.path.join(_ROOT, 'workflow', 'filter.Snakefile')
-WORKFLOW_GTDBTK_SNAKEFILE = os.path.join(_ROOT, 'workflow', 'gtdbtk.Snakefile')
-WORKFLOW_PARSE_GTDBTK_SNAKEFILE = os.path.join(_ROOT, 'workflow', 'parse_gtdbtk.Snakefile')
+WORKFLOW_FILTER = os.path.join(_ROOT, 'workflow', 'filter.Snakefile')
+WORKFLOW_GTDBTK = os.path.join(_ROOT, 'workflow', 'gtdbtk.Snakefile')
+WORKFLOW_PARSE_GTDBTK = os.path.join(_ROOT, 'workflow', 'parse_gtdbtk.Snakefile')
 WORKFLOW_FILTER_GENE_CLUSTERS = os.path.join(_ROOT, 'workflow', 'filter_geneclusters.Snakefile')
 WORKFLOW_GENE_COUNT_MAT = os.path.join(_ROOT, 'workflow', 'gene_count_mat.Snakefile')
 WORKFLOW_PRESCREENING_GENES = os.path.join(_ROOT, 'workflow', 'prescreening_genes.Snakefile')
 WORKFLOW_SIGNATURE_GENES = os.path.join(_ROOT, 'workflow', 'signature_genes.Snakefile')
-
+WORKFLOW_OUTGROUP = os.path.join(_ROOT, 'workflow', 'outgroup.Snakefile')
+WORKFLOW_PILEUP = os.path.join(_ROOT, 'workflow', 'pileup.Snakefile')
+WORKFLOW_PILEUP_PARSE = os.path.join(_ROOT, 'workflow', 'pileup_parse.Snakefile')
+WORKFLOW_ALIGNMENT = os.path.join(_ROOT, 'workflow', 'alignment.Snakefile')
+WORKFLOW_PHYLO = os.path.join(_ROOT, 'workflow', 'phylo.Snakefile')
 
 def cli():
     
@@ -50,38 +54,69 @@ def cli():
     apo.add_argument('--max_mem', help='Maximum memory in GB [%(default)s]', default=180, type=int)
     apo.add_argument('--log_lvl', help='Logging level [%(default)s].', default='INFO', type=str, choices=['DEBUG','INFO','WARNING','ERROR'])
     apo.add_argument('--only_conda', help='Only install conda environments, then exit', action='store_true')
+    apo.add_argument('--snake', help='Only run specific snakemake command. For debug purposes', type=str)
+    apo.add_argument('--unlock', help='Unlock snakemake directory in case of unexpected exists, then exit', action='store_true')
 
     # Parameters
     app = ap.add_argument_group('parameters')
     app.add_argument('--binsize', help='Minimum bin size for inclusion [%(default)s].', default=200000, type=int)
     app.add_argument('--annotation_prevalence', help='Minimum prevalence of taxonomic assignment in a cluster of bins to call consensus [%(default)s]', default=0.75, type=float)
-    app.add_argument('--clustering_coverage', help='Alignment coverage for clustering of genes with MMseqs2, [%(default)s]', default=0.95, type=float)
-    app.add_argument('--clustering_min_seq_id', help='Sequence identity threshold for clustering of genes with MMseqs2, [%(default)s]', default=0.95, type=float)
+    app.add_argument('--clustering_coverage', help='Alignment coverage for clustering of genes with MMseqs2 [%(default)s]', default=0.95, type=float)
+    app.add_argument('--clustering_min_seq_id', help='Sequence identity threshold for clustering of genes with MMseqs2 [%(default)s]', default=0.95, type=float)
+    app.add_argument('--min_gtdb_markers', help='Minimum GTDBtk marker genes shared between MGS and outgroup for rooting trees [%(default)s]', default=10, type=int)
+    app.add_argument('--marker_gene_cluster_prevalence', help='Minimum prevalence of marker genes to be selected for rooting of MGS trees [%(default)s]', default=0.5, type=float)
+    app.add_argument('--const_max_af', help='Alignment fraction threshold for calling a base when creating phylogenies [%(default)s]', default=0.8, type=float)
+    app.add_argument('--min_nonN', help='Minimum fraction of non-N characters of a sample to be included in a phylogeny [%(default)s]', default=0.5, type=float)
+    app.add_argument('--min_marker_genes', help='Minimum marker genes to be detected for inclusion of a sample in a phylogeny [%(default)s]', default=2, type=int)
+    app.add_argument('--min_signature_genes', help='Minimum signature genes to be detected for inclusion of a sample in a phylogeny [%(default)s]', default=50, type=int)
 
     ########## Workflow ##########
     master = Controller(ap)
     
     wf = Workflow(master)
-    logging.info('Filtering bins')
-    wf.run(snakefile=WORKFLOW_FILTER_SNAKEFILE)
+    
+    # If only 1 snakemake command should be run
+    if master.snake:
+        logging.info('Only running '+master.snake+' snakefile')
+        wf.run(snakefile=globals()['WORKFLOW_'+master.snake])
+    # If not, run the actual workflow
+    else:
+   
+        # Preprocess 
+        logging.info('Filtering bins')
+        wf.run(snakefile=WORKFLOW_FILTER)
 
-    logging.info('Classifying genomes with GTDB-tk')
-    wf.run(snakefile=WORKFLOW_GTDBTK_SNAKEFILE)
+        # Annotation and gene clustering
+        logging.info('Classifying genomes with GTDB-tk')
+        wf.run(snakefile=WORKFLOW_GTDBTK)
 
-    logging.info('Clustering genes and parsing GTDB-tk results')
-    wf.run(snakefile=WORKFLOW_PARSE_GTDBTK_SNAKEFILE)
+        logging.info('Clustering genes and parsing GTDB-tk results')
+        wf.run(snakefile=WORKFLOW_PARSE_GTDBTK)
 
-    logging.info('Filtering of the gene clusters and readmapping')
-    wf.run(snakefile=WORKFLOW_FILTER_GENE_CLUSTERS)
+        logging.info('Filtering of the gene clusters and readmapping')
+        wf.run(snakefile=WORKFLOW_FILTER_GENE_CLUSTERS)
 
-    logging.info('Creating a gene count matrix of the readmappings')
-    wf.run(snakefile=WORKFLOW_GENE_COUNT_MAT)
+        # Signature genes
+        logging.info('Identifying signature genes')
+        logging.debug('Creating a gene count matrix of the readmappings')
+        wf.run(snakefile=WORKFLOW_GENE_COUNT_MAT)
+        logging.debug('Sorting the matrix to only contain genes, that do not cluster across the Metagenomic Species')
+        wf.run(snakefile=WORKFLOW_PRESCREENING_GENES)
+        logging.debug('Identifying the signature genes')
+        wf.run(snakefile=WORKFLOW_SIGNATURE_GENES)
 
-    logging.info('Sorting the matrix to only contain genes, that do not cluster across the Metagenomic Species')
-    wf.run(snakefile=WORKFLOW_PRESCREENING_GENES)
-
-    logging.info('Identifying the signature genes')
-    wf.run(snakefile=WORKFLOW_SIGNATURE_GENES)
+        # Phylogenies
+        logging.info('Inferring MGS phylogenies')
+        logging.debug('Identifying outgroups and marker genes for MGS phylogenies')
+        wf.run(snakefile=WORKFLOW_OUTGROUP)
+        logging.debug('Pileup of signature genes for calling SNVs')
+        wf.run(snakefile=WORKFLOW_PILEUP)
+        logging.debug('Parsing pileup data')
+        wf.run(snakefile=WORKFLOW_PILEUP_PARSE)
+        logging.debug('Generaring alignments')
+        wf.run(snakefile=WORKFLOW_ALIGNMENT)
+        logging.debug('Generaring phylogenies')
+        wf.run(snakefile=WORKFLOW_PHYLO)
 
 if __name__ == '__main__':
     cli()

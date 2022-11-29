@@ -10,21 +10,9 @@ class Controller(object):
      
         args = ap.parse_args()
 
-        self.vamb_clusters = args.vamb_clusters
-        self.reads = args.reads
-        self.contigs = args.contigs
-        self.output = args.output
-        self.cluster = args.cluster
-        self.max_jobs = args.max_jobs
-        self.max_cores = args.max_cores
-        self.max_mem = args.max_mem
-        self.log_lvl = args.log_lvl
-        self.cluster_info = args.cluster_info
-        self.only_conda = args.only_conda
-        self.gtdb_db = args.gtdb_db
-        self.binsize = args.binsize
-        self.annotation_prevalence = args.annotation_prevalence
-
+        for k,v in args.__dict__.items():
+            setattr(self, k, v)
+        
         # Logger
         logging.basicConfig(format='\033[36m'+'[%(asctime)s] %(levelname)s:'+'\033[0m'+' %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=self.log_lvl)
         logging.info('Running MAGinator version {}'.format(pkg_resources.require("maginator")[0].version))
