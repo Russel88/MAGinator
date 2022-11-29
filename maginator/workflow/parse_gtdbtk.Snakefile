@@ -11,7 +11,6 @@ param_dict = {x[0]: x[1] for x in fl}
 rule all:
     input:
         os.path.join(WD, 'tabs', 'metagenomicspecies.tab'),
-        os.path.join(WD, 'genes', 'all_genes_cluster.tsv'),
         os.path.join(WD, 'phylo', 'intermediate', 'gtdb_markers_bins_geneID.tsv'),
         os.path.join(WD, 'phylo', 'intermediate', 'gtdbtk_summary.tsv')
 
@@ -44,7 +43,6 @@ rule repres_genes:
     input:
         os.path.join(WD, 'genes', 'all_genes.faa'),
     output:
-        fasta = os.path.join(WD, 'genes', 'all_genes_rep_seq.fasta'),
         tsv = os.path.join(WD, 'genes', 'all_genes_cluster.tsv')
     resources:
         cores = 14,

@@ -43,9 +43,10 @@ rule nonredundant_catalogue:
 
 # Indexing the genes for mapping
 rule bwa_index:
-    input: os.path.join(WD, 'genes', 'all_genes_nonredundant.fasta')
-    output: done =touch(os.path.join(WD, 'genes', 'all_genes_nonredundant')),
-            gene_lengths = os.path.join(WD, 'genes', 'all_genes_nonredundant.fasta.fai')
+    input: 
+        fasta=os.path.join(WD, 'genes', 'all_genes_nonredundant.fasta')
+    output: 
+        index=os.path.join(WD, 'genes', 'all_genes_nonredundant')
     conda:
         "envs/filter_gtdbtk.yaml" 
     resources:
@@ -53,13 +54,13 @@ rule bwa_index:
         memory = 188, 
         runtime = '1:00:00:00'
     shell:
-        "bwa-mem2 index {input}; samtools faidx {input}; touch {output.gene_lengths}"
+        "bwa-mem2 index -p {output.index} {input.fasta}; samtools faidx {input.fasta}; touch {output.index}"
 
 # Readmapping
 rule bwa_readmap:
     input:
         index = os.path.join(WD, 'genes', 'all_genes_nonredundant'),
-        gene_cat = os.path.join(WD, 'genes', 'all_genes_nonredundant.fasta'),
+        fasta = os.path.join(WD, 'genes', 'all_genes_nonredundant.fasta'),
         fastq1 = lambda wildcards: sample_dict[wildcards.sample][0],
         fastq2 = lambda wildcards: sample_dict[wildcards.sample][1]
     params:
@@ -73,4 +74,4 @@ rule bwa_readmap:
         memory = 188,
         runtime = '1:00:00:00'
     shell:
-        "bwa-mem2 mem -t {resources.cores} {input.gene_cat} {input[2]} {input[3]} | samtools view -T {input.gene_cat} -F 3584  -b --threads {resources.cores} | samtools sort --threads {resources.cores} > {output.bam}; samtools index {output.bam}"
+        "bwa-mem2 mem -t {resources.cores} {input.index} {input.fastq1} {input.fastq2} | samtools view -T {input.fasta} -F 3584  -b --threads {resources.cores} | samtools sort --threads {resources.cores} > {output.bam}; samtools index {output.bam}"

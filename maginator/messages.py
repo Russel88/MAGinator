@@ -23,7 +23,6 @@ class Message(object):
         # Get latest command
         last = self.commands[-1]
 
-        #### This is wrong when other files have been put inside the clusters dir !!! ######
         if 'workflow/filter.Snakefile' in last:
             n_clust= 0
             n_bins = 0
@@ -60,13 +59,12 @@ class Message(object):
             logging.info('A gene count matrix has been created - summarizing the readmappings for all genes in all samples')
 
         if 'workflow/prescreening_genes.Snakefile' in last:
-            n_clust = len(glob.glob(self.output+'gtdbtk/*/classify/'))
-            total_clust=len(glob.glob(self.output+'signature_genes/clusters/'))
-            logging.info('A total of ' + str(total_clust) + ' clusters are included in the analysis, where ' + str(n_clust) + ' clusters are classified with a taxonomy.')            
+            total_clust=len(glob.glob(self.output+'signature_genes/clusters/*'))
+            logging.info('A total of ' + str(total_clust) + ' clusters are included in the analysis.')            
 
-            with open(os.path.join(self.output, 'genes', 'small_gene_count_matrix.tsv')) as small_gf:
+            with open(os.path.join(self.output, 'genes', 'matrix', 'small_gene_count_matrix.tsv')) as small_gf:
                 small_genes = sum(1 for line in small_gf if line.strip())
-            with open(os.path.join(self.output, 'genes', 'gene_count_matrix.tsv')) as gf:
+            with open(os.path.join(self.output, 'genes', 'matrix', 'gene_count_matrix.tsv')) as gf:
                 genes = sum(1 for line in gf if line.strip())
             logging.info(str(small_genes) + ' out of ' + str(genes) + ' genes are included in the analysis as some of the genes was clustered across the metagenomic species')
 
@@ -75,10 +73,11 @@ class Message(object):
             for f in os.listdir(os.path.join(self.output, 'signature_genes/screened/')):
                 path = os.path.join(self.output, 'signature_genes/screened/', f)
                 if os.path.isfile(path):
-                    if (os.path.getsize(path)<50):
+                    if (os.path.getsize(path)<60):
                         no_SG += 1
             logging.info('Too few genes was present in ' + str(no_SG) + ' MGSs in order to identify Signature Genes. The relative abundance has been set to 0.')
 
-        if 'workflow/outgroup.Snakefile' in last:
-            logging.info('Outgroups and markers genes selected for MGS phylogenies')
+        if 'workflow/phylo.Snakefile' in last:
+            k = len(os.listdir(os.path.join(self.output, 'phylo', 'trees')))
+            logging.info('Phylogenies generated for '+str(k)+' metagenomic species')
             
