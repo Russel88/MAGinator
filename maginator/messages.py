@@ -78,6 +78,9 @@ class Message(object):
             logging.info('Too few genes was present in ' + str(no_SG) + ' MGSs in order to identify Signature Genes. The relative abundance has been set to 0.')
 
         if 'workflow/phylo.Snakefile' in last:
-            k = len(os.listdir(os.path.join(self.output, 'phylo', 'trees')))
+            k = 0
+            for f in glob.glob(os.path.join(self.output, 'phylo', 'trees', '*.nwk')):
+                if os.path.getsize(f) > 0:
+                    k += 1
             logging.info('Phylogenies generated for '+str(k)+' metagenomic species')
             

@@ -13,19 +13,41 @@ rule all:
     input:
         expand(os.path.join(WD, 'phylo', 'trees', '{cluster}.nwk'), cluster=CLUSTERS),
 
-rule fasttree:
-    input:
-        os.path.join(WD, 'phylo', 'cluster_alignments', '{cluster}.fna')
-    output:
-        os.path.join(WD, 'phylo', 'trees', '{cluster}.nwk')
-    conda:
-        "envs/phylo.yaml"
-    resources:
-        cores=1,
-        memory=32,
-        runtime='12:00:00'
-    shell:
-        """
-        fasttree -nt {input} > {output}
-        """
+# Fasttree
+if param_dict['phylo'] == 'fasttree':
+    rule tree:
+        input:
+            os.path.join(WD, 'phylo', 'cluster_alignments', '{cluster}.fna')
+        output:
+            os.path.join(WD, 'phylo', 'trees', '{cluster}.nwk')
+        conda:
+            "envs/phylo.yaml"
+        resources:
+            cores=1,
+            memory=32,
+            runtime='12:00:00'
+        shell:
+            """
+            fasttree -nt {input} > {output}
+            """
 
+# IQtree
+if param_dict['phylo'] == 'iqtree':
+    rule tree:
+        input:
+            fna=os.path.join(WD, 'phylo', 'cluster_alignments', '{cluster}.fna'),
+            part=os.path.join(WD, 'phylo', 'cluster_alignments', '{cluster}.part')
+        output:
+            os.path.join(WD, 'phylo', 'trees', '{cluster}.nwk')
+        conda:
+            "envs/phylo.yaml"
+        params:
+            prefix=os.path.join(WD, 'phylo', 'trees', '{cluster}'),
+        resources:
+            cores=40,
+            memory=180,
+            runtime='02:00:00:00'
+        shell:
+            """
+            iqtree -T {resources.cores} -s {input.fna} -p {input.part} -o Outgroup --prefix {params.prefix} || true && if [ -f {params.prefix}.treefile ]; then mv {params.prefix}.treefile {output}; else touch {output}; fi
+            """

@@ -98,10 +98,12 @@ class Workflow(object):
         
         # Only install conda envs if only_conda
         if self.only_conda:
+            logging.info('Only creating conda environments.')
             cmd.append(' --conda-create-envs-only')
 
         # If unlocking
         if self.unlock:
+            logging.info('Unlocking working directory.')
             cmd.append('--unlock')
 
         logging.debug(' '.join(cmd))
