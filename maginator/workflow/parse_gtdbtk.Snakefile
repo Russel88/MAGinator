@@ -17,7 +17,7 @@ rule all:
 rule parse_gtdbtk:
     input:
         os.path.join(WD, 'gtdbtk'),
-        WD
+        ancient(WD)
     output:
         os.path.join(WD, 'tabs', 'metagenomicspecies.tab'),
         os.path.join(WD, 'genes', 'all_genes.fna'),
