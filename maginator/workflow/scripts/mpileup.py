@@ -31,7 +31,7 @@ Workflow of this script:
 
 #######################################################################################################################
 # Constants
-const_max_af = float(snakemake.params.const_max_af)
+const_min_af = float(snakemake.params.min_af)
 threads = int(snakemake.resources.cores)
 min_nonN = float(snakemake.params.min_nonN)
 min_marker_genes = int(snakemake.params.min_marker_genes)
@@ -304,13 +304,13 @@ def inverse_dict(dd):
     return(dict(inversed_dict))
 
 
-def parse_base_pairs(ref_base, x, max_af):
+def parse_base_pairs(ref_base, x, min_af):
     '''
     Parse mpileup read base column
     
     ref_base: Base of reference sequences
     x: pileup read base string
-    max_af: Maximum allele frequency, if below this an N is returned
+    min_af: Minimum allele frequency, if below this an N is returned
 
     Return:
     Str: Base
@@ -342,7 +342,7 @@ def parse_base_pairs(ref_base, x, max_af):
             seq = ''
    
         # If allele frequency is low, replace with N
-        if max(counts)/len(x) < max_af:
+        if max(counts)/len(x) < min_af:
             seq = 'N'
             af_low = 1
 
@@ -418,18 +418,18 @@ def parse_base_pairs(ref_base, x, max_af):
             seq = ''
 
         # If allele frequency low, replace with N
-        if max(counts)/len(x) < max_af:
+        if max(counts)/len(x) < min_af:
             seq = 'N'
             af_low = 1
 
     return seq, af_low
 
 
-def mpileup_read(file, max_af = const_max_af):
+def mpileup_read(file, min_af = const_min_af):
     '''
     Read a samtools mpileup file and output sequence dict
 
-    max_af: Maximum allowed allele frequency, if above this an N is returned at that position
+    min_af: Minimum allowed allele frequency, if above this an N is returned at that position
 
     Return:
     dict: key, value = sequence ID, [sequence, first position, last position, total depth, n bases with too low allele freq, seq_len]
@@ -474,7 +474,7 @@ def mpileup_read(file, max_af = const_max_af):
                     seq_base = ''
                     af_ind = 0
                 else:
-                    seq_base, af_ind = parse_base_pairs(line_data[2], line_data[4], max_af)
+                    seq_base, af_ind = parse_base_pairs(line_data[2], line_data[4], min_af)
                 
                 sequence = seq_base
                 af_count = af_ind
@@ -494,7 +494,7 @@ def mpileup_read(file, max_af = const_max_af):
                     seq_base = ''
                     af_ind = 0
                 else: 
-                    seq_base, af_ind = parse_base_pairs(line_data[2], line_data[4], max_af)
+                    seq_base, af_ind = parse_base_pairs(line_data[2], line_data[4], min_af)
                 
                 sequence += seq_base
                 af_count += af_ind

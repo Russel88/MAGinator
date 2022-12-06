@@ -65,7 +65,7 @@ def cli():
     app.add_argument('--clustering_min_seq_id', help='Sequence identity threshold for clustering of genes with MMseqs2 [%(default)s]', default=0.95, type=float)
     app.add_argument('--min_gtdb_markers', help='Minimum GTDBtk marker genes shared between MGS and outgroup for rooting trees [%(default)s]', default=10, type=int)
     app.add_argument('--marker_gene_cluster_prevalence', help='Minimum prevalence of marker genes to be selected for rooting of MGS trees [%(default)s]', default=0.5, type=float)
-    app.add_argument('--const_max_af', help='Alignment fraction threshold for calling a base when creating phylogenies [%(default)s]', default=0.8, type=float)
+    app.add_argument('--min_af', help='Minimim allele frequency for calling a base when creating phylogenies [%(default)s]', default=0.8, type=float)
     app.add_argument('--min_nonN', help='Minimum fraction of non-N characters of a sample to be included in a phylogeny [%(default)s]', default=0.5, type=float)
     app.add_argument('--min_marker_genes', help='Minimum marker genes to be detected for inclusion of a sample in a phylogeny [%(default)s]', default=2, type=int)
     app.add_argument('--min_signature_genes', help='Minimum signature genes to be detected for inclusion of a sample in a phylogeny [%(default)s]', default=50, type=int)
