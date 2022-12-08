@@ -27,6 +27,7 @@ WORKFLOW_PILEUP = os.path.join(_ROOT, 'workflow', 'pileup.Snakefile')
 WORKFLOW_PILEUP_PARSE = os.path.join(_ROOT, 'workflow', 'pileup_parse.Snakefile')
 WORKFLOW_ALIGNMENT = os.path.join(_ROOT, 'workflow', 'alignment.Snakefile')
 WORKFLOW_PHYLO = os.path.join(_ROOT, 'workflow', 'phylo.Snakefile')
+WORKFLOW_GENE_TAX = os.path.join(_ROOT, 'workflow', 'gene_tax.Snakefile')
 
 def cli():
     
@@ -70,6 +71,7 @@ def cli():
     app.add_argument('--min_marker_genes', help='Minimum marker genes to be detected for inclusion of a sample in a phylogeny [%(default)s]', default=2, type=int)
     app.add_argument('--min_signature_genes', help='Minimum signature genes to be detected for inclusion of a sample in a phylogeny [%(default)s]', default=50, type=int)
     app.add_argument('--phylo', help='Software for phylogeny inference. Either fast (fasttree) or slow and more accurate (iqtree) [%(default)s]', default='fasttree', type=str, choices=['fasttree', 'iqtree'])
+    app.add_argument('--tax_scope_threshold', help='Threshold for assigning the taxonomic scope of a gene cluster [%(default)s]', default=0.9, type=float)
 
     ########## Workflow ##########
     master = Controller(ap)
@@ -118,6 +120,10 @@ def cli():
         wf.run(snakefile=WORKFLOW_ALIGNMENT)
         logging.debug('Generaring phylogenies')
         wf.run(snakefile=WORKFLOW_PHYLO)
+
+        # Gene vs tax
+        logging.info('Inferring taxonomic scope of genes')
+        wf.run(snakefile=WORKFLOW_GENE_TAX)
 
 if __name__ == '__main__':
     cli()

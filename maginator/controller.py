@@ -36,11 +36,24 @@ class Controller(object):
                 sys.exit()
 
         # Check input and output
+        self.check_params()
         self.check_out()
         self.check_vamb()
         self.check_reads()
         self.check_contigs()
         self.write_params(args)
+
+    def check_params(self):
+        '''
+        Return error if parameters are not allowed
+        '''
+
+        if self.tax_scope_threshold < 0.5:
+            logging.error('tax_scope_threshold lower than 0.5 can lead to unexpected results')
+            sys.exit()
+        if self.min_af < 0.5:
+            logging.error('min_af lower than 0.5 can lead to unexpected results')
+            sys.exit()
 
     def check_out(self):
         '''
