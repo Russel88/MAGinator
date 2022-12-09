@@ -53,10 +53,10 @@ class Message(object):
             logging.info(f'{len(re.findall(r">", genefile))} genes were clustered into {len(re.findall(r">", clusterfile))} gene clusters')
 
         if 'workflow/filter_geneclusters.Snakefile' in last:
-            logging.info('Readmapping to the clustered genes has been done.')
+            logging.debug('Readmapping to the clustered genes has been done.')
 
         if 'workflow/gene_count_mat.Snakefile' in last:
-            logging.info('A gene count matrix has been created - summarizing the readmappings for all genes in all samples')
+            logging.debug('A gene count matrix has been created - summarizing the readmappings for all genes in all samples')
 
         if 'workflow/prescreening_genes.Snakefile' in last:
             total_clust=len(glob.glob(self.output+'signature_genes/clusters/*'))
@@ -66,7 +66,7 @@ class Message(object):
                 small_genes = sum(1 for line in small_gf if line.strip())
             with open(os.path.join(self.output, 'genes', 'matrix', 'gene_count_matrix.tsv')) as gf:
                 genes = sum(1 for line in gf if line.strip())
-            logging.info(str(small_genes) + ' out of ' + str(genes) + ' genes are included in the analysis as some of the genes was clustered across the metagenomic species')
+            logging.debug(str(small_genes) + ' out of ' + str(genes) + ' genes are included in the analysis as some of the genes was clustered across the metagenomic species')
 
         if 'workflow/signature_genes.Snakefile' in last:
             no_SG = 0

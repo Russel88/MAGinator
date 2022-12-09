@@ -27,7 +27,8 @@ rule parse_gtdbtk:
         os.path.join(WD, 'genes', 'all_genes.faa')
     params:
         param_dict['annotation_prevalence'],
-        VAMB
+        VAMB,
+        param_dict['no_mgs']
     conda:
         "envs/filter_gtdbtk.yaml"
     resources:

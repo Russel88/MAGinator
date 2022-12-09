@@ -13,4 +13,5 @@ dependencies:
  - parallel
  - multiprocess=0.70
  - fasta
- - markov_clustering 
+ - mcl=14
+ - scipy=1.9

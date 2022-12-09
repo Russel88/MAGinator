@@ -88,16 +88,21 @@ for clust in os.listdir(snakemake.input[0]):
 species_list = []
 mgs_list = []
 for clust in tax_list:
-    # If not species annotation, just add to final list
-    if bool(re.search('s__$', clust[1])):
+    # vamb_cluster parameter is set, not clusters are aggregated
+    if bool(snakemake.params[2]):
         mgs_list.append(clust)
-    # If species annotation, check if it's already added to list - if False add to final list. If True append to existing
+    # If vamb_cluster parameter is not set, aggregate if species annotation is similar
     else:
-        if clust[1] in species_list:
-            mgs_list[[x[1] for x in mgs_list].index(clust[1])][0] += clust[0]
-        else:
+        # If not species annotation, just add to final list
+        if bool(re.search('s__$', clust[1])):
             mgs_list.append(clust)
-            species_list.append(clust[1])
+        # If species annotation, check if it's already added to list - if False add to final list. If True append to existing
+        else:
+            if clust[1] in species_list:
+                mgs_list[[x[1] for x in mgs_list].index(clust[1])][0] += clust[0]
+            else:
+                mgs_list.append(clust)
+                species_list.append(clust[1])
 
 # Write metagenomicspecies file
 with open(snakemake.output[0], 'w') as fh:

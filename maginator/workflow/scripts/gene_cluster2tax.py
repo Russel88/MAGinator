@@ -18,7 +18,7 @@ cutoff = float(snakemake.params['cutoff'])
 ###### Transform ######
 # Expand mgs data.frame to contain a row per cluster for easy merging
 mgs_zip = zip(list(mgs_df['MGS']), list(mgs_df['Clusters']))
-mgs_list = list(itertools.chain.from_iterable([[('Cluster'+str(x[0]), y) for y in x[1].split(',')] for x in mgs_zip]))
+mgs_list = list(itertools.chain.from_iterable([[('Cluster'+str(x[0]), y) for y in str(x[1]).split(',')] for x in mgs_zip]))
 mgs_df_exp = pd.DataFrame(mgs_list, columns=('MGS', 'Cluster'))
 
 ####### Merging ######
