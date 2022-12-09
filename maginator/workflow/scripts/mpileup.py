@@ -32,6 +32,7 @@ Workflow of this script:
 #######################################################################################################################
 # Constants
 const_min_af = float(snakemake.params.min_af)
+const_min_depth = float(snakemake.params.min_depth)
 threads = int(snakemake.resources.cores)
 min_nonN = float(snakemake.params.min_nonN)
 min_marker_genes = int(snakemake.params.min_marker_genes)
@@ -304,7 +305,7 @@ def inverse_dict(dd):
     return(dict(inversed_dict))
 
 
-def parse_base_pairs(ref_base, x, min_af):
+def parse_base_pairs(ref_base, x, min_af, min_depth):
     '''
     Parse mpileup read base column
     
@@ -331,6 +332,11 @@ def parse_base_pairs(ref_base, x, min_af):
     # Insert reference
     x = x.replace('.', ref_base)
     
+    # Return N if depth too low
+    if len(x) < min_depth:
+        seq = 'N'
+        return seq, af_low
+
     # If no indels, just report most seen and the frequency
     if (x.find('+') < 0) and (x.find('-') < 0):
         chars = ('*','A','C','T','G','N')
@@ -425,7 +431,7 @@ def parse_base_pairs(ref_base, x, min_af):
     return seq, af_low
 
 
-def mpileup_read(file, min_af = const_min_af):
+def mpileup_read(file, min_af = const_min_af, min_depth = const_min_depth):
     '''
     Read a samtools mpileup file and output sequence dict
 
@@ -474,7 +480,7 @@ def mpileup_read(file, min_af = const_min_af):
                     seq_base = ''
                     af_ind = 0
                 else:
-                    seq_base, af_ind = parse_base_pairs(line_data[2], line_data[4], min_af)
+                    seq_base, af_ind = parse_base_pairs(line_data[2], line_data[4], min_af, min_depth)
                 
                 sequence = seq_base
                 af_count = af_ind
@@ -494,7 +500,7 @@ def mpileup_read(file, min_af = const_min_af):
                     seq_base = ''
                     af_ind = 0
                 else: 
-                    seq_base, af_ind = parse_base_pairs(line_data[2], line_data[4], min_af)
+                    seq_base, af_ind = parse_base_pairs(line_data[2], line_data[4], min_af, min_depth)
                 
                 sequence += seq_base
                 af_count += af_ind

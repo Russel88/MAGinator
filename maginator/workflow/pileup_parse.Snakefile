@@ -29,6 +29,7 @@ rule parse:
         dump=os.path.join(WD, 'phylo', 'intermediate', 'pileup_dumb.bin')
     params:
         min_af = param_dict['min_af'], 
+        min_depth = param_dict['min_depth'], 
         min_nonN = param_dict['min_nonN'], 
         min_marker_genes = param_dict['min_marker_genes'], 
         min_signature_genes = param_dict['min_signature_genes']
