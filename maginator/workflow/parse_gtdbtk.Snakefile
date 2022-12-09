@@ -37,11 +37,17 @@ rule parse_gtdbtk:
     script:
         "scripts/parse_gtdbtk.py"
 
+# identifying the sequence type which will be the basis for the gene clustering
+if param_dict["clustering_type"] == "protein":
+    sequence_type_cluster = os.path.join(WD, 'genes', 'all_genes.faa')
+elif param_dict["clustering_type"] == "nucleotide":
+    sequence_type_cluster = os.path.join(WD, 'genes', 'all_genes.fna')
+
 
 # Get representative genes from all genes.
 rule repres_genes:
     input:
-        os.path.join(WD, 'genes', 'all_genes.faa'),
+        sequence_type_cluster
     output:
         tsv = os.path.join(WD, 'genes', 'all_genes_cluster.tsv')
     resources:
