@@ -20,9 +20,7 @@ All you need for running MAGinator is snakemake and mamba. Other dependencies wi
 ```sh
 conda create -n maginator -c bioconda -c conda-forge snakemake mamba
 conda activate maginator
-git clone https://github.com/Russel88/MAGinator.git
-cd MAGinator
-pip install .
+pip install maginator
 ```
 
 Furthermore, MAGinator also needs the GTDB-tk database version R207_v2 downloaded. If you don't already have it, you can run the following:
