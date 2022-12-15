@@ -33,8 +33,6 @@ class Workflow(object):
                '--use-conda',
                '--latency-wait', '20',
                '-s', snakefile,
-               '--resources', 
-               'mem_gb='+str(self.max_mem),
                '--config',
                'wd='+self.output,
                'reads='+self.reads,

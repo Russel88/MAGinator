@@ -1,4 +1,5 @@
 import os
+import distutils.util
 
 WD = config['wd']
 PARAMS = config['params']
@@ -28,7 +29,7 @@ rule parse_gtdbtk:
     params:
         param_dict['annotation_prevalence'],
         VAMB,
-        param_dict['no_mgs']
+        distutils.util.strtobool(param_dict['no_mgs'])
     conda:
         "envs/filter_gtdbtk.yaml"
     resources:

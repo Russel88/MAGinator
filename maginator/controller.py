@@ -87,6 +87,9 @@ class Controller(object):
             logging.error('VAMB clusters.tsv is invalid. All lines should contain 2 tab-separated columns')
             sys.exit()            
 
+        del self.bin_set
+        del vamb_file
+
     def check_reads(self):
         '''
         Check that the reads file is of the correct format
@@ -130,7 +133,10 @@ class Controller(object):
         if not set(contig_names) == self.contig_set:
             logging.error('Contig names in fasta file do not match contig names in VAMB clusters.tsv file')
             sys.exit()
-            
+
+        del self.contig_set
+        del contig_names
+
     def write_params(self, args):
         '''
         Write parameters for snakemake workflows to a file
