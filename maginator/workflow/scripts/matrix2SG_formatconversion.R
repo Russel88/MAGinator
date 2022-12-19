@@ -17,11 +17,11 @@ for (i in cluster_order){
   gene_names <- gene_clusters[gene_clusters$CLUSTERID == i,1] # getting the gene names of the cluster
   
   # Sort the gene count matrix of the MSP according to correlation
-  AbuMatrix <- as.matrix(genemat[gene_names,])
+  AbuMatrix <- as.matrix(genemat[gene_names,, drop=FALSE])
   Median_profile <- colMedians(AbuMatrix)
   pcc2MedianProfile <-cor(t(AbuMatrix) , Median_profile )
   gene_order <- row.names(pcc2MedianProfile)[order(pcc2MedianProfile, decreasing = TRUE)]
-  ordered_AbuMatrix <- AbuMatrix[gene_order,]
+  ordered_AbuMatrix <- AbuMatrix[gene_order,, drop=FALSE]
   
   m_name <- paste('Cluster', i, sep = "")
   cluster_mat <- paste('Cluster', i, sep = "")

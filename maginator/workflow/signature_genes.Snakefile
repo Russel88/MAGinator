@@ -32,7 +32,7 @@ rule refinement:
         functions = "Functions_v4.R"
     resources:
         cores = 1,
-        memory = 188,
+        memory = 12,
         runtime = '12:00:00'
     script: 
         "scripts/SG_refinement.R"
@@ -50,7 +50,7 @@ rule gene_counts:
         "envs/signature_genes.yaml"
     resources:
         cores = 1,
-        memory = 188,
+        memory = 12,
         runtime = '12:00:00'
     script:
         "scripts/MGS_counts.R"
@@ -71,8 +71,8 @@ rule abundance_profile:
     conda:
         "envs/signature_genes.yaml"
     resources:
-        cores = 6,
-        memory = 188,
+        cores = 1,
+        memory = 12,
         runtime = '12:00:00'
     script:
         "scripts/abundance_profiles.R"
