@@ -151,6 +151,13 @@ run_one_id <- function(id){
         MSE <- init.genes$mse
         break
       }
+
+      if ((min(500, length(Clusterlist[[id]][, 1]))-n.genes)<(n.genes-length(init.genes$good.genes))){ ##check if there is enough potential replacement genes in the geneset
+        MSE <- init.genes$mse
+        best.model <- init.genes
+        best.genes <- genes
+        break
+      }
       
       #if all the genes meet the threshold set up before then we are done
       #if we have 100 good genes then there is no reason to keep going
@@ -171,6 +178,7 @@ run_one_id <- function(id){
       } else {
         MSE.old <- rotation$mse
       }
+
     
       rotation <- rank.mat(id = id,
                            gene.names = init.genes$good.genes,
@@ -275,6 +283,12 @@ run_one_id <- function(id){
         break
       }
       
+      if ((min(500, length(Clusterlist[[id]][, 1]))-n.genes)<(n.genes-length(init.quant$good.genes))){ # if there is not more new genes than genes required for rotation
+        best.model <- init.quant
+        best.genes <- new.genes
+        break
+      }
+
       # if there is only 5 good genes it is impossible to fit model
       if (length(init.quant$good.genes) < 5){ # if there is only 5 good gene it is impossible to fit model
         if (init.quant$mse < best.model$mse){#ØP: and if that model, using 5 or fewer, is still better, then use that?
