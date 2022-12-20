@@ -72,7 +72,7 @@ rule abundance_profile:
         "envs/signature_genes.yaml"
     resources:
         cores = 1,
-        memory = 12,
+        memory = 80,
         runtime = '12:00:00'
     script:
         "scripts/abundance_profiles.R"

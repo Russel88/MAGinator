@@ -38,9 +38,10 @@ class Controller(object):
         # Check input and output
         self.check_params()
         self.check_out()
-        self.check_vamb()
-        self.check_reads()
-        self.check_contigs()
+        if not any([self.unlock, self.only_conda, self.snake is not None]):
+            self.check_vamb()
+            self.check_reads()
+            self.check_contigs()
         self.write_params(args)
 
     def check_params(self):
