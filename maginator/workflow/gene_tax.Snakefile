@@ -30,7 +30,7 @@ rule gene_tax:
         "envs/phylo.yaml"
     resources:
         cores = 1,
-        memory = 10,
+        memory = 80,
         runtime = '02:00:00'
     script:
         "scripts/gene_cluster2tax.py"
