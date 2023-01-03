@@ -15,7 +15,8 @@ CLUSTERS = {x for x in CLUSTERS if x.isdigit()}
 
 rule all:
     input:
-        os.path.join(WD, 'abundance', 'abundance_phyloseq.RData')
+        os.path.join(WD, 'abundance', 'abundance_phyloseq.RData'),
+        os.path.join(WD, 'signature_genes', 'read-count_detected-genes.pdf')
 
 
 # Identifying the refined sets of signature genes using the gene count matrix and gene lengths
@@ -76,3 +77,23 @@ rule abundance_profile:
         runtime = '12:00:00'
     script:
         "scripts/abundance_profiles.R"
+
+
+# Create figure for each MGS with expected readcounts and number of detected Signature Genes
+rule gene_refinement_plots:
+    input:
+        gene_lengths = os.path.join(WD, 'signature_genes', 'gene_lengths.RDS'),
+        screened_clusters = expand(os.path.join(WD, 'signature_genes', 'screened', 'cluster_{cluster}_screened.RDS'), cluster=CLUSTERS),
+        clusters_sorted = os.path.join(WD, 'signature_genes', 'clusters_sorted.RDS'),
+        annotation = os.path.join(WD, 'tabs', 'metagenomicspecies.tab'),
+        tax_matrix = os.path.join(WD, 'tabs', 'tax_matrix.tsv')
+    output:
+        plot_pdf = os.path.join(WD, 'signature_genes', 'read-count_detected-genes.pdf')
+    conda:
+        "envs/signature_genes.yaml"
+    resources:
+        cores = 1,
+        memory = 80,
+        runtime = '12:00:00'
+    script:
+        "scripts/gene_refinement_plots.R"
