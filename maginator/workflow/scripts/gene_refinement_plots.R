@@ -48,7 +48,7 @@ pois.two.plot <- function(i.Genes, i.Reads, i.mse, r.Genes, r.Reads, r.mse, id){
     geom_point(data=df_r_plot, aes(x=r.Reads, y=r.Genes,color="Refined"), size=0.7)
   
   plotly.data <- (p + scale_x_log10()+ scale_colour_manual(values = c("Initial" = cmcol1[2], "Refined"=cmcol1[5], "Expected"="black")))
-  plotly.data <- plotly.data + annotate("text",x=min(df_plot$Reads),y=max(df_plot$Genes),hjust=.2, label = paste("initial MSE:", round(i.mse, 2), "\n refined MSE:", round(r.mse, 2))) 
+  plotly.data <- plotly.data + annotate("text",x=1,y=100,hjust=.2, label = paste("initial MSE:", round(i.mse, 2), "\n refined MSE:", round(r.mse, 2))) 
   plotly.data <- plotly.data  + theme_minimal() + theme(legend.position="bottom")
   return(plotly.data)  
 }
@@ -68,9 +68,9 @@ for(Cluster in taxmat$V1){
 
 if (length(screened_clusters[screened_clusters[,'id']==Cluster,]) > 1){
 
-tax=taxmat[taxmat$V1==Cluster,7]
-if (is.na(taxmat[taxmat$V1==Cluster,7])){
-tax=taxmat[taxmat$V1==Cluster,6]}
+tax=taxmat[taxmat$V1==Cluster,8]
+if (is.na(taxmat[taxmat$V1==Cluster,8])){
+tax=taxmat[taxmat$V1==Cluster,7]}
 
 colsum <- colSums(Clusterlist[[Cluster]][1:n.genes, ])
 mapped <- colsum[colsum >= minimum_sampels]
