@@ -38,8 +38,8 @@ rule gtdbtk:
     params:
         gtdbtk=param_dict['gtdb_db']
     resources:
-        cores=20,
-        memory=90,
+        cores=8,
+        memory=180,
         runtime=tim
     shell:
         '''
