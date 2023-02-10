@@ -79,6 +79,7 @@ mapped <- colsum[colsum >= minimum_sampels]
 refined_reads <- round(Clusterlist[[Cluster]][screened_clusters[screened_clusters[,'id']==Cluster,]$genes$best, names(mapped)] / 
                  +                   (present_genes[rownames(Clusterlist[[Cluster]][screened_clusters[screened_clusters[,'id']==Cluster,]$genes$best, ])] * 10^-3))
 
+
 refined_countreads <- colSums(refined_reads)
 refined_genes <- colSums(refined_reads > 0) 
 
@@ -88,8 +89,7 @@ reads <- round(Clusterlist[[Cluster]][screened_clusters[screened_clusters[,'id']
 countreads <- colSums(reads)
 genes <- colSums(reads > 0) 
 
-
-p <- pois.two.plot(genes, countreads, as.numeric(screened_clusters[screened_clusters[,'id']==Cluster,]$mse$init), refined_genes, refined_countreads, as.numeric(screened_clusters[screened_clusters[,'id']==Cluster,]$MSE$best), paste(Cluster, tax))
+p <- pois.two.plot(genes, countreads, as.numeric(screened_clusters[screened_clusters[,'id']==Cluster,]$MSE$initial), refined_genes, refined_countreads, as.numeric(screened_clusters[screened_clusters[,'id']==Cluster,]$MSE$best), paste(Cluster, tax))
 
 print(p)
 
