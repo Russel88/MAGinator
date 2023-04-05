@@ -34,7 +34,7 @@ rule refinement:
     resources:
         cores = 1,
         memory = 12,
-        runtime = '12:00:00'
+        runtime = '43200' #12h in s
     script: 
         "scripts/SG_refinement.R"
 
@@ -52,7 +52,7 @@ rule gene_counts:
     resources:
         cores = 1,
         memory = 12,
-        runtime = '12:00:00'
+        runtime = '43200' #12h in s
     script:
         "scripts/MGS_counts.R"
 
@@ -74,7 +74,7 @@ rule abundance_profile:
     resources:
         cores = 1,
         memory = 80,
-        runtime = '12:00:00'
+        runtime = '43200' #12h in s
     script:
         "scripts/abundance_profiles.R"
 
@@ -94,6 +94,6 @@ rule gene_refinement_plots:
     resources:
         cores = 1,
         memory = 80,
-        runtime = '12:00:00'
+        runtime = '43200' #12h in s
     script:
         "scripts/gene_refinement_plots.R"

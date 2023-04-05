@@ -22,7 +22,7 @@ mem = math.ceil(n_contigs/1000000)*30
 if mem > int(param_dict['max_mem']):
     mem = int(param_dict['max_mem'])
 ## time is 1 hour per million
-tim = str(math.ceil(n_contigs/1000000))*60*60 # runtime in seconds
+tim = str(math.ceil(n_contigs/1000000)*60*60) # runtime in seconds
 
 rule all:
     input:

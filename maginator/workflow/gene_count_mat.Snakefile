@@ -27,7 +27,7 @@ rule count_genes:
     resources:
         cores = 1,
         memory = 20,
-        runtime = '2:00:00'
+        runtime = '7200' #2h in s
     shell:
         "samtools idxstats {input} | cut -f3 > {output.readcounts}"
 
@@ -44,7 +44,7 @@ rule gene_names:
     resources:
         cores = 1,
         memory = 20,
-        runtime = '1:00:00'
+        runtime = '3600' #1h in s
     shell:
         "samtools idxstats {input} | cut -f1 > {output}"
 
@@ -58,7 +58,7 @@ rule create_header:
     resources:
         cores = 1,
         memory = 188,
-        runtime = '1:00:00'
+        runtime = '3600' #1h in s
     run:
         header = "Gene"
         for f in input:
@@ -82,6 +82,6 @@ rule gene_count_matrix:
     resources:
         cores = 1,
         memory = 188,
-        runtime = '1:00:00'
+        runtime = '3600' #1h in s
     shell:
         "paste {input.gene_names} {input.readcounts} | cat {input.header} - > {output}; sed -i '$d' {output}"

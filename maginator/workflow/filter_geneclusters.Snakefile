@@ -37,7 +37,7 @@ rule nonredundant_catalogue:
     resources:
         cores = 1,
         memory = 50,
-        runtime = '12:00:00'
+        runtime = '43200' #12h in s
     shell:
         "perl -ne 'if(/^>(\S+)/){{$c=$i{{$1}}}}$c?print:chomp;$i{{$_}}=1 if @ARGV' <(cut -f1 {input.clusters} | uniq) {input.genecat} | awk '{{print $1}}' > {output}"
 
@@ -52,7 +52,7 @@ rule bwa_index:
     resources:
         cores = 40,
         memory = 188, 
-        runtime = '1:00:00:00'
+        runtime = '86400' #1d in s
     shell:
         "bwa-mem2 index -p {output.index} {input.fasta}; samtools faidx {input.fasta}; touch {output.index}"
 
@@ -72,6 +72,6 @@ rule bwa_readmap:
     resources:
         cores = 40,
         memory = 188,
-        runtime = '1:00:00:00'
+        runtime = '86400' #1d in s
     shell:
         "bwa-mem2 mem -t {resources.cores} {input.index} {input.fastq1} {input.fastq2} | samtools view -T {input.fasta} -F 3584  -b --threads {resources.cores} | samtools sort --threads {resources.cores} > {output.bam}; samtools index {output.bam}"

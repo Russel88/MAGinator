@@ -38,7 +38,7 @@ rule parse:
     resources:
         cores = 40,
         memory = 180,
-        runtime = '02:00:00:00'
+        runtime = '172800' #2d in s
     script:
         "scripts/mpileup.py"
 

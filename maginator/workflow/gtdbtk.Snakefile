@@ -19,7 +19,7 @@ CLUSTERS = {x for x in CLUSTERS if x.isdigit()}
 out = subprocess.Popen(['wc', '-l', READS], stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()[0]
 n_samples = int(out.partition(b' ')[0])
 ## time is 1 hour per 30 samples
-tim = str(math.ceil(n_samples/30))+':00:00'
+tim = str(math.ceil(n_samples/30)*60*60) # time in seconds
 
 wildcard_constraints:
     cluster="\d+"

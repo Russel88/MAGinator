@@ -24,7 +24,7 @@ rule align:
     resources:
         cores=1,
         memory=4,
-        runtime='10:00:00'
+        runtime='36000' #10h in s
     shell:
         """
         mkdir -p {output}
@@ -42,7 +42,7 @@ rule concat:
     resources:
         cores=10,
         memory=40,
-        runtime='10:00:00'
+        runtime='36000' #10h in s
     params:
         ali_dir=os.path.join(WD, 'phylo', 'alignments')
     script:

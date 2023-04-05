@@ -178,7 +178,12 @@ run_one_id <- function(id){
       } else {
         MSE.old <- rotation$mse
       }
-
+    if ((n.genes+1)==min(500, length(Clusterlist[[id]][, 1]))){ # if there is only one gene to rotate it is not enough
+        MSE <- init.genes$mse
+        best.model <- init.genes
+        best.genes <- init.genes$good.genes
+        break
+      } 
     
       rotation <- rank.mat(id = id,
                            gene.names = init.genes$good.genes,
@@ -286,6 +291,13 @@ run_one_id <- function(id){
       if ((min(500, length(Clusterlist[[id]][, 1]))-n.genes)<(n.genes-length(init.quant$good.genes))){ # if there is not more new genes than genes required for rotation
         best.model <- init.quant
         best.genes <- new.genes
+        break
+      }
+
+    if ((n.genes+1)==min(500, length(Clusterlist[[id]][, 1]))){ # if there is only one gene to rotate it is not enough
+        MSE <- init.genes$mse
+        best.model <- init.genes
+        best.genes <- init.genes$good.genes
         break
       }
 
