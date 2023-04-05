@@ -29,7 +29,7 @@ rule parse_gtdbtk:
     params:
         param_dict['annotation_prevalence'],
         VAMB,
-        distutils.util.strtobool(param_dict['no_mgs'])
+        distutils.util.strtobool(param_dict['mgs_collections'])
     conda:
         "envs/filter_gtdbtk.yaml"
     resources:

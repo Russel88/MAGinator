@@ -61,9 +61,9 @@ def cli():
     # Parameters
     app = ap.add_argument_group('parameters')
     app.add_argument('--binsize', help='Minimum bin size for inclusion [%(default)s].', default=200000, type=int)
-    app.add_argument('--no_mgs', help='If set, bin clusters will not be aggregated to metagenomic species, but treated separately.', action='store_true')
+    app.add_argument('--mgs_collections', help='If set, bin clusters will be aggregated to metagenomic species.', action='store_true')
     app.add_argument('--annotation_prevalence', help='Minimum prevalence of taxonomic assignment in a cluster of bins to call consensus [%(default)s]', default=0.75, type=float)
-    app.add_argument('--clustering_coverage', help='Alignment coverage for clustering of genes with MMseqs2 [%(default)s]', default=0.95, type=float)
+    app.add_argument('--clustering_coverage', help='Alignment coverage for clustering of genes with MMseqs2 [%(default)s]', default=0.8, type=float)
     app.add_argument('--clustering_min_seq_id', help='Sequence identity threshold for clustering of genes with MMseqs2 [%(default)s]', default=0.95, type=float)
     app.add_argument('--clustering_type', help='Sequence type for gene clustering with MMseqs2. Nucleotide- or protein-level [%(default)s]', default='protein', type=str, choices=['nucleotide', 'protein'])
     app.add_argument('--min_gtdb_markers', help='Minimum GTDBtk marker genes shared between MGS and outgroup for rooting trees [%(default)s]', default=10, type=int)
