@@ -24,7 +24,7 @@ rule subset:
         "envs/phylo.yaml"
     resources:
         cores = 1,
-        memory = 20,
+        mem_gb = 20,
         runtime = '43200' #12h in s
     shell:
         "samtools view -b -L {input.bed} {input.bam} | samtools sort -o {output}"
@@ -39,7 +39,7 @@ rule pileup:
        	"envs/phylo.yaml"
     resources:
         cores = 1,
-        memory = 20,
+        mem_gb = 20,
         runtime = '86400' #1d in s
     shell:
         "samtools mpileup -A -x -f {input.fna} {input.bam} -o {output}"

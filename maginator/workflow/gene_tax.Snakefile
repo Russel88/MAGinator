@@ -30,7 +30,7 @@ rule gene_tax:
         "envs/phylo.yaml"
     resources:
         cores = 1,
-        memory = 80,
+        mem_gb = 80,
         runtime = '7200' #2h in s
     script:
         "scripts/gene_cluster2tax.py"
@@ -46,7 +46,7 @@ rule synteny_graph:
         "envs/phylo.yaml"
     resources:
         cores = 1,
-        memory = 40,
+        mem_gb = 40,
         runtime = '36000' #10h in s
     script:
         "scripts/synteny.py"
@@ -66,7 +66,7 @@ rule synteny_mcl:
         i=param_dict['synteny_mcl_inflation']
     resources:
         cores = 40,
-        memory = 180,
+        mem_gb = 180,
         runtime = '86400' #1d in s
     shell:
         """

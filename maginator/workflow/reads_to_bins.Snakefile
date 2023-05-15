@@ -38,7 +38,7 @@ rule adapter_removal:
         sample = SAMPLES
     resources:
         cores = 1,
-        memory = 62,
+        mem_gb = 62,
         runtime = '54000' #15h in s
     log:
         "log/read_qc/adapter_removal/{sample}.adapter.log"
@@ -66,7 +66,7 @@ rule quality_removal:
         length = config["read_length_cutoff"]
     resources:
         cores = 1,
-        memory = 45,
+        mem_gb = 45,
         runtime = '18000' #5h in s
     log:
         "log/read_qc/quality_filtering/{sample}.quality.log"
@@ -84,7 +84,7 @@ rule hg19:
         hg19 = "preprocessed/hg19.fasta"
     resources:
         cores = 1,
-        memory = 45,
+        mem_gb = 45,
         runtime = '18000' #5h in s
     conda:
         "envs/preprocess.yaml"
@@ -100,7 +100,7 @@ rule human_index:
         dummy = "preprocessed/empty.txt"
     resources:
         cores = 20,
-        memory = 179,
+        mem_gb = 179,
         runtime = '72000' #20h in s
     log:
         "log/read_qc/human_removal/index_human.log"
@@ -122,14 +122,14 @@ rule human_removal:
         human_counts = temp("preprocessed/stats/human_counts_{sample}.tsv")
     resources:
         cores = 5,
-        memory = 180,
+        mem_gb = 180,
         runtime = '604800' #1w in s
     log:
         "log/read_qc/human_removal/{sample}.human.log"
     conda:
         "envs/preprocess.yaml"
     shell:
-        "bbmap.sh qin=33 threads={resources.cores} in={input.qc_reads1} in2={input.qc_reads2} outu1={output.clean_reads1} outu2={output.clean_reads2} path=preprocessed -Xmx{resources.memory}g 2>{log};"
+        "bbmap.sh qin=33 threads={resources.cores} in={input.qc_reads1} in2={input.qc_reads2} outu1={output.clean_reads1} outu2={output.clean_reads2} path=preprocessed -Xmx{resources.mem_gb}g 2>{log};"
         "cp {input.qc_counts} {output.human_counts}; echo $(cat {output.clean_reads1}|wc -l)/4|bc >> {output.human_counts};"
 
 # Combining the read statistics
@@ -140,7 +140,7 @@ rule stat_combine:
         "preprocessed/stats/read_stats.tsv"
     resources:
         cores = 1,
-        memory = 20,
+        mem_gb = 20,
         runtime = '3600' #1h in s
     log:
         "log/read_qc/read_counts_combine.log"
@@ -155,7 +155,7 @@ rule stats_fig:
         fig = "preprocessed/read_stats.png"
     resources:
         cores = 1,
-        memory = 20,
+        mem_gb = 20,
         runtime = '3600' #1h in s
     run:
         import numpy as np
@@ -192,7 +192,7 @@ rule assembly:
         "assembly/{sample}/contigs.fasta"
     resources:
         cores = 40,
-        memory = 185,
+        mem_gb = 185,
         runtime = '1296000' #15d in s
     params:
         statusfile = "assembly/{sample}/pipeline_state/stage_0_before_start"
@@ -204,7 +204,7 @@ rule assembly:
         """
         # find path for output .paths file - will indicate whether spades has been run before and can be rerun.  
         if [ -f {params.statusfile} ]; then (metaspades.py -o $(dirname {output}) --continue)
-        else (metaspades.py -t {resources.cores} -m {resources.memory} -o $(dirname {output}) -1 {input.R1} -2 {input.R2} -k 21,33,55,77,99,127 2>{log} )
+        else (metaspades.py -t {resources.cores} -m {resources.mem_gb} -o $(dirname {output}) -1 {input.R1} -2 {input.R2} -k 21,33,55,77,99,127 2>{log} )
         fi
         """
 
@@ -216,7 +216,7 @@ rule contig_rename:
         "assembly/{sample}/renamed_contigs.fasta"       	
     resources:
         cores = 1,
-        memory = 45,
+        mem_gb = 45,
         runtime = '18000' #5h in s
     log:
         "log/assembly/{sample}.id.log"
@@ -231,7 +231,7 @@ rule combine_contigs:
         "assembly/all_assemblies_all_lengths.fasta"
     resources:
         cores = 1,
-        memory = 45,
+        mem_gb = 45,
         runtime = '18000' #5h in s
     log:
         "log/assembly/combine_contigs.log"
@@ -252,7 +252,7 @@ rule contig_filtering:
       size = config["contig_length_cutoff"]
     resources:
         cores = 4,
-        memory = 180,
+        mem_gb = 180,
         runtime = '54000' #15h in s
     run:
         from Bio import SeqIO
@@ -274,7 +274,7 @@ rule index:
        done=touch("assembly/all_assemblies"),
        index="assembly/all_assemblies.fasta.bwt"
     resources:
-        memory = 1450,
+        mem_gb = 1450,
         runtime = '172800', #2d in s
         cores = 40
     log:
@@ -297,7 +297,7 @@ rule map:
         sample=SAMPLES
     resources:
         cores = 14,
-        memory = 100,
+        mem_gb = 100,
         runtime = '86400' #1d in s
     log:
         "log/mapping/map_{sample}.log"
@@ -319,7 +319,7 @@ rule sort:
         temp("mapped/{sample}.sort.bam")
     resources:
         cores = 1,
-        memory = 15,
+        mem_gb = 15,
         runtime = '864000' #10d in s    
     params:
         prefix="mapped/tmp.{sample}"
@@ -337,7 +337,7 @@ rule jgi:
         jgi = temp("jgi/{sample}.raw.jgi")
     resources:
         cores = 1,
-        memory = 10,
+        mem_gb = 10,
         runtime = '864000' #10d in s
     log:
         "log/jgi/{sample}.jgi"
@@ -353,7 +353,7 @@ rule cut_column1to3:
         "jgi/jgi.column1to3"
     resources:
         cores = 1,
-        memory = 1,
+        mem_gb = 1,
         runtime = '86400' #1d in s
     log:
         "log/jgi/column1to3"
@@ -367,7 +367,7 @@ rule cut_column4to5:
         "jgi/{sample}.cut.jgi"
     resources:
         cores = 1,
-        memory = 1,
+        mem_gb = 1,
         runtime = '86400' #1d in s
     log:
         "log/jgi/{sample}.cut.log"
@@ -382,7 +382,7 @@ rule paste_abundances:
         "jgi_matrix/jgi.abundance.dat" 
     resources:
         cores = 1,
-        memory = 1,
+        mem_gb = 1,
         runtime = '86400' #1d in s
     log:
         "log/jgi/paste_abundances.log"
@@ -404,7 +404,7 @@ rule vamb:
         "vamb/tnf.npz"
     resources:
         cores = 20,
-        memory = 180,
+        mem_gb = 180,
         runtime = '86400' #1d in s
     log:
         "log/vamb/vamb.log"
@@ -421,7 +421,7 @@ rule checkm:
         "vamb/checkm.results"
     resources:
         cores = 10,
-        memory = 180,
+        mem_gb = 180,
         runtime = '129600' #15d in s
     params:
         bins = "vamb/bins",

@@ -18,7 +18,7 @@ class Workflow(object):
         
         # Substitute resource information
         x = re.sub('{cores}', '{resources.cores}', x)
-        x = re.sub('{memory}', '{resources.memory}', x)
+        x = re.sub('{mem_gb}', '{resources.mem_gb}', x)
         x = re.sub('{runtime}', '{resources.runtime}', x)
    
         return x
@@ -80,7 +80,7 @@ class Workflow(object):
         if self.cluster == 'slurm':
             
             cluster_cmd = 'sbatch' + ' ' + self.cluster_info
-            cluster_cmd = cluster_cmd + ' -e ' + self.output + 'logs/cluster_err' + ' -o ' + self.output + 'logs/cluster_out'
+            cluster_cmd = cluster_cmd + ' -e ' + self.output + 'logs/cluster_err/%j.err' + ' -o ' + self.output + 'logs/cluster_out/%j.out'
             cluster_cmd = self.add_info(cluster_cmd)
             
             # Final snakemake command

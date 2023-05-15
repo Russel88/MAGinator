@@ -33,7 +33,7 @@ rule refinement:
         functions = "Functions_v4.R"
     resources:
         cores = 1,
-        memory = 12,
+        mem_gb = 12,
         runtime = '43200' #12h in s
     script: 
         "scripts/SG_refinement.R"
@@ -51,7 +51,7 @@ rule gene_counts:
         "envs/signature_genes.yaml"
     resources:
         cores = 1,
-        memory = 12,
+        mem_gb = 12,
         runtime = '43200' #12h in s
     script:
         "scripts/MGS_counts.R"
@@ -73,7 +73,7 @@ rule abundance_profile:
         "envs/signature_genes.yaml"
     resources:
         cores = 1,
-        memory = 80,
+        mem_gb = 80,
         runtime = '43200' #12h in s
     script:
         "scripts/abundance_profiles.R"
@@ -93,7 +93,7 @@ rule gene_refinement_plots:
         "envs/signature_genes.yaml"
     resources:
         cores = 1,
-        memory = 80,
+        mem_gb = 80,
         runtime = '43200' #12h in s
     script:
         "scripts/gene_refinement_plots.R"

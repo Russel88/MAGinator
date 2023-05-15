@@ -24,7 +24,7 @@ if param_dict['phylo'] == 'fasttree':
             "envs/phylo.yaml"
         resources:
             cores=1,
-            memory=32,
+            mem_gb=32,
             runtime='43200' #12h in s
         shell:
             """
@@ -45,7 +45,7 @@ if param_dict['phylo'] == 'iqtree':
             prefix=os.path.join(WD, 'phylo', 'trees', '{cluster}'),
         resources:
             cores=40,
-            memory=180,
+            mem_gb=180,
             runtime='172800' #2d in s
         shell:
             """

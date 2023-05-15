@@ -31,7 +31,7 @@ rule markers:
         "envs/phylo.yaml"
     resources:
         cores=1,
-        memory=10,
+        mem_gb=10,
         runtime='36000' #10h in s
     script:
         "scripts/marker_genes.py"
@@ -46,7 +46,7 @@ rule fasta1:
         "envs/phylo.yaml"
     resources:
         cores=1,
-        memory=10,
+        mem_gb=10,
         runtime='36000' #10h in s
     shell:
         "perl -ne 'if(/^>(\S+)/){{$c=$i{{$1}}}}$c?print:chomp;$i{{$_}}=1 if @ARGV' <(cut -f4 {input.tab} | sort | uniq) {input.fasta} > {output}"
@@ -61,7 +61,7 @@ rule fasta2:
         "envs/phylo.yaml"
     resources:
         cores=1,
-        memory=10,
+        mem_gb=10,
         runtime='36000' #10h in s
     shell:
         "perl -ne 'if(/^>(\S+)/){{$c=$i{{$1}}}}$c?print:chomp;$i{{$_}}=1 if @ARGV' <(cut -f5 {input.tab} | sort | uniq) {input.fasta} > {output}"
@@ -76,7 +76,7 @@ rule fasta3:
         "envs/phylo.yaml"
     resources:
         cores=1,
-        memory=10,
+        mem_gb=10,
         runtime='36000' #10h in s
     shell:
         "perl -ne 'if(/^>(\S+)/){{$c=$i{{$1}}}}$c?print:chomp;$i{{$_}}=1 if @ARGV' <(cut -f1 {input.tab}) {input.fasta} > {output}"
@@ -92,7 +92,7 @@ rule bed:
         "envs/phylo.yaml"
     resources:
         cores=1,
-        memory=10,
+        mem_gb=10,
         runtime='36000' #10h in s
     shell:
         """
@@ -113,7 +113,7 @@ rule uniq:
         "envs/phylo.yaml"
     resources:
         cores=1,
-        memory=10,
+        mem_gb=10,
         runtime='36000' #10h in s
     shell:
         """
@@ -130,7 +130,7 @@ rule index:
         "envs/phylo.yaml"
     resources:
         cores=1,
-        memory=10,
+        mem_gb=10,
         runtime='36000' #10h in s
     shell:
         """

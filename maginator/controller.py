@@ -23,11 +23,11 @@ class Controller(object):
         # Check cluster info input
         if self.cluster is not None:
             if self.cluster_info is not None:
-                if len(re.findall('{cores}|{memory}|{runtime}', self.cluster_info)) != 3 or len(re.findall('{.*?}', self.cluster_info)) != 3: 
-                    logging.error('cluster_info has to contain the following special strings: {cores}, {memory}, and {runtime}')
+                if len(re.findall('{cores}|{mem_gb}|{runtime}', self.cluster_info)) != 3 or len(re.findall('{.*?}', self.cluster_info)) != 3: 
+                    logging.error('cluster_info has to contain the following special strings: {cores}, {mem_gb}, and {runtime}')
                     sys.exit()
                 else:
-                    tmp_info = re.sub('{cores}|{memory}|{runtime}','',self.cluster_info)
+                    tmp_info = re.sub('{cores}|{mem_gb}|{runtime}','',self.cluster_info)
                     if not bool(re.match('^[a-zA-Z0-9-_ =:,.]+$', tmp_info)):
                         logging.error('Invalid characters in cluster_info')
                         sys.exit()

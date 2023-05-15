@@ -45,14 +45,14 @@ def cli():
     # Cluster arguments
     apc = ap.add_argument_group('compute cluster arguments')
     apc.add_argument('--cluster', help='Cluster compute structure [%(default)s]', default=None, type=str, choices=[None,'qsub','slurm','drmaa'])
-    apc.add_argument('--cluster_info', help='Cluster scheduler arguments when submitting cluster jobs.\nHas to contain the following special strings:\n{memory}, {cores}, and {runtime}.\nThese special strings will be substituted by maginator to indicate resources for each job.\n{memory} is substituted for the memory in GB.\n{runtime} is substituted with the time in the following format: DD:HH:MM:SS.\nCan also contain user names, groups, etc. required by the cluster scheduler', default=None, type=str)
+    apc.add_argument('--cluster_info', help='Cluster scheduler arguments when submitting cluster jobs.\nHas to contain the following special strings:\n{mem_gb}, {cores}, and {runtime}.\nThese special strings will be substituted by maginator to indicate resources for each job.\n{mem_gb} is substituted for the mem_gb in GB.\n{runtime} is substituted with the time in the following format: DD:HH:MM:SS.\nCan also contain user names, groups, etc. required by the cluster scheduler', default=None, type=str)
     apc.add_argument('--max_jobs', help='Maximum number of cluster jobs [%(default)s]', default=500, type=int)
     
     # Optional
     apo = ap.add_argument_group('optional arguments')
     apo.add_argument("-h", "--help", action="help", help="show this help message and exit")
     apo.add_argument('--max_cores', help='Maximum number of cores [%(default)s]', default=40, type=int)
-    apo.add_argument('--max_mem', help='Maximum memory in GB [%(default)s]', default=180, type=int)
+    apo.add_argument('--max_mem', help='Maximum mem_gb in GB [%(default)s]', default=180, type=int)
     apo.add_argument('--log_lvl', help='Logging level [%(default)s].', default='INFO', type=str, choices=['DEBUG','INFO','WARNING','ERROR'])
     apo.add_argument('--only_conda', help='Only install conda environments, then exit', action='store_true')
     apo.add_argument('--snake', help='Only run specific snakemake command. For debug purposes', type=str)

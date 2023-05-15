@@ -23,7 +23,7 @@ rule align:
         "envs/phylo.yaml"
     resources:
         cores=1,
-        memory=4,
+        mem_gb=4,
         runtime='36000' #10h in s
     shell:
         """
@@ -41,7 +41,7 @@ rule concat:
         "envs/phylo.yaml"
     resources:
         cores=10,
-        memory=40,
+        mem_gb=40,
         runtime='36000' #10h in s
     params:
         ali_dir=os.path.join(WD, 'phylo', 'alignments')

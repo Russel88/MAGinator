@@ -37,7 +37,7 @@ rule parse:
         "envs/phylo.yaml"
     resources:
         cores = 40,
-        memory = 180,
+        mem_gb = 180,
         runtime = '172800' #2d in s
     script:
         "scripts/mpileup.py"

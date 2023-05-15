@@ -18,31 +18,32 @@ CLUSTERS = {x for x in CLUSTERS if x.isdigit()}
 ## Get lines in read file
 out = subprocess.Popen(['wc', '-l', READS], stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()[0]
 n_samples = int(out.partition(b' ')[0])
-## time is 1 hour per 30 samples
-tim = str(math.ceil(n_samples/30)*60*60) # time in seconds
+## time is 1 hour per 30 samples or at least 2h
+tim = (max(math.ceil(n_samples/30)*60, 2*60)) # time in h
 
 wildcard_constraints:
     cluster="\d+"
 
 rule all:
     input:
-        expand(os.path.join(WD, 'gtdbtk', '{cluster}'), cluster=CLUSTERS)
+        expand(os.path.join(WD, 'gtdbtk', '{cluster}/classify/gtdbtk.bac120.summary.tsv'), cluster=CLUSTERS)
 
 rule gtdbtk:
     input:
         os.path.join(F_DIR, '{cluster}/')
     output:
-        directory(os.path.join(WD, 'gtdbtk', '{cluster}'))
+        directory(os.path.join(WD, 'gtdbtk', '{cluster}')),
+        os.path.join(WD, 'gtdbtk', '{cluster}/classify/gtdbtk.bac120.summary.tsv')
     conda:
         "envs/filter_gtdbtk.yaml"
     params:
         gtdbtk=param_dict['gtdb_db']
     resources:
         cores=8,
-        memory=180,
-        runtime=tim
+        mem_gb=180,
+        runtime=str(tim*60*60)
     shell:
         '''
         export GTDBTK_DATA_PATH={params.gtdbtk};
-        gtdbtk classify_wf --genome_dir {input} --out_dir {output} --cpus {resources.cores} --extension fa --keep_intermediates || true
+        gtdbtk classify_wf --genome_dir {input} --out_dir {output[0]} --cpus {resources.cores} --extension fa --keep_intermediates || true
         '''

@@ -5,6 +5,7 @@ dependencies:
  - gtdbtk=2.1
  - biopython=1.79
  - pandas=1.4
+ - numpy=1.23.1
  - mmseqs2=13.45111
  - bbmap=38.96
  - bwa-mem2=2.2.1
