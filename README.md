@@ -108,7 +108,7 @@ This is what MAGinator does with your input (if you want to see all parameters r
     * stats.tab - Mapping information such as non-N fraction, number of signature genes and marker genes, read depth, and number of bases not reaching allele frequency cutoff 
     * stats_genes.tab - Same as above but the information is split per gene
 * signature_genes/ 
-    * - R data files with signature gene optimization
+    * \- R data files with signature gene optimization
     * read-count_detected-genes.pdf - Figure for each MGS/cluster displaying number of identified SG's in each sample along with the number of reads mapped.
 * tabs/
     * gene_cluster_bins.tab - Table listing which bins each gene cluster was found in
