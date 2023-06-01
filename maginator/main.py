@@ -50,6 +50,7 @@ def cli():
     
     # Optional
     apo = ap.add_argument_group('optional arguments')
+    apo.add_argument('-V','--version', action='version', version='MAGinator version {}'.format(pkg_resources.require("maginator")[0].version))
     apo.add_argument("-h", "--help", action="help", help="show this help message and exit")
     apo.add_argument('--max_cores', help='Maximum number of cores [%(default)s]', default=40, type=int)
     apo.add_argument('--max_mem', help='Maximum mem_gb in GB [%(default)s]', default=180, type=int)
