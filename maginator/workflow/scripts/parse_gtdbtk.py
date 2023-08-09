@@ -38,6 +38,8 @@ for clust in os.listdir(snakemake.input[0]):
     # Try reading both bacterial and archaeal summaries.
     try:
         tax_bac = pd.read_csv(os.path.join(snakemake.input[0], clust, 'gtdbtk.bac120.summary.tsv'), sep='\t', header=0)  
+        if tax_bac.iloc[0,1]=='Unclassified':
+            tax_bac=None
     except FileNotFoundError:
         tax_bac = None
     try: 
