@@ -43,11 +43,51 @@ maginator -v vamb_clusters.tsv -r reads.csv -c contigs.fasta -o my_output -g "/p
 ```
 
 ### Run on a compute cluster
-MAGinator can run on compute clusters using qsub (torque), sbatch (slurm), or drmaa structures. The --cluster argument toggles the type of compute cluster infrastructure. The --cluster_info argument toggles the information given to the submission command, and it has to contain the following keywords {cores}, {memory}, {runtime}, which are used to forward resource information to the cluster.
+MAGinator can run on compute clusters using qsub (torque), sbatch (slurm), or drmaa structures. The --cluster argument toggles the type of compute cluster infrastructure. The --cluster_info argument toggles the information given to the submission command, and it has to contain the following keywords {cores}, {memory$
 
 A qsub MAGinator can for example be run with the following command (... indicates required arguments, see above):
 ```sh
 maginator ... --cluster qsub --cluster_info "-l nodes=1:ppn={cores}:thinnode,mem={memory}gb,walltime={runtime}"
+```
+
+## Test data
+
+A test set can be found in the test_data directory. 
+1. Download the 3 samples used for the test at SRA: https://www.ncbi.nlm.nih.gov/sra?LinkName=bioproject_sra_all&from_uid=715601 with the ID's dfc99c_A, f9d84e_A and 221641_A
+2. Change the paths to the read-files in reads.csv
+3. Unzip the contigs.fasta.gz 
+4. Run MAGinator
+
+MAGinator has been run on the test data on a slurm server with the following command:
+```
+maginator --vamb_clusters clusters.tsv --reads reads.csv --contigs contigs.fasta --gtdb_db data/release207_v2/ --output test_out --cluster slurm --cluster_info "-n {cores} --mem {mem_gb}gb -t {runtime}" --max_mem 180
+```
+The expected output can be found in test_data/test_out (excluding the GTDB-tk folders, phylogeny alignments and BAM-files due to size limitations)
+
+## Recommended workflow 
+
+To generate the input files to run MAGinator we have created a recommended workflow, with preprocessing, assembly and binning* of your metagenomics reads (the rules for binning have been copied from VAMB (https://github.com/RasmussenLab/vamb/blob/master/workflow/)). 
+It has been setup as a snakefile in recommended_workflow/reads_to_bins.Snakefile.
+
+The input to the workflow is the reads.csv file. The workflow can be run using snakemake:
+```
+snakemake --use-conda -s reads_to_bins.Snakefile --resources mem_gb=180 --config reads=reads.csv --cores 10 --printshellcmds 
+```
+
+Preparing data for MAGinator run
+```
+sed 's/@/_/g' assembly/all_assemblies.fasta > all_assemblies.fasta
+sed 's/@/_/g' vamb/clusters.tsv > clusters.tsv
+```
+
+Now you are ready to run MAGinator.
+
+To generate the functional annotation of the genes we recommend using EggNOG mapper (https://github.com/eggnogdb/eggnog-mapper).
+
+You can download it and try to run it on the test data
+```
+mkdir test_out/functional_annotation
+emapper.py -i test/genes/all_genes_rep_seq.fasta --output test_out/functional_annotation -m diamond --cpu 38
 ```
 
 ## MAGinator workflow
@@ -101,7 +141,9 @@ This is what MAGinator does with your input (if you want to see all parameters r
     * trees/ - Phylogenetic trees for each MGS
     * stats.tab - Mapping information such as non-N fraction, number of signature genes and marker genes, read depth, and number of bases not reaching allele frequency cutoff 
     * stats_genes.tab - Same as above but the information is split per gene
-* signature_genes/ - R data files with signature gene optimization
+* signature_genes/ 
+    * \- R data files with signature gene optimization
+    * read-count_detected-genes.pdf - Figure for each MGS/cluster displaying number of identified SG's in each sample along with the number of reads mapped.
 * tabs/
     * gene_cluster_bins.tab - Table listing which bins each gene cluster was found in
     * gene_cluster_tax_scope.tab - Table listing the taxonomic scope of each gene cluster

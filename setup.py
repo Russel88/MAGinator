@@ -5,9 +5,9 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="maginator", 
-    version="0.1.16",
+    version="0.1.17",
     author="Jakob Russel & Trine Zachariasen",
-    author_email="russel2620@gmail.com",
+    author_email="russel2620@gmail.com & trine_zachariasen@hotmail.com",
     description="MAGinator: Abundance, strain, and functional profiling of MAGs",
     long_description=long_description,
     long_description_content_type="text/markdown",

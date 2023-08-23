@@ -17,7 +17,7 @@ param_dict = {x[0]: x[1] for x in fl}
 ## Get lines in vamb file
 out = subprocess.Popen(['wc', '-l', VAMB], stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()[0]
 n_contigs = int(out.partition(b' ')[0])
-## memory is 30gb per million contigs
+## mem_gb is 30gb per million contigs
 mem = math.ceil(n_contigs/1000000)*30
 if mem > int(param_dict['max_mem']):
     mem = int(param_dict['max_mem'])
@@ -40,7 +40,7 @@ rule bin_filter:
         "envs/filter_gtdbtk.yaml"
     resources:
         cores=1,
-        memory=mem,
+        mem_gb=mem,
         runtime=tim
     script:
         "scripts/filter.py"
