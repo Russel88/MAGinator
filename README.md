@@ -42,6 +42,12 @@ Run MAGinator:
 maginator -v vamb_clusters.tsv -r reads.csv -c contigs.fasta -o my_output -g "/path/to/GTDB-Tk/database/release207_v2/"
 ```
 
+A testset can be found in the test_data directory. 
+1. Download the 3 samples used for the test at SRA: https://www.ncbi.nlm.nih.gov/sra?LinkName=bioproject_sra_all&from_uid=715601 with the ID's dfc99c_A, f9d84e_A and 221641_A
+2. Change the paths to the read-files in reads.csv
+3. Unzip the contigs.fasta.gz 
+4. Run MAGinator
+
 ### Run on a compute cluster
 MAGinator can run on compute clusters using qsub (torque), sbatch (slurm), or drmaa structures. The --cluster argument toggles the type of compute cluster infrastructure. The --cluster_info argument toggles the information given to the submission command, and it has to contain the following keywords {cores}, {memory$
 
