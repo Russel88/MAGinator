@@ -25,7 +25,7 @@ pip install maginator
 
 Furthermore, MAGinator also needs the GTDB-tk database version R207_v2 downloaded. If you don't already have it, you can run the following:
 ```sh
-wget https://data.gtdb.ecogenomic.org/releases/latest/auxillary_files/gtdbtk_v2_data.tar.gz
+wget https://data.gtdb.ecogenomic.org/releases/release207/207.0/auxillary_files/gtdbtk_r207_v2_data.tar.gz
 tar xvzf gtdbtk_v2_data.tar.gz
 ```
 
@@ -49,7 +49,7 @@ A testset can be found in the test_data directory.
 4. Run MAGinator
 
 ### Run on a compute cluster
-MAGinator can run on compute clusters using qsub (torque), sbatch (slurm), or drmaa structures. The --cluster argument toggles the type of compute cluster infrastructure. The --cluster_info argument toggles the information given to the submission command, and it has to contain the following keywords {cores}, {memory$
+MAGinator can run on compute clusters using qsub (torque), sbatch (slurm), or drmaa structures. The --cluster argument toggles the type of compute cluster infrastructure. The --cluster_info argument toggles the information given to the submission command, and it has to contain the following keywords {cores}, {memory}, {runtime}, which are used to forward resource information to the cluster.
 
 A qsub MAGinator can for example be run with the following command (... indicates required arguments, see above):
 ```sh
