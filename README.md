@@ -58,11 +58,12 @@ maginator ... --cluster qsub --cluster_info "-l nodes=1:ppn={cores}:thinnode,mem
 
 ## Test data
 
-A test set can be found in the test_data directory. 
+A test set can be found in the maginator/test_data directory. 
 1. Download the 3 samples used for the test at SRA: https://www.ncbi.nlm.nih.gov/sra?LinkName=bioproject_sra_all&from_uid=715601 with the ID's dfc99c_A, f9d84e_A and 221641_A
-2. Change the paths to the read-files in reads.csv
-3. Unzip the contigs.fasta.gz 
-4. Run MAGinator
+2. Clone repo: git clone https://github.com/Russel88/MAGinator.git
+3. Change the paths to the read-files in reads.csv
+4. Unzip the contigs.fasta.gz 
+5. Run MAGinator
 
 MAGinator has been run on the test data on a slurm server with the following command:
 ```
