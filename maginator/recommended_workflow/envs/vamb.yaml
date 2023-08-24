@@ -1,0 +1,14 @@
+name: vamb
+channels:
+  - pytorch
+  - conda-forge
+  - bioconda
+dependencies:
+  - pytorch
+  - pip
+  - torchvision
+  - cudatoolkit=10.2
+  - pysam
+  - numpy=1.20
+  - pip:
+     - git+https://github.com/RasmussenLab/vamb@v3.0.8
