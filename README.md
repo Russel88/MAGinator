@@ -66,10 +66,10 @@ A test set can be found in the maginator/test_data directory.
 5. Run MAGinator
 
 MAGinator has been run on the test data on a slurm server with the following command:
-```
+```sh
 maginator --vamb_clusters clusters.tsv --reads reads.csv --contigs contigs.fasta --gtdb_db data/release207_v2/ --output test_out --cluster slurm --cluster_info "-n {cores} --mem {mem_gb}gb -t {runtime}" --max_mem 180
 ```
-The expected output can be found in test_data/test_out (excluding the GTDB-tk folders, phylogeny alignments and BAM-files due to size limitations)
+The expected output can be found as a zipped file on Zenodo: https://doi.org/10.5281/zenodo.8279036
 
 ## Recommended workflow 
 
@@ -89,13 +89,22 @@ sed 's/@/_/g' vamb/clusters.tsv > clusters.tsv
 
 Now you are ready to run MAGinator.
 
+## Functional Annotation
+
 To generate the functional annotation of the genes we recommend using EggNOG mapper (https://github.com/eggnogdb/eggnog-mapper).
 
 You can download it and try to run it on the test data
-```
+```sh
 mkdir test_out/functional_annotation
 emapper.py -i test/genes/all_genes_rep_seq.fasta --output test_out/functional_annotation -m diamond --cpu 38
 ```
+
+The eggNOG output can be merged with clusters.tsv and further processed to obtain functional annotations of the MAG, cluster or sample levels with the following command:
+```sh
+(echo -e '#sample\tMAG_cluster\tMAG\tfunction'; join -1 1 -2 1 <(awk '{print $2 "\t" $1}' clusters.tsv | sort) <(tail -n +6 annotations.tsv | head -n -3 | cut -f1,15 | grep -v '\-$' | sed 's/_[[:digit:]]\+\t/\t/' | sed 's/,/\n/g' | perl -lane '{$q = $F[0] if $#F > 0; unshift(@F, $q) if $#F == 0}; print "$F[0]\t$F[1]"' | sed 's/\tko:/\t/' | sort) | awk '{print $2 "\t" $2 "\t" $3}' | sed 's/_/\t/' | sort -k1,1 -k2,2n) > MAGfunctions.tsv
+```
+In this case the KEGG ortholog column 15 was picked from the eggNOG-mapper output. But by cutting e.g. column number 13, one would obtain GO terms instead. Refer to the header of the eggNOG-mapper output for other available functional annotations e.g. KEGG pathways, Pfam, CAZy, COGs, etc.
+
 
 ## MAGinator workflow
 
