@@ -47,7 +47,7 @@ rule sort_genes_across_MGS:
     output:
         os.path.join(WD, 'genes', 'matrix', 'small_gene_count_matrix.tsv')
     conda:
-       	"envs/signature_genes.yaml" 
+        "envs/signature_genes.yaml" 
     resources:
         cores = 1, 
         mem_gb = 188,
@@ -67,7 +67,7 @@ rule format_conversion:
         R_gene_lengths = os.path.join(WD, 'signature_genes', 'gene_lengths.RDS'),
         clusters_dir = (directory(cluster_DIR))
     conda:
-       	"envs/signature_genes.yaml" 
+        "envs/signature_genes.yaml" 
     resources:
         cores = 1,
         mem_gb = 188,

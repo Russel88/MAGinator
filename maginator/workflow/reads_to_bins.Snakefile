@@ -213,7 +213,7 @@ rule contig_rename:
     input:
         "assembly/{sample}/contigs.fasta"
     output:
-        "assembly/{sample}/renamed_contigs.fasta"       	
+        "assembly/{sample}/renamed_contigs.fasta"
     resources:
         cores = 1,
         mem_gb = 45,
@@ -289,7 +289,7 @@ rule map:
     input:
         index="assembly/all_assemblies",
         gene_cat="assembly/all_assemblies.fasta",
-	R1 = lambda wildcards: sample_dict[wildcards.sample][0],
+        R1 = lambda wildcards: sample_dict[wildcards.sample][0],
         R2 = lambda wildcards: sample_dict[wildcards.sample][1] 
     output:
         "mapped/{sample}.bam"
