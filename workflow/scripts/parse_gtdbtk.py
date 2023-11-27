@@ -155,4 +155,4 @@ def unique_gtdb(domain, output):
                     nl += 1
 
 unique_gtdb('bac120', snakemake.output[3])
-unique_gtdb('ar122', snakemake.output[4])
+unique_gtdb('ar53', snakemake.output[4])
