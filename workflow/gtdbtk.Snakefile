@@ -46,7 +46,7 @@ rule gtdbtk:
         '''
         export GTDBTK_DATA_PATH={params.gtdbtk};
         gtdbtk classify_wf --genome_dir {input} --out_dir {output[0]} --cpus {resources.cores} --extension fa --keep_intermediates || true
-        if [[ -f {output[0]}/classify/gtdbtk.bac120.summary.tsv || -f {output[0]}/classify/gtdbtk.arc53.summary.tsv ]]; then
+        if [[ -f {output[0]}/classify/gtdbtk.bac120.summary.tsv || -f {output[0]}/classify/gtdbtk.ar53.summary.tsv ]]; then
             touch {output[1]}
         fi
         '''
