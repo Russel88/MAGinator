@@ -8,10 +8,10 @@ import pandas as pd
 import numpy as np
 
 ####### Read #######
-tax_df = pd.read_csv("tabs/tax_matrix.tsv", header=None, names=('MGS', 'Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species'), sep='\t')
-mgs_df = pd.read_csv('tabs/metagenomicspecies.tab', header=None, names=('MGS', 'Taxonomy', 'Clusters'), sep='\t')
-clust_df = pd.read_csv("genes/all_genes_cluster.tsv", header=None, names=('GeneCluster', 'Gene'), sep='\t')
-vamb_df = pd.read_csv("../maginator_clusters_drep.tsv", header=None, names=('Bin', 'Contig'), sep='\t')
+tax_df = pd.read_csv(snakemake.input['tax'], header=None, names=('MGS', 'Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species'), sep='\t')
+mgs_df = pd.read_csv(snakemake.input['mgs'], header=None, names=('MGS', 'Taxonomy', 'Clusters'), sep='\t')
+clust_df = pd.read_csv(snakemake.input['cluster'], header=None, names=('GeneCluster', 'Gene'), sep='\t')
+vamb_df = pd.read_csv(snakemake.input['vamb'], header=None, names=('Bin', 'Contig'), sep='\t')
 
 cutoff = float(snakemake.params['cutoff'])
 
