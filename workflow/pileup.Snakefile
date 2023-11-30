@@ -25,7 +25,7 @@ rule subset:
     resources:
         cores = 1,
         mem_gb = 20,
-        runtime = '43200' #12h in s
+        runtime = 43200 #12h in s
     shell:
         "samtools view -b -L {input.bed} {input.bam} | samtools sort -o {output}"
 
@@ -40,7 +40,7 @@ rule pileup:
     resources:
         cores = 1,
         mem_gb = 20,
-        runtime = '86400' #1d in s
+        runtime = 86400 #1d in s
     shell:
         "samtools mpileup -A -x -f {input.fna} {input.bam} -o {output}"
 

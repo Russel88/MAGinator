@@ -25,7 +25,7 @@ if param_dict['phylo'] == 'fasttree':
         resources:
             cores=1,
             mem_gb=32,
-            runtime='43200' #12h in s
+            runtime=43200 #12h in s
         shell:
             """
             fasttree -nt {input} > {output}
@@ -46,7 +46,7 @@ if param_dict['phylo'] == 'iqtree':
         resources:
             cores=40,
             mem_gb=180,
-            runtime='172800' #2d in s
+            runtime=172800 #2d in s
         shell:
             """
             iqtree -T {resources.cores} -s {input.fna} -p {input.part} -o Outgroup --prefix {params.prefix} || true && if [ -f {params.prefix}.treefile ]; then mv {params.prefix}.treefile {output}; else touch {output}; fi

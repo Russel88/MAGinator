@@ -30,6 +30,7 @@ class Workflow(object):
 
         # Define core snakemake command
         cmd = ['snakemake',
+               '--rerun-incomplete',
                '--use-conda',
                '--latency-wait', '80',
                '-s', snakefile,

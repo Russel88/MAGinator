@@ -18,7 +18,7 @@ CLUSTERS = {x for x in CLUSTERS if x.isdigit()}
 ## Get lines in read file
 out = subprocess.Popen(['wc', '-l', READS], stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()[0]
 n_samples = int(out.partition(b' ')[0])
-## time is 1 hour per 30 samples or at least 2h
+## time is 1 hour per 30 samples or at least 3h
 tim = (max(math.ceil(n_samples/30)*60, 3*60)) # time in h
 
 wildcard_constraints:
@@ -41,7 +41,7 @@ rule gtdbtk:
     resources:
         cores=8,
         mem_gb=180,
-        runtime=str(tim*60*60)
+        runtime= tim*60*60
     shell:
         '''
         export GTDBTK_DATA_PATH={params.gtdbtk};
