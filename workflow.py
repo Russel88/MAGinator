@@ -30,7 +30,6 @@ class Workflow(object):
 
         # Define core snakemake command
         cmd = ['snakemake',
-               '--rerun-incomplete',
                '--use-conda',
                '--latency-wait', '80',
                '-s', snakefile,
@@ -40,6 +39,10 @@ class Workflow(object):
                'contigs='+self.contigs,
                'vamb='+self.vamb_clusters,
                'params='+self.params]
+        
+        # If the user wants to rerun incomplete jobs
+        if self.rerun_incomplete:
+            cmd.append('--rerun-incomplete')
         
         # If run on server
         if self.cluster == None:

@@ -58,7 +58,8 @@ def cli():
     apo.add_argument('--only_conda', help='Only install conda environments, then exit', action='store_true')
     apo.add_argument('--snake', help='Only run specific snakemake command. For debug purposes', type=str)
     apo.add_argument('--unlock', help='Unlock snakemake directory in case of unexpected exists, then exit', action='store_true')
-
+    apo.add_argument('--rerun-incomplete', help='Rerun incomplete snakemake jobs', action='store_true')
+    
     # Parameters
     app = ap.add_argument_group('parameters')
     app.add_argument('--binsize', help='Minimum bin size for inclusion [%(default)s].', default=200000, type=int)
