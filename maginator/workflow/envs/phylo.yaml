@@ -1,0 +1,17 @@
+channels:
+ - conda-forge
+ - bioconda
+ - biobuilds
+dependencies:
+ - biopython=1.79
+ - pandas=1.4
+ - samtools=1.10
+ - fasttree=2
+ - perl=5
+ - mafft=7
+ - iqtree=2
+ - parallel
+ - multiprocess=0.70
+ - fasta
+ - mcl=14
+ - scipy=1.9
