@@ -1,9 +1,0 @@
-7b30c57 Added a functionality to decide if rerun-incomplete
-f7aaebd Modified parse_genes.py to match the taxonomy output regardless of GTDB-tk version
-3037c7a Changed the runtime of all files to numerical (bug with the strings)
-c900ff3 Increased minimum gtdbtk running time to 3h
-ba08da6 Spelling mistake solved in gtdbtk.snakefile
-fc94c52 Fixed error in gtdbtk snakefile condition
-47f2c96 Fixed error in gene_cluster2tax.py
-007aadc Modifications to gtdbtk_parse.py to account for the presence of archaea (arc53)
-8410069 Initial files of MAGinator
