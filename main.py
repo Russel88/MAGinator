@@ -131,6 +131,8 @@ def cli():
         # Gene vs tax
         logging.info('Inferring taxonomic scope of genes')
         wf.run(snakefile=WORKFLOW_GENE_TAX)
+        logging.info('MAGinator has finished successfully. You can find the results in the output directory: '+master.output)
+
 
 if __name__ == '__main__':
     cli()
