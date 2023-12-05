@@ -31,7 +31,7 @@ rule gene_tax:
     resources:
         cores = 1,
         mem_gb = 80,
-        runtime = '7200' #2h in s
+        runtime = 7200 #2h in s
     script:
         "scripts/gene_cluster2tax.py"
 
@@ -47,7 +47,7 @@ rule synteny_graph:
     resources:
         cores = 1,
         mem_gb = 40,
-        runtime = '36000' #10h in s
+        runtime = 36000 #10h in s
     script:
         "scripts/synteny.py"
 
@@ -67,7 +67,7 @@ rule synteny_mcl:
     resources:
         cores = 40,
         mem_gb = 180,
-        runtime = '86400' #1d in s
+        runtime = 86400 #1d in s
     shell:
         """
         join -1 2 -2 1 <(join -j1 <(sed 's/.*(//;s/)//;s/,//;s/\.0$//' {input.graph} | sort -k1,1) <(sort -k1,1 {input.index}) | sort -k2,2) <(sort -k1,1 {input.index}) \

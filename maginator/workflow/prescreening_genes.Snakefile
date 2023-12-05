@@ -35,7 +35,7 @@ rule geneID_collectionID:
     resources:
         cores = 1,
         mem_gb = 188,
-        runtime = '43200' #12h in s
+        runtime = 43200 #12h in s
     script: 
         "scripts/species_collections.py"
 
@@ -51,7 +51,7 @@ rule sort_genes_across_MGS:
     resources:
         cores = 1, 
         mem_gb = 188,
-        runtime = '43200' #12h in s
+        runtime = 43200 #12h in s
     script:
         "scripts/sort_gene_mat.py"
 
@@ -71,7 +71,7 @@ rule format_conversion:
     resources:
         cores = 1,
         mem_gb = 188,
-        runtime = '86400' #1d in s
+        runtime = 86400 #1d in s
     script:
         "scripts/matrix2SG_formatconversion.R"
 
@@ -88,6 +88,6 @@ rule prescreening_genes:
     resources:
         cores = 1,
         mem_gb = 188,
-        runtime = '86400' #1d in s
+        runtime = 86400 #1d in s
     script: 
         "scripts/prescreening_genes.R"

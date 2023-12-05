@@ -34,9 +34,9 @@ rule refinement:
     resources:
         cores = 1,
         mem_gb = 12,
-        runtime = '43200' #12h in s
+        runtime = 43200 #12h in s
     script: 
-        "scripts/SG_refinement.R"
+        """scripts/SG_refinement.R"""
 
 
 # insert rule for creating the MGS_object.RDS
@@ -52,7 +52,7 @@ rule gene_counts:
     resources:
         cores = 1,
         mem_gb = 12,
-        runtime = '43200' #12h in s
+        runtime = 43200 #12h in s
     script:
         "scripts/MGS_counts.R"
 
@@ -74,7 +74,7 @@ rule abundance_profile:
     resources:
         cores = 1,
         mem_gb = 80,
-        runtime = '43200' #12h in s
+        runtime = 43200 #12h in s
     script:
         "scripts/abundance_profiles.R"
 
@@ -94,6 +94,6 @@ rule gene_refinement_plots:
     resources:
         cores = 1,
         mem_gb = 80,
-        runtime = '43200' #12h in s
+        runtime = 43200 #12h in s
     script:
         "scripts/gene_refinement_plots.R"

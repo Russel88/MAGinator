@@ -40,6 +40,10 @@ class Workflow(object):
                'vamb='+self.vamb_clusters,
                'params='+self.params]
         
+        # If the user wants to rerun incomplete jobs
+        if self.rerun_incomplete:
+            cmd.append('--rerun-incomplete')
+        
         # If run on server
         if self.cluster == None:
             cmd += ['--cores', str(self.max_cores)]
