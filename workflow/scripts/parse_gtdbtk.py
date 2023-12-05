@@ -40,12 +40,12 @@ for clust in os.listdir(snakemake.input[0]):
         tax_bac = pd.read_csv(glob.glob(os.path.join(snakemake.input[0], clust, 'gtdbtk.bac*.summary.tsv'))[0], sep='\t', header=0)  
         if tax_bac.iloc[0,1]=='Unclassified':
             tax_bac=None
-    except FileNotFoundError:
+    except (IndexError, FileNotFoundError):
         tax_bac = None
     try: 
         # Include a regex in the filename that detects anything that is gtdbtk.ar\\d+.summary.tsv
         tax_ar = pd.read_csv(glob.glob(os.path.join(snakemake.input[0], clust, 'gtdbtk.ar*.summary.tsv'))[0], sep='\t', header=0)  
-    except FileNotFoundError:
+    except (FileNotFoundError,IndexError):
         tax_ar = None
 
     # Combine
