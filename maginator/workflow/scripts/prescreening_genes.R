@@ -7,10 +7,10 @@ Clusterlist <- readRDS(snakemake@input[["clusters"]])
 GeneLengths <- readRDS(snakemake@input[["gene_lengths"]])
 
 #Number of signature genes
-n.genes <- 100
+n.genes <- snakemake@params[["n_genes"]]
 
 #minimum number of mapped genes required
-n.mapped.minimum <- 3
+n.mapped.minimum <- snakemake@params[["min_genes"]]
 
 ids <- names(Clusterlist) #the ids of the MGS
 

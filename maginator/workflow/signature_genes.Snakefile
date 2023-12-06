@@ -30,7 +30,9 @@ rule refinement:
     conda:
         "envs/signature_genes.yaml"
     params:
-        functions = "Functions_v4.R"
+        functions = "Functions_v4.R",sig
+        n_genes = param_dict['n_signature_genes'],
+        min_genes = param_dict['min_SG_genes'],
     resources:
         cores = 1,
         mem_gb = 12,
@@ -49,6 +51,8 @@ rule gene_counts:
         cluster_counts = os.path.join(WD, 'signature_genes','counts', 'cluster_{cluster}_counts.RDS')
     conda:
         "envs/signature_genes.yaml"
+    params:
+        n_genes = param_dict['n_signature_genes']
     resources:
         cores = 1,
         mem_gb = 12,
@@ -71,6 +75,9 @@ rule abundance_profile:
         sg_cluster = os.path.join(WD, 'tabs', 'signature_genes_cluster.tsv')
     conda:
         "envs/signature_genes.yaml"
+    params:
+        n_genes = param_dict['n_signature_genes'],
+        min_genes = param_dict['min_SG_genes'],
     resources:
         cores = 1,
         mem_gb = 80,

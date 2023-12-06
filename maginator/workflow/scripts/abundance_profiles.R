@@ -8,7 +8,7 @@ library(stringr)
 # Loading relevant input
 GeneLengths <- readRDS(snakemake@input[["R_gene_lengths"]]) # The gene lengths
 sg_files <- snakemake@input[["screened_clusters"]]
-screened_clusters <- do.call("rbind", lapply(sg_files, readRDS))
+scre <- do.call("rbind", lapply(sg_files, readRDS))
 #load(snakemake@input[["MGS_object"]]) # contain the SGs of the Clusters
 Clusterlist <- readRDS(snakemake@input[["R_clusters"]]) # read count mat ofclusters
 taxonomy <- read.csv(snakemake@input[["annotation"]], header=FALSE, sep="\t") # the taxonomy 
@@ -18,8 +18,8 @@ colnames(taxonomy) <- c("Cluster","Taxonomy")
 #setting important variables
 gene_index <- seq(1,length(GeneLengths))
 gene_names <- names(GeneLengths)
-n.mapped.minimum <- 3 #The number of genes that needs reads that map to count the cluster as present
-n.genes <- 100 # number of signature genes
+n.mapped.minimum <- snakemake@params[["min_genes"]] #The number of genes that needs reads that map to count the cluster as present
+n.genes <- snakemake@params[["n_genes"]] # number of signature genes
 
 # inserting NA for the Clusters that do not have a annotation
 taxmat <- matrix("NA", nrow = length(names(Clusterlist)), ncol = 7)
@@ -82,10 +82,12 @@ for (id in names(Clusterlist)){
   # The readcounts are divided by the gene length
   final.reads <- final.Clusterlist[[id]][final.gene.names, ] / GeneLengths[final.gene.names]
   
+  # Maybe introduce some filtering here based on the normalized readcounts per gene?
+
   # summing the read counts for the id/cluster/MGS
   final.read.matrix[, id] <- colSums(final.reads)
   if (length(final.gene.names)>0){
-  if (length(final.gene.names)!=100){
+  if (length(final.gene.names)!=n.genes){
   final.gene.names<-c(final.gene.names, rep("NA", (100-length(final.gene.names))))}
   sg_cluster[sg_cluster[,2]==id] <- matrix(c(final.gene.names, rep(id, length(final.gene.names))), ncol=2)
 }}
