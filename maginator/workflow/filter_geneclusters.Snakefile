@@ -63,8 +63,6 @@ rule bwa_readmap:
         fasta = os.path.join(WD, 'genes', 'all_genes_nonredundant.fasta'),
         fastq1 = lambda wildcards: sample_dict[wildcards.sample][0],
         fastq2 = lambda wildcards: sample_dict[wildcards.sample][1]
-    params:
-        sample = SAMPLES
     output:
         bam = os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.bam')
     conda:

@@ -17,10 +17,10 @@ Cluster <- readRDS(snakemake@input[["clusters_dir"]])
 snakemake@source(snakemake@params[["functions"]])
 
 #Number of signature genes
-n.genes <- snakemake@params[["n_genes"]]
+n.genes <- as.integer(snakemake@params[["n_genes"]])
 
 #Minimum number of mapped genes required
-n.mapped.minimum <- snakemake@params[["min_genes"]]
+n.mapped.minimum <- as.integer(snakemake@params[["min_genes"]])
 
 ids <- names(Clusterlist) #the ids of the MGS
 id <- tail(strsplit(strsplit(snakemake@input[["clusters_dir"]], ".RDS")[[1]], "/")[[1]], n=1)

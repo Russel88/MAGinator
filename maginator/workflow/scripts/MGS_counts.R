@@ -1,7 +1,7 @@
 Clusterlist <- readRDS(snakemake@input[["clusters_sorted"]])
 GeneLengths <- readRDS(snakemake@input[["gene_lengths"]])
 screened_cluster <- readRDS(snakemake@input[["cluster_screened"]])
-n_genes <- snakemake@params[["n_genes"]]
+n_genes <- as.integer(snakemake@params[["n_genes"]])
 
 MGS_object <- list()
 MGS_object[['i']] <- list()

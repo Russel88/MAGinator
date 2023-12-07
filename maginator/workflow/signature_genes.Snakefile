@@ -30,7 +30,7 @@ rule refinement:
     conda:
         "envs/signature_genes.yaml"
     params:
-        functions = "Functions_v4.R",sig
+        functions = "Functions_v4.R",
         n_genes = param_dict['n_signature_genes'],
         min_genes = param_dict['min_SG_genes'],
     resources:
