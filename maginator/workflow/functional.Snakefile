@@ -27,17 +27,17 @@ rule all:
 
 rule annotation:
     input:
-        os.path.join(WD, 'genes', 'all_genes.fna')
+        os.path.join(WD, 'genes', 'all_genes.faa')
     output:
         os.path.join(WD, 'functional', 'all_genes_annotation.tsv')
     conda:
         "envs/functional.yaml"
     resources:
-        cores = 10,
+        cores = 40,
         mem_gb = 40,
-        runtime = 7200 #2h in s
+        runtime = 72000 #20h in s
     script:
-        "emapper.py -i {input} -o {output}"
+        "emapper.py -i {input} -o {output} -m diamond --cpu {resources.cores}"
 
 # Merging the annotation with the gene count matrix into an RData object
 rule functional_profiling:

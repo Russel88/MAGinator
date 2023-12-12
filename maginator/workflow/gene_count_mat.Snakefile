@@ -15,17 +15,15 @@ rule all:
     input:
         os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
 
-
 # Use samtools to count the genes for each sample
-
 rule gene_coverage:
     input:
-        os.path.join(WD,'mapped_reads', 'bam','{samples}.bam'),
+        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{samples}.bam'),
     output:
         os.path.join(WD,'mapped_reads','coverage','{samples}.coverage')
     conda:
         "envs/filter_geneclusters.yaml"
-    params:
+    resources:
         cores = 1,
         mem_gb = 20,
         runtime = 7200 #2h in s
@@ -35,7 +33,7 @@ rule gene_coverage:
 #Modifying the gene count matrix so genes that do not reach a threshold of mapped counts are set to 0  
 rule create_gene_count_matrix:
     input:
-        cov_files = expand(os.path.join(WD,'mapped_reads','coverage','{samples}.coverage'),sample=SAMPLES)         
+        cov_files = expand(os.path.join(WD,'mapped_reads','coverage','{samples}.coverage'),samples=SAMPLES)         
     output:
         gene_matrix=os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
     conda:
@@ -45,7 +43,6 @@ rule create_gene_count_matrix:
     resources:
         cores = 1,
         mem_gb = 40,
-        runtime = 7200 #12h in s
+        runtime = 7200 #2h in s
     script: 
-        "scripts/gene_count_matrix.py"
-
+        "scripts/gene_count_matrix.R"
