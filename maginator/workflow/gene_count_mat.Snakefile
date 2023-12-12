@@ -41,7 +41,7 @@ rule create_gene_count_matrix:
     conda:
         "envs/signature_genes.yaml"
     params:
-        min_reads = param_dict['min_reads'],
+        min_reads = param_dict['min_cov'],
     resources:
         cores = 1,
         mem_gb = 40,

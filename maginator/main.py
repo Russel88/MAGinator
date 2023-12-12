@@ -69,7 +69,7 @@ def cli():
     app.add_argument('--clustering_coverage', help='Alignment coverage for clustering of genes with MMseqs2 [%(default)s]', default=0.8, type=float)
     app.add_argument('--clustering_min_seq_id', help='Sequence identity threshold for clustering of genes with MMseqs2 [%(default)s]', default=0.95, type=float)
     app.add_argument('--clustering_type', help='Sequence type for gene clustering with MMseqs2. Nucleotide- or protein-level [%(default)s]', default='protein', type=str, choices=['nucleotide', 'protein'])
-    app.add_argument('--min_reads', help='Minimum number of reads for a gene to be included [%(default)s]', default=3, type=int)
+    app.add_argument('--min_cov', help='Minimum percentage of coverage that a gene must have to be counted as present[%(default)s]', default=30, type=int)
     app.add_argument('--min_SG_genes', help='Minimum number of signature genes for a bin to be included [%(default)s]', default=3, type=int)
     app.add_argument('--n_signature_genes',help='Number of signature genes used for the abundance matrix [%(default)s]', default=100, type=int)
     app.add_argument('--min_gtdb_markers', help='Minimum GTDBtk marker genes shared between MGS and outgroup for rooting trees [%(default)s]', default=10, type=int)
