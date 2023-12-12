@@ -37,7 +37,7 @@ rule create_gene_count_matrix:
     output:
         gene_matrix=os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
     conda:
-        "envs/signature_genes.yaml"
+        "envs/filter_geneclusters.yaml"
     params:
         min_reads = param_dict['min_cov'],
     resources:
