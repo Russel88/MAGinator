@@ -39,6 +39,23 @@ rule geneID_collectionID:
     script: 
         "scripts/species_collections.py"
 
+# Modifying the gene count matrix so genes that do not reach a threshold of mapped counts are set to 0  
+# rule modify_gene_count_matrix:
+#     input:
+#         os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv'),
+#     output:
+#         os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix_modified.tsv')
+#     conda:
+#         "envs/signature_genes.yaml"
+#     params:
+#         min_reads = param_dict['min_reads'],
+#     resources:
+#         cores = 1,
+#         mem_gb = 40,
+#         runtime = 7200 #12h in s
+#     script: 
+#         "scripts/modify_gene_count_matrix.py"
+
 # creating a gene count matrix only containing the genes, that does not cluster across metagenomic species / species collection
 rule sort_genes_across_MGS:
     input: 

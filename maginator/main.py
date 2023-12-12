@@ -52,6 +52,7 @@ def cli():
     apo = ap.add_argument_group('optional arguments')
     apo.add_argument('-V','--version', action='version', version='MAGinator version {}'.format(pkg_resources.require("maginator")[0].version))
     apo.add_argument("-h", "--help", action="help", help="show this help message and exit")
+    apo.add_argument("--profiling_only", help="Only run the community profiling steps, without producing the cluster phylogeny and gene synteny", action="store_true")
     apo.add_argument('--max_cores', help='Maximum number of cores [%(default)s]', default=40, type=int)
     apo.add_argument('--max_mem', help='Maximum mem_gb in GB [%(default)s]', default=180, type=int)
     apo.add_argument('--log_lvl', help='Logging level [%(default)s].', default='INFO', type=str, choices=['DEBUG','INFO','WARNING','ERROR'])
@@ -117,24 +118,29 @@ def cli():
         wf.run(snakefile=WORKFLOW_PRESCREENING_GENES)
         logging.debug('Identifying the signature genes')
         wf.run(snakefile=WORKFLOW_SIGNATURE_GENES)
+        logging.info('MAGinator has finished the profiling successfully. You can find the results in the output directory: ' + master.output)
 
-        # Phylogenies
-        logging.info('Inferring MGS phylogenies')
-        logging.debug('Identifying outgroups and marker genes for MGS phylogenies')
-        wf.run(snakefile=WORKFLOW_OUTGROUP)
-        logging.debug('Pileup of signature genes for calling SNVs')
-        wf.run(snakefile=WORKFLOW_PILEUP)
-        logging.debug('Parsing pileup data')
-        wf.run(snakefile=WORKFLOW_PILEUP_PARSE)
-        logging.debug('Generaring alignments')
-        wf.run(snakefile=WORKFLOW_ALIGNMENT)
-        logging.debug('Generaring phylogenies')
-        wf.run(snakefile=WORKFLOW_PHYLO)
+        # In case only the profiling should be run
+        if master.profiling_only:
+            pass
+        else:
+            # Phylogenies
+            logging.info('Inferring MGS phylogenies')
+            logging.debug('Identifying outgroups and marker genes for MGS phylogenies')
+            wf.run(snakefile=WORKFLOW_OUTGROUP)
+            logging.debug('Pileup of signature genes for calling SNVs')
+            wf.run(snakefile=WORKFLOW_PILEUP)
+            logging.debug('Parsing pileup data')
+            wf.run(snakefile=WORKFLOW_PILEUP_PARSE)
+            logging.debug('Generaring alignments')
+            wf.run(snakefile=WORKFLOW_ALIGNMENT)
+            logging.debug('Generaring phylogenies')
+            wf.run(snakefile=WORKFLOW_PHYLO)
 
-        # Gene vs tax
-        logging.info('Inferring taxonomic scope of genes')
-        wf.run(snakefile=WORKFLOW_GENE_TAX)
-        logging.info('MAGinator has finished successfully. You can find the results in the output directory: '+master.output)
+            # Gene vs tax
+            logging.info('Inferring taxonomic scope of genes')
+            wf.run(snakefile=WORKFLOW_GENE_TAX)
+            logging.info('MAGinator has finished inferring the cluster phylogenias and gene syntenies successfully.')
 
 
 if __name__ == '__main__':
