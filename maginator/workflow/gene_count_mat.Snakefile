@@ -17,71 +17,35 @@ rule all:
 
 
 # Use samtools to count the genes for each sample
-rule count_genes:
+
+rule gene_coverage:
     input:
-        os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.bam')
+        os.path.join(WD,'mapped_reads', 'bam','{samples}.bam'),
     output:
-        readcounts = os.path.join(WD, 'mapped_reads', 'counts', '{sample}.counts')
+        os.path.join(WD,'mapped_reads','coverage','{samples}.coverage')
     conda:
         "envs/filter_geneclusters.yaml"
-    resources:
+    params:
         cores = 1,
         mem_gb = 20,
         runtime = 7200 #2h in s
     shell:
-        "samtools idxstats {input} | cut -f3 > {output.readcounts}"
+        "samtools coverage {input} > {output}"
 
-# Create the gene index
-rule gene_names:
+#Modifying the gene count matrix so genes that do not reach a threshold of mapped counts are set to 0  
+rule create_gene_count_matrix:
     input:
-        os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.bam')
+        cov_files = expand(os.path.join(WD,'mapped_reads','coverage','{samples}.coverage'),sample=SAMPLES)         
     output:
-        os.path.join(WD, 'mapped_reads', 'gene_names_{sample}')
-    wildcard_constraints:
-        sample=SAMPLES[0]
+        gene_matrix=os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
     conda:
-       	"envs/filter_geneclusters.yaml"
+        "envs/signature_genes.yaml"
+    params:
+        min_reads = param_dict['min_reads'],
     resources:
         cores = 1,
-        mem_gb = 20,
-        runtime = 3600 #1h in s
-    shell:
-        "samtools idxstats {input} | cut -f1 > {output}"
+        mem_gb = 40,
+        runtime = 7200 #12h in s
+    script: 
+        "scripts/gene_count_matrix.py"
 
-
-# Create the header for the gene count matrix
-rule create_header:
-    input: 
-        expand(os.path.join(WD, 'mapped_reads', 'counts', '{sample}.counts'), sample=SAMPLES)
-    output:
-        header = os.path.join(WD, 'mapped_reads', 'header.txt')
-    resources:
-        cores = 1,
-        mem_gb = 188,
-        runtime = 3600 #1h in s
-    run:
-        header = "Gene"
-        for f in input:
-            sample_name = f.split("/")[-1].split(".")[0]
-            header = header + "\t" + sample_name
-        header = header + "\n"
-        with open(output.header, "w") as out:
-            out.write(header)
-
-
-#Combining the gene names with the counts of all samples
-rule gene_count_matrix:
-    input:
-        readcounts = expand(os.path.join(WD, 'mapped_reads', 'counts', '{sample}.counts'), sample=SAMPLES),
-        gene_names = expand(os.path.join(WD, 'mapped_reads', 'gene_names_{sample}'), sample=SAMPLES[0]),
-        header = os.path.join(WD, 'mapped_reads', 'header.txt')
-    output:
-        os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
-    conda:
-       	"envs/filter_geneclusters.yaml"
-    resources:
-        cores = 1,
-        mem_gb = 188,
-        runtime = 3600 #1h in s
-    shell:
-        "paste {input.gene_names} {input.readcounts} | cat {input.header} - > {output}; sed -i '$d' {output}"
