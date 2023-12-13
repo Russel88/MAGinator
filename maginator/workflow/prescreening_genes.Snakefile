@@ -94,4 +94,4 @@ rule prescreening_genes:
         mem_gb = 188,
         runtime = 86400 #1d in s
     script: 
-        "scripts/prescreening_genes.Rsi "
+        "scripts/prescreening_genes.R"
