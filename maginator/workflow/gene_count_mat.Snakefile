@@ -20,13 +20,15 @@ rule filter_bamfile:
         os.path.join(WD,'mapped_reads', 'bams','gene_counts_{samples}.bam'),
     output:
         os.path.join(WD,'mapped_reads', 'bams','gene_counts_{samples}_filtered.bam')
+    conda:
+        "envs/filter_geneclusters.yaml"
     resources:
         cores = 1,
         mem_gb = 20,
         runtime = 7200 #2h in s
     script:
         "scripts/extract_map.py"  
-        
+
 # Use samtools to count the genes for each sample
 rule gene_coverage:
     input:
