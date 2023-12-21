@@ -15,10 +15,22 @@ rule all:
     input:
         os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
 
+rule filter_bamfile:
+    input:
+        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{samples}.bam'),
+    output:
+        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{samples}_filtered.bam')
+    resources:
+        cores = 1,
+        mem_gb = 20,
+        runtime = 7200 #2h in s
+    script:
+        "scripts/extract_map.py"  
+        
 # Use samtools to count the genes for each sample
 rule gene_coverage:
     input:
-        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{samples}.bam'),
+        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{samples}_filtered.bam'),
     output:
         os.path.join(WD,'mapped_reads','coverage','{samples}.coverage')
     conda:
@@ -41,8 +53,8 @@ rule create_gene_count_matrix:
     params:
         min_reads = param_dict['min_cov'],
     resources:
-        cores = 1,
-        mem_gb = 40,
-        runtime = 7200 #2h in s
+        cores = 30,
+        mem_gb = 100,
+        runtime = 86400 #24h in s
     script: 
         "scripts/gene_count_matrix.R"
