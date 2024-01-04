@@ -23,10 +23,10 @@ conda activate maginator
 pip install maginator
 ```
 
-Furthermore, MAGinator also needs the GTDB-tk database version R207_v2 downloaded. If you don't already have it, you can run the following:
+Furthermore, MAGinator also needs the GTDB-tk database downloaded. Here we download release 214. If you don't already have it, you can run the following:
 ```sh
-wget https://data.gtdb.ecogenomic.org/releases/release207/207.0/auxillary_files/gtdbtk_r207_v2_data.tar.gz
-tar xvzf gtdbtk_v2_data.tar.gz
+wget https://data.ace.uq.edu.au/public/gtdb/data/releases/release214/214.1/auxillary_files/gtdbtk_r214_data.tar.gz
+tar xvzf *.tar.gz
 ```
 
 ## Usage
@@ -39,7 +39,7 @@ MAGinator needs 3 input files:
 
 Run MAGinator:
 ```sh
-maginator -v vamb_clusters.tsv -r reads.csv -c contigs.fasta -o my_output -g "/path/to/GTDB-Tk/database/release207_v2/"
+maginator -v vamb_clusters.tsv -r reads.csv -c contigs.fasta -o my_output -g "/path/to/GTDB-Tk/database/release214/"
 ```
 
 A testset can be found in the test_data directory. 
@@ -65,11 +65,18 @@ A test set can be found in the maginator/test_data directory.
 4. Unzip the contigs.fasta.gz 
 5. Run MAGinator
 
-MAGinator has been run on the test data on a slurm server with the following command:
+MAGinator can been run on the test data on a slurm server with the following command:
 ```sh
-maginator --vamb_clusters clusters.tsv --reads reads.csv --contigs contigs.fasta --gtdb_db data/release207_v2/ --output test_out --cluster slurm --cluster_info "-n {cores} --mem {mem_gb}gb -t {runtime}" --max_mem 180
+maginator --vamb_clusters clusters.tsv --reads reads.csv --contigs contigs.fasta --gtdb_db data/release214/ --output test_out --cluster slurm --cluster_info "-n {cores} --mem {mem_gb}gb -t {runtime}" --max_mem 180
 ```
-The expected output can be found as a zipped file on Zenodo: https://doi.org/10.5281/zenodo.8279036
+The expected output can be found as a zipped file on Zenodo: https://doi.org/10.5281/zenodo.8279036. MAGinator has been run on the test data (using GTDB-tk db release207_v2) on a slurm server.
+
+On the compute cluster each job have had access to 180gb RAM, with the following time consumption: 
+real	72m27.379s
+user	0m18.830s
+sys	1m0.454s
+
+If you run on a smaller server you can set the parameters --max_cores and --max_mem.
 
 ## Recommended workflow 
 
@@ -120,11 +127,13 @@ This is what MAGinator does with your input (if you want to see all parameters r
     * Use --clustering_coverage to toggle the clustering coverage
     * Use --clustering_type to toggle whether to cluster on amino acid or nucleotide level
 * Map reads to the non-redundant gene catalogue and create a matrix with gene counts for each sample
-* Pick non-redundant genes that are only found in one MGS each
-* Fit signature gene model and use the resulting signature genes to get the abundance of each MGS
-* Prepare for generation of phylogenies for each MGS by finding outgroups and marker genes which will be used for rooting the phylogenies
+* Pick non-redundant genes that are only found in one MAG cluster each
+* Fit signature gene model and use the resulting signature genes to get the abundance of each MAG cluster
+    * Use --min_mapped_signature_genes to change minimum number of signature genes to be detected in the sample to be included in the analysis
+    * Use --min_samples to alter the number of samples with the MAG cluster present in order to perform signature gene refinement
+* Prepare for generation of phylogenies for each MAG cluster by finding outgroups and marker genes which will be used for rooting the phylogenies
 * Use the read mappings to collect SNV information for each signature gene and marker gene for each sample
-* Align signature and marker genes, concatenate alignments and infer phylogenetic trees for each MGS
+* Align signature and marker genes, concatenate alignments and infer phylogenetic trees for each MAG cluster
     * Use --phylo to toggle whether use fasttree (fast, approximate) or iqtree (slow, precise) to infer phylogenies
 * Infer the taxonomic scope of each gene cluster. That is, at what taxonomic level are genes from a given gene cluster found in
     * Use --tax_scope_threshold to toggle the threshold for how to find the taxonomic scope consensus
@@ -144,6 +153,7 @@ This is what MAGinator does with your input (if you want to see all parameters r
     * all_genes_cluster.tsv - Gene clusters
     * matrix/
         * gene_count_matrix.tsv - Read count for each gene cluster for each sample
+        * small_gene_count_matrix.tsv - Read count matrix only containing the genes, that does not cluster across MAG cluster
     * synteny/ - Intermediate files for synteny clustering of gene clusters
 * gtdbtk/
     * <cluster>/ - GTDB-tk taxonomic annotation for each VAMB cluster
@@ -152,19 +162,19 @@ This is what MAGinator does with your input (if you want to see all parameters r
     * bams/ - Bam files for mapping reads to gene clusters
 * phylo/
     * alignments/ - Alignments for each signature gene
-    * cluster_alignments/ - Concatenated alignments for each MGS
-    * pileup/ - SNV information for each MGS and each sample
-    * trees/ - Phylogenetic trees for each MGS
+    * cluster_alignments/ - Concatenated alignments for each MAG cluster
+    * pileup/ - SNV information for each MAG cluster and each sample
+    * trees/ - Phylogenetic trees for each MAG cluster
     * stats.tab - Mapping information such as non-N fraction, number of signature genes and marker genes, read depth, and number of bases not reaching allele frequency cutoff 
     * stats_genes.tab - Same as above but the information is split per gene
 * signature_genes/ 
     * \- R data files with signature gene optimization
-    * read-count_detected-genes.pdf - Figure for each MGS/cluster displaying number of identified SG's in each sample along with the number of reads mapped.
+    * read-count_detected-genes.pdf - Figure for each MAG cluster displaying number of identified SG's in each sample along with the number of reads mapped.
 * tabs/
     * gene_cluster_bins.tab - Table listing which bins each gene cluster was found in
     * gene_cluster_tax_scope.tab - Table listing the taxonomic scope of each gene cluster
-    * metagenomicspecies.tab - Table listing which, if any, clusters where merged in MGS and the taxonomy of those
-    * signature_genes_cluster.tsv - Table with the signature genes for each MGS/cluster
+    * metagenomicspecies.tab - Table listing which, if any, clusters where merged in MAG cluster and the taxonomy of those
+    * signature_genes_cluster.tsv - Table with the signature genes for each MAG cluster
     * synteny_clusters.tab - Table listing the synteny cluster association for the gene clusters. Gene clusters from the same synteny cluster are genomically adjacent.
-    * tax_matrix.tsv - Table with taxonomy information for MGS
+    * tax_matrix.tsv - Table with taxonomy information for MAG cluster
     

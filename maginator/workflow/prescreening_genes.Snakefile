@@ -47,7 +47,7 @@ rule sort_genes_across_MGS:
     output:
         os.path.join(WD, 'genes', 'matrix', 'small_gene_count_matrix.tsv')
     conda:
-       	"envs/signature_genes.yaml" 
+        "envs/signature_genes.yaml" 
     resources:
         cores = 1, 
         mem_gb = 188,
@@ -67,7 +67,7 @@ rule format_conversion:
         R_gene_lengths = os.path.join(WD, 'signature_genes', 'gene_lengths.RDS'),
         clusters_dir = (directory(cluster_DIR))
     conda:
-       	"envs/signature_genes.yaml" 
+        "envs/signature_genes.yaml" 
     resources:
         cores = 1,
         mem_gb = 188,
@@ -83,6 +83,8 @@ rule prescreening_genes:
         gene_lengths = os.path.join(WD, 'signature_genes', 'gene_lengths.RDS')
     output:
         clusters_sorted = os.path.join(WD, 'signature_genes', 'clusters_sorted.RDS'),
+    params:
+        min_mapped_signature_genes = param_dict['min_mapped_signature_genes']
     conda:
         "envs/signature_genes.yaml"
     resources:

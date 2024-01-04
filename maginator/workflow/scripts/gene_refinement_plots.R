@@ -9,7 +9,7 @@ taxmat <- read.csv(snakemake@input[["tax_matrix"]], sep="\t", header=FALSE)
 
 # Initializing relevant parameters
 n_signature_genes_expected <- '95'
-minimum_sampels <- 3
+minimum_sampels <- as.integer(snakemake@params[["min_samples"]])
 n.genes <- 100
 
 #loading colors
