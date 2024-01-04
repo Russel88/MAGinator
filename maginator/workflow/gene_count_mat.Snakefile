@@ -40,7 +40,7 @@ rule gene_names:
     wildcard_constraints:
         sample=SAMPLES[0]
     conda:
-       	"envs/filter_geneclusters.yaml"
+        "envs/filter_geneclusters.yaml"
     resources:
         cores = 1,
         mem_gb = 20,
@@ -78,7 +78,7 @@ rule gene_count_matrix:
     output:
         os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
     conda:
-       	"envs/filter_geneclusters.yaml"
+        "envs/filter_geneclusters.yaml"
     resources:
         cores = 1,
         mem_gb = 188,

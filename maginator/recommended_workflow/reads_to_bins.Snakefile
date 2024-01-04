@@ -39,7 +39,7 @@ rule unzip:
         memory = 45,
         runtime = '1:00:00'
     shell:
-        "zcat {input.fastq1} > {output.unzip1}; zcat {input.fastq2} > {output.unzip2}"    
+        "zcat {input.fastq1} > {output.unzip1}; zcat {input.fastq2} > {output.unzip2}"
 
 # Removing adapters
 rule adapter_removal:
@@ -176,7 +176,7 @@ rule stats_fig:
     run:
         import numpy as np
         from matplotlib import pyplot as plt
-        
+
         a = np.loadtxt(input.stats, delimiter='\t')
         A = a[::, a[3,].argsort()[::-1]] # sorting the np array according to amount of reads in the sample
         reads_left = A[3]
@@ -229,7 +229,7 @@ rule contig_rename:
     input:
         "assembly/{sample}/contigs.fasta"
     output:
-        "assembly/{sample}/renamed_contigs.fasta"       	
+        "assembly/{sample}/renamed_contigs.fasta"
     resources:
         cores = 1,
         memory = 45,
@@ -305,8 +305,8 @@ rule map:
     input:
         index="assembly/all_assemblies",
         gene_cat="assembly/all_assemblies.fasta",
-	R1 = lambda wildcards: sample_dict[wildcards.sample][0],
-        R2 = lambda wildcards: sample_dict[wildcards.sample][1] 
+        R1 = lambda wildcards: sample_dict[wildcards.sample][0],
+        R2 = lambda wildcards: sample_dict[wildcards.sample][1]
     output:
         "mapped/{sample}.bam"
     params:
@@ -336,7 +336,7 @@ rule sort:
     resources:
         cores = 1,
         memory = 15,
-        runtime = '10:00:00:00'    
+        runtime = '10:00:00:00'
     params:
         prefix="mapped/tmp.{sample}"
     log:
@@ -373,7 +373,7 @@ rule cut_column1to3:
         runtime = '1:00:00:00'
     log:
         "log/jgi/column1to3"
-    shell: 
+    shell:
         "cut -f1-3 {input} > {output} 2>{log}"
 
 rule cut_column4to5:
@@ -387,7 +387,7 @@ rule cut_column4to5:
         runtime = '1:00:00:00'
     log:
         "log/jgi/{sample}.cut.log"
-    shell: 
+    shell:
         "cut -f1-3 --complement {input} > {output} 2>{log}"
 
 rule paste_abundances:
@@ -395,15 +395,15 @@ rule paste_abundances:
         column1to3="jgi/jgi.column1to3",
         data=expand("jgi/{sample}.cut.jgi", sample=SAMPLES)
     output:
-        "jgi_matrix/jgi.abundance.dat" 
+        "jgi_matrix/jgi.abundance.dat"
     resources:
         cores = 1,
         memory = 1,
         runtime = '1:00:00:00'
     log:
         "log/jgi/paste_abundances.log"
-    shell: 
-        "paste {input.column1to3} {input.data} > {output} 2>{log}" 
+    shell:
+        "paste {input.column1to3} {input.data} > {output} 2>{log}"
 
 
 rule vamb:
