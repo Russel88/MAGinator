@@ -20,7 +20,8 @@ snakemake@source(snakemake@params[["functions"]])
 n.genes <- 100
 
 #minimum number of mapped genes required
-n.mapped.minimum <- 3
+n.mapped.minimum <- as.integer(snakemake@params[["min_mapped_signature_genes"]])
+n.minimum.samples <- as.integer(snakemake@params[["min_samples"]])
 
 ids <- names(Clusterlist) #the ids of the MGS
 id <- tail(strsplit(strsplit(snakemake@input[["clusters_dir"]], ".RDS")[[1]], "/")[[1]], n=1)
@@ -59,12 +60,12 @@ run_one_id <- function(id){
 
   #colsum is the amount mapped genes in any given sample
   colsum <- colSums(Clusterlist[[id]][1:n.genes, ])
-  # extracting only the samples which contains above 3 mapped reads -- if there are 3 reads we believe this is a true detection
+  # extracting only the samples which contains above n.mapped.minimum mapped reads -- if there are above n.mapped.minimum reads we believe this is a true detection
   mapped <- colsum[colsum >= n.mapped.minimum]
   
   n_samples <- setNames(c(n_samples, sum(colsum>=n.mapped.minimum)), c(names(n_samples), id))
-  #if less than 3 samples are mapped to the MGS, the MGS should be skipped
-  if (length(mapped) < 3){
+  #if less than n.minimum.samples are mapped to the MGS, the MGS should be skipped
+  if (length(mapped) < n.minimum.samples){
 #    print("Not enough samples are mapped to the cluster")
     return()}
   genes <- names(Clusterlist[[id]][1:n.genes, 1])

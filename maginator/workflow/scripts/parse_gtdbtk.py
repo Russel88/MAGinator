@@ -37,14 +37,16 @@ for clust in os.listdir(snakemake.input[0]):
 
     # Try reading both bacterial and archaeal summaries.
     try:
-        tax_bac = pd.read_csv(os.path.join(snakemake.input[0], clust, 'gtdbtk.bac120.summary.tsv'), sep='\t', header=0)  
+        tax_bac = pd.read_csv(glob.glob(os.path.join(snakemake.input[0], clust, 'gtdbtk.bac*.summary.tsv'))[0], sep='\t', header=0)  
         if tax_bac.iloc[0,1]=='Unclassified':
             tax_bac=None
-    except FileNotFoundError:
+        elif tax_bac.iloc[0,1]=='Unclassified Bacteria':
+            tax_bac=None
+    except (IndexError, FileNotFoundError):
         tax_bac = None
     try: 
-        tax_ar = pd.read_csv(os.path.join(snakemake.input[0], clust, 'gtdbtk.ar122.summary.tsv'), sep='\t', header=0)  
-    except FileNotFoundError:
+        tax_ar = pd.read_csv(glob.glob(os.path.join(snakemake.input[0], clust, 'gtdbtk.ar*.summary.tsv'))[0], sep='\t', header=0)  
+    except (IndexError, FileNotFoundError):
         tax_ar = None
 
     # Combine
@@ -59,7 +61,7 @@ for clust in os.listdir(snakemake.input[0]):
         
         # Remove unclassified
         classification = [x for x in classification if len(x) == 7]
-       
+        
         # Traverse from species annotation and up
         # Pick the annotation if the most common annotation is above prevalence set by parameter
         level = 6
@@ -145,7 +147,7 @@ with open(snakemake.output[2], 'w') as wfh:
 # Collect all unique markers for phylogenetic analyses
 def unique_gtdb(domain, output):
     with open(output, 'w') as wfh:
-        for f in glob.glob(os.path.join(snakemake.input[0], '*', 'identify', 'gtdbtk.'+domain+'.markers_summary.tsv')):
+        for f in glob.glob(os.path.join(snakemake.input[0], '*', 'identify', 'gtdbtk.'+domain+'*.markers_summary.tsv')):
             with open(f, 'r') as rfh:
                 nl = 0
                 for ll in rfh:
@@ -154,5 +156,5 @@ def unique_gtdb(domain, output):
                         wfh.write(line[0]+'\t'+line[5]+'\n')
                     nl += 1
 
-unique_gtdb('bac120', snakemake.output[3])
-unique_gtdb('ar122', snakemake.output[4])
+unique_gtdb('bac', snakemake.output[3])
+unique_gtdb('ar', snakemake.output[4])

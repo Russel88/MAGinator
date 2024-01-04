@@ -30,7 +30,9 @@ rule refinement:
     conda:
         "envs/signature_genes.yaml"
     params:
-        functions = "Functions_v4.R"
+        functions = "Functions_v4.R",
+        min_mapped_signature_genes=param_dict['min_mapped_signature_genes'],
+        min_samples = param_dict['min_samples']
     resources:
         cores = 1,
         mem_gb = 12,
@@ -69,6 +71,8 @@ rule abundance_profile:
         physeq_abundance = os.path.join(WD, 'abundance', 'abundance_phyloseq.RData'),
         tax_matrix = os.path.join(WD, 'tabs', 'tax_matrix.tsv'),
         sg_cluster = os.path.join(WD, 'tabs', 'signature_genes_cluster.tsv')
+    params:
+        min_mapped_signature_genes=param_dict['min_mapped_signature_genes']
     conda:
         "envs/signature_genes.yaml"
     resources:
@@ -89,6 +93,8 @@ rule gene_refinement_plots:
         tax_matrix = os.path.join(WD, 'tabs', 'tax_matrix.tsv')
     output:
         plot_pdf = os.path.join(WD, 'signature_genes', 'read-count_detected-genes.pdf')
+    params:
+        min_samples=param_dict['min_samples']
     conda:
         "envs/signature_genes.yaml"
     resources:
