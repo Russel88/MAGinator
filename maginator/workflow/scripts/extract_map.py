@@ -2,7 +2,6 @@
 import os
 import pysam
 import sys
-import argparse
 import multiprocessing
 
 
@@ -34,16 +33,10 @@ def filter_bam_file(bam_file_path, threshold, output_file):
     bam_file.close()
     filtered_bam_file.close()
 
-# Parse command line arguments
-parser = argparse.ArgumentParser(description='Calculate mapped percentage for a BAM file and filter based on threshold.')
-parser.add_argument('bam_file_path', type=str, help='Path to the BAM file')
-parser.add_argument('threshold', type=float, help='Threshold for mapped percentage')
-parser.add_argument('output_file', type=str, help='Output file name')
-args = parser.parse_args()
 
 # Extract command line arguments
-bam_file_path = args.bam_file_path
-threshold = args.threshold
-output_file = args.output_file
+bam_file_path = snakemake.input[0]
+threshold = float(snakemake.params["min_map"])
+output_file = snakemake.output[0]
 
 filter_bam_file(bam_file_path, threshold, output_file)

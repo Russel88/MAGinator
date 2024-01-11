@@ -8,10 +8,9 @@ dependencies:
  - r-base=4.2.0
  - r-tidyverse=2.0.0
  - python=3.9
+ - pandas
  - pip:
-   - os
    - pysam
-   - sys
    - argparse
-   - multiprocessing
+   - futures
 

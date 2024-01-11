@@ -26,6 +26,8 @@ rule filter_bamfile:
         cores = 1,
         mem_gb = 20,
         runtime = 7200 #2h in s
+    params:
+        min_map = param_dict['min_map']
     script:
         "scripts/extract_map.py"  
 
@@ -47,16 +49,57 @@ rule gene_coverage:
 #Modifying the gene count matrix so genes that do not reach a threshold of mapped counts are set to 0  
 rule create_gene_count_matrix:
     input:
-        cov_files = expand(os.path.join(WD,'mapped_reads','coverage','{samples}.coverage'),samples=SAMPLES)         
+        cov_file = os.path.join(WD,'mapped_reads','coverage','{samples}.coverage')         
     output:
-        gene_matrix=os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
+        out_file = os.path.join(WD,'mapped_reads','coverage','{samples}_filtered.coverage')
+        gene_names = os.path.join(WD, 'mapped_reads', 'gene_names')
     conda:
         "envs/filter_geneclusters.yaml"
     params:
         min_reads = param_dict['min_cov'],
+            
     resources:
-        cores = 30,
-        mem_gb = 100,
-        runtime = 86400 #24h in s
+        cores = 1,
+        mem_gb = 20,  # Calculate the total size of input files in GB
+        runtime =  7200 #2h in s
     script: 
-        "scripts/gene_count_matrix.R"
+        "scripts/coverage_filter.py"
+
+# Create the header for the gene count matrix
+rule create_header:
+    input: 
+        expand(os.path.join(WD, 'mapped_reads', 'counts', '{sample}_filtered.counts'), sample=SAMPLES)
+    output:
+        header = os.path.join(WD, 'mapped_reads', 'header.txt')
+    resources:
+        cores = 1,
+        mem_gb = 188,
+        runtime = '3600' #1h in s
+    run:
+        header = "Gene"
+        for f in input:
+            sample_name = f.split("/")[-1].split(".")[0]
+            header = header + "\t" + sample_name
+        header = header + "\n"
+        with open(output.header, "w") as out:
+            out.write(header)
+
+
+
+
+#Combining the gene names with the counts of all samples
+rule gene_count_matrix:
+    input:
+        readcounts = expand(os.path.join(WD, 'mapped_reads', 'counts', '{sample}_filtered.counts'), sample=SAMPLES),
+        gene_names = os.path.join(WD, 'mapped_reads', 'gene_names'),
+        header = os.path.join(WD, 'mapped_reads', 'header.txt')
+    output:
+        os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
+    conda:
+        "envs/filter_geneclusters.yaml"
+    resources:
+        cores = 1,
+        mem_gb = 188,
+        runtime = '3600' #1h in s
+    shell:
+        "paste {input.gene_names} {input.readcounts} | cat {input.header} - > {output}; sed -i '$d' {output}"
