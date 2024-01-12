@@ -51,7 +51,7 @@ rule filter_coverage:
     input:
         cov_file = os.path.join(WD,'mapped_reads','coverage','{sample}.coverage')         
     output:
-        out_file = os.path.join(WD,'mapped_reads','counts','{sample}_filtered.counts'),
+        out_file = os.path.join(WD,'mapped_reads','counts','{sample}.filtered.counts'),
         names_file = os.path.join(WD,'mapped_reads','names','{sample}.gene_names')
     conda:
         "envs/filter_geneclusters.yaml"
@@ -83,7 +83,7 @@ rule clear_gene_names:
 # Create the header for the gene count matrix
 rule create_header:
     input: 
-        expand(os.path.join(WD, 'mapped_reads', 'counts', '{sample}_filtered.counts'), sample=SAMPLES)
+        expand(os.path.join(WD, 'mapped_reads', 'counts', '{sample}.filtered.counts'), sample=SAMPLES)
     output:
         header = os.path.join(WD, 'mapped_reads', 'header.txt')
     resources:
@@ -102,7 +102,7 @@ rule create_header:
 #Combining the gene names with the counts of all samples
 rule gene_count_matrix:
     input:
-        readcounts = expand(os.path.join(WD, 'mapped_reads', 'counts', '{sample}_filtered.counts'), sample=SAMPLES),
+        readcounts = expand(os.path.join(WD, 'mapped_reads', 'counts', '{sample}.filtered.counts'), sample=SAMPLES),
         gene_names = expand(os.path.join(WD, 'mapped_reads', 'gene_names_{sample}'), sample=SAMPLES[0]),
         header = os.path.join(WD, 'mapped_reads', 'header.txt')
     output:
