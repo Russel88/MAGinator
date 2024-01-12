@@ -17,9 +17,9 @@ rule all:
 
 rule filter_bamfile:
     input:
-        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{samples}.bam'),
+        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}.bam'),
     output:
-        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{samples}_filtered.bam')
+        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}_filtered.bam')
     conda:
         "envs/filter_geneclusters.yaml"
     resources:
@@ -34,9 +34,9 @@ rule filter_bamfile:
 # Use samtools to count the genes for each sample
 rule gene_coverage:
     input:
-        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{samples}_filtered.bam'),
+        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}_filtered.bam'),
     output:
-        os.path.join(WD,'mapped_reads','coverage','{samples}.coverage')
+        os.path.join(WD,'mapped_reads','coverage','{sample}.coverage')
     conda:
         "envs/filter_geneclusters.yaml"
     resources:
@@ -46,13 +46,13 @@ rule gene_coverage:
     shell:
         "samtools coverage {input} > {output}"
 
-#Modifying the gene count matrix so genes that do not reach a threshold of mapped counts are set to 0  
-rule create_gene_count_matrix:
+#Modifying the gene count matrix so genes that do not reach a threshold of mapped counts are set to 0   (Find a way to include the gene name as output)
+rule filter_coverage:
     input:
-        cov_file = os.path.join(WD,'mapped_reads','coverage','{samples}.coverage')         
+        cov_file = os.path.join(WD,'mapped_reads','coverage','{sample}.coverage')         
     output:
-        out_file = os.path.join(WD,'mapped_reads','coverage','{samples}_filtered.coverage')
-        gene_names = os.path.join(WD, 'mapped_reads', 'gene_names')
+        out_file = os.path.join(WD,'mapped_reads','counts','{sample}_filtered.counts'),
+        names_file = os.path.join(WD,'mapped_reads','names','{sample}.gene_names')
     conda:
         "envs/filter_geneclusters.yaml"
     params:
@@ -65,6 +65,21 @@ rule create_gene_count_matrix:
     script: 
         "scripts/coverage_filter.py"
 
+# Get only the names from one file, and find a way to safely delete the rest (they are the same)
+rule clear_gene_names:
+    input:
+        os.path.join(WD, 'mapped_reads', 'names', '{sample}.gene_names')
+    output:
+        os.path.join(WD, 'mapped_reads', 'gene_names_{sample}')
+    wildcard_constraints:
+        sample=SAMPLES[0]
+    resources:
+        cores = 1,
+        mem_gb = 5,
+        runtime = '3600' #1h in s
+    shell:
+        "mv {input} {output}"
+
 # Create the header for the gene count matrix
 rule create_header:
     input: 
@@ -73,7 +88,7 @@ rule create_header:
         header = os.path.join(WD, 'mapped_reads', 'header.txt')
     resources:
         cores = 1,
-        mem_gb = 188,
+        mem_gb = 20,
         runtime = '3600' #1h in s
     run:
         header = "Gene"
@@ -84,14 +99,11 @@ rule create_header:
         with open(output.header, "w") as out:
             out.write(header)
 
-
-
-
 #Combining the gene names with the counts of all samples
 rule gene_count_matrix:
     input:
         readcounts = expand(os.path.join(WD, 'mapped_reads', 'counts', '{sample}_filtered.counts'), sample=SAMPLES),
-        gene_names = os.path.join(WD, 'mapped_reads', 'gene_names'),
+        gene_names = expand(os.path.join(WD, 'mapped_reads', 'gene_names_{sample}'), sample=SAMPLES[0]),
         header = os.path.join(WD, 'mapped_reads', 'header.txt')
     output:
         os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')

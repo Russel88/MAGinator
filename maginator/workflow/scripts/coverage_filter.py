@@ -6,7 +6,7 @@ import os
 cov_thr = int(snakemake.params['min_reads'])
 in_file = snakemake.input['cov_file']
 out_file = snakemake.output['out_file']
-name_file = snakemake.output['gene_names']
+name_file = snakemake.output['names_file']
 
 # Read the file into a data frame
 df = pd.read_csv(in_file, sep='\t', header=0, dtype=str)
