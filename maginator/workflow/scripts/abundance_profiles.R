@@ -12,6 +12,7 @@ screened_clusters <- do.call("rbind", lapply(sg_files, readRDS))
 #load(snakemake@input[["MGS_object"]]) # contain the SGs of the Clusters
 Clusterlist <- readRDS(snakemake@input[["R_clusters"]]) # read count mat ofclusters
 taxonomy <- read.csv(snakemake@input[["annotation"]], header=FALSE, sep="\t") # the taxonomy 
+stat <- snakemake@params[["stat"]] # the statistic used to calculate the abundance
 colnames(taxonomy) <- c("Cluster","Taxonomy")
 
 
@@ -85,7 +86,17 @@ for (id in names(Clusterlist)){
   # Maybe introduce some filtering here based on the normalized readcounts per gene?
 
   # summing the read counts for the id/cluster/MGS
-  final.read.matrix[, id] <- colSums(final.reads)
+  if (stat == "sum"){
+    abundance <- colSums(Clusterlist[[id]][final.gene.names, ])
+  } else if (stat == "t_avg"){ # Obtain the truncated average of the read counts
+    # Calculate truncated mean for each column
+    abundance <- apply(Clusterlist[[id]][final.gene.names, ], 2, function(x) {
+      quantiles <- quantile(x, probs = c(0.25, 0.5, 0.75))
+      middle_quantiles <- quantiles[2]
+      mean(x[x >= quantiles[1] & x <= quantiles[3]])
+    })
+  }
+  final.read.matrix[, id] <- abundance
   if (length(final.gene.names)>0){
   if (length(final.gene.names)!=n.genes){
   final.gene.names<-c(final.gene.names, rep("NA", (100-length(final.gene.names))))}

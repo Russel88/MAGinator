@@ -73,6 +73,7 @@ def cli():
     app.add_argument('--min_cov', help='Minimum percentage of coverage that a gene must have to be counted as present[%(default)s]', default=0, type=int)
     app.add_argument('--min_SG_genes', help='Minimum number of signature genes for a bin to be included [%(default)s]', default=3, type=int)
     app.add_argument('--n_signature_genes',help='Number of signature genes used for the abundance matrix [%(default)s]', default=100, type=int)
+    app.add_argument('--stat', help='Method employed to calculate the absolute abundances [%(default)s]', default='sum', type=str, choices=['sum', 't_avg'])
     app.add_argument('--min_gtdb_markers', help='Minimum GTDBtk marker genes shared between MGS and outgroup for rooting trees [%(default)s]', default=10, type=int)
     app.add_argument('--marker_gene_cluster_prevalence', help='Minimum prevalence of marker genes to be selected for rooting of MGS trees [%(default)s]', default=0.5, type=float)
     app.add_argument('--min_af', help='Minimim allele frequency for calling a base when creating phylogenies [%(default)s]', default=0.8, type=float)
