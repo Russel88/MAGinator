@@ -29,12 +29,7 @@ rule filter_bamfile:
     params:
         min_map = param_dict['min_map']
     script:
-        "scripts/extract_map.py"
-    run:
-        if params.min_map != 0:
-            shell("python {script} --input {input} --output {output} --min_map {params.min_map}")
-        else:
-            shell("touch {output}")  # Create an empty file if min_map is 0
+        "scripts/extract_map.py"  
 
 # Use samtools to count the genes for each sample
 rule gene_coverage:
@@ -48,11 +43,8 @@ rule gene_coverage:
         cores = 1,
         mem_gb = 20,
         runtime = 7200 #2h in s
-    run:
-        if param_dict['min_map'] != 0:
-            shell("samtools coverage {input} > {output}")
-        else:
-            shell("file=$(echo {input} | sed 's/_filtered//g'); samtools coverage $file > {output}")")
+    shell:
+        "samtools coverage {input} > {output}"
 
 #Modifying the gene count matrix so genes that do not reach a threshold of mapped counts are set to 0   (Find a way to include the gene name as output)
 rule filter_coverage:
