@@ -89,11 +89,16 @@ for (id in names(Clusterlist)){
   if (stat == "sum"){
     abundance <- colSums(Clusterlist[[id]][final.gene.names, ])
   } else if (stat == "t_avg"){ # Obtain the truncated average of the read counts
+    
     # Calculate truncated mean for each column
     abundance <- apply(Clusterlist[[id]][final.gene.names, ], 2, function(x) {
-      quantiles <- quantile(x, probs = c(0.25, 0.5, 0.75))
-      middle_quantiles <- quantiles[2]
-      mean(x[x >= quantiles[1] & x <= quantiles[3]])
+      if (all(x == 0)) { # If all values are 0, the truncated mean would return NaN
+        return(0)
+      } else {
+        quantiles <- quantile(x, probs = c(0.25, 0.5, 0.75))
+        middle_quantiles <- quantiles[2]
+        return(mean(x[x >= quantiles[1] & x <= quantiles[3]]))
+      }
     })
   }
   final.read.matrix[, id] <- abundance
