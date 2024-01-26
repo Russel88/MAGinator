@@ -88,7 +88,7 @@ def cli():
     app.add_argument('--synteny_mcl_inflation', help='Inflation parameter for mcl clustering of synteny graph. Usually between 1.2 and 5. Higher values produce smaller clusters [%(default)s]', default=5, type=float)
     
     ## Benchmarking
-    app.add_argument('--map_filter', help='Type of mapped reads filter [%(default)s]', default='mine', type=str)
+    app.add_argument('--map_filter', help='Type of mapped reads filter [%(default)s]', default='pablo', type=str)
     app.add_argument('--benchmark',help='Run MAGinator in benchmarking mode',action='store_true')
     ########## Workflow ##########
     master = Controller(ap)

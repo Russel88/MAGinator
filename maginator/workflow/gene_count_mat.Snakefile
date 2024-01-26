@@ -16,23 +16,42 @@ rule all:
     input:
         os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
 
-rule filter_bamfile:
-    input:
-        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}.bam'),
-    output:
-        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}_filtered.bam')
-    conda:
-        "envs/filter_geneclusters.yaml"
-    resources:
-        cores = 1,
-        mem_gb = 20,
-        runtime = 7200 #2h in s
-    params:
-        min_map = param_dict['min_map'],
-        min_cov = param_dict['min_cov'],
-        benchmark = param_dict['benchmark']
-    script:
-        "scripts/extract_map.py"  
+if param_dict['map_filter'] == 'pablo':
+    rule filter_bamfile:
+        input:
+            os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}.bam'),
+        output:
+            os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}_filtered.bam')
+        conda:
+            "envs/filter_geneclusters.yaml"
+        resources:
+            cores = 1,
+            mem_gb = 20,
+            runtime = 7200 #2h in s
+        params:
+            min_map = param_dict['min_map'],
+            min_cov = param_dict['min_cov'],
+            benchmark = param_dict['benchmark'],
+        script:
+            "scripts/extract_map.py"
+
+else:
+    rule filter_bamfile_shiraz:
+        input:
+            os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}.bam'),
+        output:
+            os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}_filtered.bam')
+        conda:
+            "envs/filter_geneclusters.yaml"
+        resources:
+            cores = 1,
+            mem_gb = 20,
+            runtime = 7200 #2h in s
+        shell:
+            """
+            msamtools filter -b -l 80 -p 95 -z 80 {input} > {filtered}
+            """  
+
 
 # Use samtools to count the genes for each sample
 rule gene_coverage:
@@ -61,7 +80,8 @@ rule filter_coverage:
     params:
         min_reads = param_dict['min_cov'],
         min_map = param_dict['min_map'],
-        benchmark = param_dict['benchmark']
+        benchmark = param_dict['benchmark'],
+        map_filter = param_dict['map_filter']
     resources:
         cores = 1,
         mem_gb = 20,  # Calculate the total size of input files in GB
