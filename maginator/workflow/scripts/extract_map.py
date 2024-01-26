@@ -3,7 +3,7 @@ import os
 import pysam
 import sys
 import multiprocessing
-
+import pandas as pd
 
 # Define a determine if the read is over the percentage of mapped bases
 def calculate_mapped_percentage(read, threshold):
@@ -23,20 +23,39 @@ def filter_bam_file(bam_file_path, threshold, output_file):
     filtered_bam_file = pysam.AlignmentFile(output_file, "wb", header=bam_file.header)
 
     # Iterate over each read in the input BAM file
+    count = 0
     for read in bam_file:
         # Check if the read passes the mapped percentage threshold
         if calculate_mapped_percentage(read, threshold):
             # Write the read to the filtered BAM file
             filtered_bam_file.write(read)
-
+        else:
+            count += 1
     # Close the input and output BAM files
     bam_file.close()
     filtered_bam_file.close()
+    return count
 
 
 # Extract command line arguments
 bam_file_path = snakemake.input[0]
-threshold = float(snakemake.params["min_map"])
+threshold= float(snakemake.params["min_map"])
+cov_thr = snakemake.params["min_cov"] + "cov"
 output_file = snakemake.output[0]
+benchmark = snakemake.params["benchmark"] == "True"
 
-filter_bam_file(bam_file_path, threshold, output_file)
+lost = filter_bam_file(bam_file_path, threshold, output_file)
+
+if benchmark:
+# Open a predetermined file for writing the output
+    count_file = "map_deleted_reads.tsv"
+    map_thr = str(threshold) + "map"
+    sample_name = os.path.basename(bam_file_path).split(".")[0].split("_")[2]
+
+
+    # Open the count file as a pandas data frame
+    count_df = pd.read_csv(count_file, sep='\t')
+    # Save the value of 'lost' in the column corresponding to the threshold and the row corresponding to the sample name
+    count_df.loc[map_thr+"_"+cov_thr, sample_name] = lost
+    # Save the modified data frame back to the count file
+    count_df.to_csv(count_file, sep='\t', index=False)

@@ -11,6 +11,7 @@ param_dict = {x[0]: x[1] for x in fl}
 with open(param_dict['reads']) as f:
     SAMPLES = ([row.split(',')[0] for row in f])
 
+
 rule all:
     input:
         os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
@@ -27,7 +28,9 @@ rule filter_bamfile:
         mem_gb = 20,
         runtime = 7200 #2h in s
     params:
-        min_map = param_dict['min_map']
+        min_map = param_dict['min_map'],
+        min_cov = param_dict['min_cov'],
+        benchmark = param_dict['benchmark']
     script:
         "scripts/extract_map.py"  
 
@@ -57,7 +60,8 @@ rule filter_coverage:
         "envs/filter_geneclusters.yaml"
     params:
         min_reads = param_dict['min_cov'],
-            
+        min_map = param_dict['min_map'],
+        benchmark = param_dict['benchmark']
     resources:
         cores = 1,
         mem_gb = 20,  # Calculate the total size of input files in GB
