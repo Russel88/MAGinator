@@ -85,7 +85,9 @@ def cli():
     app.add_argument('--tax_scope_threshold', help='Threshold for assigning the taxonomic scope of a gene cluster [%(default)s]', default=0.9, type=float)
     app.add_argument('--synteny_adj_cutoff', help='Minimum number of times gene clusters should be adjacent to be included in synteny graph [%(default)s]', default=1, type=int)
     app.add_argument('--synteny_mcl_inflation', help='Inflation parameter for mcl clustering of synteny graph. Usually between 1.2 and 5. Higher values produce smaller clusters [%(default)s]', default=5, type=float)
-
+    
+    ## Benchmarking
+    app.add_argument('--map_filter', help='Type of mapped reads filter [%(default)s]', default='mine', type=str)
     ########## Workflow ##########
     master = Controller(ap)
     

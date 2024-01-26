@@ -8,6 +8,7 @@ dependencies:
  - r-base=4.2.0
  - r-tidyverse=2.0.0
  - python=3.9
+ - msamtools
  - pandas
  - pip:
    - pysam
