@@ -7,6 +7,8 @@ cov_thr = int(snakemake.params['min_reads'])
 in_file = snakemake.input['cov_file']
 out_file = snakemake.output['out_file']
 name_file = snakemake.output['names_file']
+benchmark = snakemake.params['benchmark'] == "True"
+map_thr = snakemake.params['min_map'] + "map"
 
 # Read the file into a data frame
 df = pd.read_csv(in_file, sep='\t', header=0, dtype=str)
@@ -23,3 +25,21 @@ count_df = df.sort_values('#rname')[["#rname", "count"]]
 # Save the count dataframe to a tab-separated file
 count_df[["count"]].to_csv(out_file, sep='\t', index=False,header=False)
 count_df[["#rname"]].to_csv(name_file, sep='\t', index=False,header=False)
+
+
+if benchmark:
+    # Count the number of genes that are over the threshold
+    num_genes = df[df['coverage'].astype(float) > int(cov_thr)]['coverage'].count()
+    sample_name = os.path.basename(in_file).split(".")[0]
+    count_file = "trial/maginator_readcov/cov_pass_genes.tsv"
+
+    try: 
+        # Open a predetermined file for writing the output
+        res_df = pd.read_csv(count_file, sep='\t',header=0,index_col=0)
+    except FileNotFoundError:
+        # Create an empty pandas data frame, with an index named "Sample"
+        res_df = pd.DataFrame()
+    # Save the value of 'lost' in the column corresponding to the threshold and the row corresponding to the sample name
+    res_df.loc[sample_name, map_thr + "_" + str(cov_thr) + "cov"] = num_genes
+    # Save the modified data frame back to the count file
+    res_df.to_csv(count_file, sep='\t', index=True)

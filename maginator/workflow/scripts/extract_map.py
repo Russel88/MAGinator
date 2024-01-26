@@ -37,6 +37,7 @@ def filter_bam_file(bam_file_path, threshold, output_file):
     return count
 
 
+
 # Extract command line arguments
 bam_file_path = snakemake.input[0]
 threshold= float(snakemake.params["min_map"])
@@ -52,10 +53,13 @@ if benchmark:
     map_thr = str(threshold) + "map"
     sample_name = os.path.basename(bam_file_path).split(".")[0].split("_")[2]
 
-
-    # Open the count file as a pandas data frame
-    count_df = pd.read_csv(count_file, sep='\t')
+    try:
+        # Open the count file as a pandas data frame
+        count_df = pd.read_csv(count_file, sep='\t',header=0,index_col=0)
+    except FileNotFoundError:
+        # Create an empty pandas data frame, with an index named "Sample"
+        count_df = pd.DataFrame()
     # Save the value of 'lost' in the column corresponding to the threshold and the row corresponding to the sample name
-    count_df.loc[map_thr+"_"+cov_thr, sample_name] = lost
+    count_df.loc[sample_name, map_thr + "_" + cov_thr] = lost
     # Save the modified data frame back to the count file
-    count_df.to_csv(count_file, sep='\t', index=False)
+    count_df.to_csv(count_file, sep='\t', index=True)    
