@@ -13,6 +13,7 @@ screened_clusters <- do.call("rbind", lapply(sg_files, readRDS))
 Clusterlist <- readRDS(snakemake@input[["R_clusters"]]) # read count mat ofclusters
 taxonomy <- read.csv(snakemake@input[["annotation"]], header=FALSE, sep="\t") # the taxonomy 
 stat <- snakemake@params[["stat"]] # the statistic used to calculate the abundance
+pctg <- as.float(snakemake@params[["percentage"]])/100 # percentage of the SG distribution that will be left out to calculate abundances
 colnames(taxonomy) <- c("Cluster","Taxonomy")
 
 
@@ -95,11 +96,21 @@ for (id in names(Clusterlist)){
       if (all(x == 0)) { # If all values are 0, the truncated mean would return NaN
         return(0)
       } else {
-        quantiles <- quantile(x, probs = c(0.25, 0.5, 0.75))
-        middle_quantiles <- quantiles[2]
-        return(mean(x[x >= quantiles[1] & x <= quantiles[3]]))
+       quantiles <- quantile(x, probs = c(pctg, 1-pctg))
+        return(mean(x[x > quantiles[1] & x < quantiles[2]])) # Should it be also equal??
       }
     })
+  } else if (stat == "low_avg"){ #One tailed truncated mean (only truncated in the top X genes)
+    # Calculate truncated mean for each column
+    abundance <- apply(Clusterlist[[id]][final.gene.names, ], 2, function(x) {
+      if (all(x == 0)) { # If all values are 0, the truncated mean would return NaN
+        return(0)
+      } else {
+        quantiles <- quantile(x, probs = c(1-pctg))  # Should it be also equal??
+        return(mean(x[x < quantiles]))
+      }
+    })
+
   }
   final.read.matrix[, id] <- abundance
   if (length(final.gene.names)>0){
