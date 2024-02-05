@@ -16,6 +16,7 @@ rule all:
     input:
         os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
 
+print(param_dict['map_filter'])
 if param_dict['map_filter'] == 'pablo':
     rule filter_bamfile:
         input:
@@ -49,7 +50,7 @@ else:
             runtime = 7200 #2h in s
         shell:
             """
-            msamtools filter -b -l 80 -p 95 -z 80 {input} > {filtered}
+            msamtools filter -b -l 80 -p 95 -z 80 {input} > {output}
             """  
 
 

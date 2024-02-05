@@ -1,8 +1,6 @@
 # Import necessary modules
 import os
 import pysam
-import sys
-import multiprocessing
 import pandas as pd
 
 # Define a determine if the read is over the percentage of mapped bases
@@ -50,16 +48,25 @@ lost = filter_bam_file(bam_file_path, threshold, output_file)
 if benchmark:
 # Open a predetermined file for writing the output
     count_file = "map_deleted_reads.tsv"
-    map_thr = str(threshold) + "map"
+    map_thr = str(int(threshold)) + "map"
     sample_name = os.path.basename(bam_file_path).split(".")[0].split("_")[2]
-
+    count = 0
+    # while True:
     try:
         # Open the count file as a pandas data frame
         count_df = pd.read_csv(count_file, sep='\t',header=0,index_col=0)
     except FileNotFoundError:
         # Create an empty pandas data frame, with an index named "Sample"
         count_df = pd.DataFrame()
+        # except pd.errors.EmptyDataError:
+        #     time.sleep(random.randint(1, 10) / 10)
+        #     print("Waiting for the file to be released")
+        #     count = count + 1
+        #     if count == 5:
+        #         raise Exception("The file is locked for more than 5 iterations, please check the pipeline")
+        #     else:
+        #         continue
     # Save the value of 'lost' in the column corresponding to the threshold and the row corresponding to the sample name
-    count_df.loc[sample_name, map_thr + "_" + cov_thr] = lost
+    count_df.loc[sample_name, map_thr + "_" + cov_thr] = int(lost)
     # Save the modified data frame back to the count file
     count_df.to_csv(count_file, sep='\t', index=True)    

@@ -79,7 +79,7 @@ rule abundance_profile:
         n_genes = param_dict['n_signature_genes'],
         min_genes = param_dict['min_SG_genes'],
         stat = param_dict['stat'],
-        percentage = param_dict['percentage'],
+        percentage = param_dict['tail_percentage'],
     resources:
         cores = 1,
         mem_gb = 80,
