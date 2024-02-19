@@ -28,6 +28,7 @@ WORKFLOW_PILEUP_PARSE = os.path.join(_ROOT, 'workflow', 'pileup_parse.Snakefile'
 WORKFLOW_ALIGNMENT = os.path.join(_ROOT, 'workflow', 'alignment.Snakefile')
 WORKFLOW_PHYLO = os.path.join(_ROOT, 'workflow', 'phylo.Snakefile')
 WORKFLOW_GENE_TAX = os.path.join(_ROOT, 'workflow', 'gene_tax.Snakefile')
+WORKFLOW_BENCHMARK = os.path.join(_ROOT, 'workflow', 'benchmark.Snakefile')
 
 def cli():
     
@@ -69,8 +70,9 @@ def cli():
     app.add_argument('--clustering_coverage', help='Alignment coverage for clustering of genes with MMseqs2 [%(default)s]', default=0.8, type=float)
     app.add_argument('--clustering_min_seq_id', help='Sequence identity threshold for clustering of genes with MMseqs2 [%(default)s]', default=0.95, type=float)
     app.add_argument('--clustering_type', help='Sequence type for gene clustering with MMseqs2. Nucleotide- or protein-level [%(default)s]', default='protein', type=str, choices=['nucleotide', 'protein'])
-    app.add_argument('--min_map', help='Minimum percentage of mapped bases for a read to be included [%(default)s]', default=0, type=float)
-    app.add_argument('--min_cov', help='Minimum percentage of coverage that a gene must have to be counted as present[%(default)s]', default=0, type=int)
+    app.add_argument('--min_length',help='Minimum number of aligned basepairs of a read to be included [%(default)s]', default=80, type=int)
+    app.add_argument('--min_identity',help='Minimum percentage of identity for a read to be included [%(default)s]', default=95, type=int)	
+    app.add_argument('--min_map', help='Minimum percentage of mapped bases for a read to be included [%(default)s]', default=80, type=int)
     app.add_argument('--min_SG_genes', help='Minimum number of signature genes for a bin to be included [%(default)s]', default=3, type=int)
     app.add_argument('--n_signature_genes',help='Number of signature genes used for the abundance matrix [%(default)s]', default=100, type=int)
     app.add_argument('--stat', help='Method employed to calculate the absolute abundances [%(default)s]', default='sum', type=str, choices=['sum', 't_avg','low_avg'])
@@ -88,7 +90,6 @@ def cli():
     app.add_argument('--synteny_mcl_inflation', help='Inflation parameter for mcl clustering of synteny graph. Usually between 1.2 and 5. Higher values produce smaller clusters [%(default)s]', default=5, type=float)
     
     ## Benchmarking
-    app.add_argument('--map_filter', help='Type of mapped reads filter [%(default)s]', default='pablo', type=str)
     app.add_argument('--benchmark',help='Run MAGinator in benchmarking mode',action='store_true')
     ########## Workflow ##########
     master = Controller(ap)
@@ -148,6 +149,10 @@ def cli():
             wf.run(snakefile=WORKFLOW_GENE_TAX)
             logging.info('MAGinator has finished inferring the cluster phylogenias and gene syntenies successfully.')
 
+        # In case benchmarking is selected
+        if master.benchmark:
+            wf.run(snakefile=BENCHMARKING)
+            logging.info('Benchmarking mode selected. MAGinator has finished successfully.')
 
 if __name__ == '__main__':
     cli()
