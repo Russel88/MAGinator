@@ -80,6 +80,8 @@ rule abundance_profile:
     params:
         n_genes = param_dict['n_signature_genes'],
         min_genes = param_dict['min_SG_genes'],
+        stat = param_dict['stat'],
+        percentage = param_dict['tail_percentage'],
     resources:
         cores = 1,
         mem_gb = 80,
@@ -106,5 +108,10 @@ rule gene_refinement_plots:
         cores = 1,
         mem_gb = 80,
         runtime = 43200 #12h in s
+    params:
+        stat=param_dict['stat'],
+        min_map = param_dict['min_map'],
+        min_cov = param_dict['min_cov'],
+        map_filter = param_dict['map_filter'],
     script:
         "scripts/gene_refinement_plots.R"

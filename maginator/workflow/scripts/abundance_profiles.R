@@ -12,6 +12,8 @@ screened_clusters <- do.call("rbind", lapply(sg_files, readRDS))
 #load(snakemake@input[["MGS_object"]]) # contain the SGs of the Clusters
 Clusterlist <- readRDS(snakemake@input[["R_clusters"]]) # read count mat ofclusters
 taxonomy <- read.csv(snakemake@input[["annotation"]], header=FALSE, sep="\t") # the taxonomy 
+stat <- snakemake@params[["stat"]] # the statistic used to calculate the abundance
+pctg <- as.integer(snakemake@params[["percentage"]])/100 # percentage of the SG distribution that will be left out to calculate abundances
 colnames(taxonomy) <- c("Cluster","Taxonomy")
 
 
@@ -85,12 +87,38 @@ for (id in names(Clusterlist)){
   # Maybe introduce some filtering here based on the normalized readcounts per gene?
 
   # summing the read counts for the id/cluster/MGS
-  final.read.matrix[, id] <- colSums(final.reads)
+  if (stat == "sum"){
+    abundance <- colSums(Clusterlist[[id]][final.gene.names, ])
+  } else if (stat == "t_avg"){ # Obtain the truncated average of the read counts
+    # Calculate truncated mean for each column
+    abundance <- apply(Clusterlist[[id]][final.gene.names, ], 2, function(x) {
+      if (all(x == 0)) { # If all values are 0, the truncated mean would return NaN
+        return(0)
+      } else {
+       quantiles <- quantile(x, probs = c(pctg, 1-pctg))
+        return(mean(x[x >= quantiles[1] & x <= quantiles[2]])) # Should it be also equal??
+      }
+    })
+  } else if (stat == "low_avg"){ #One tailed truncated mean (only truncated in the top X genes)
+    # Calculate truncated mean for each column
+    abundance <- apply(Clusterlist[[id]][final.gene.names, ], 2, function(x) {
+      if (all(x == 0)) { # If all values are 0, the truncated mean would return NaN
+        return(0)
+      } else {
+        quantiles <- quantile(x, probs = c(1-pctg))  # Should it be also equal??
+        return(mean(x[x <= quantiles]))
+      }
+    })
+
+  }
+  final.read.matrix[, id] <- abundance
   if (length(final.gene.names)>0){
   if (length(final.gene.names)!=n.genes){
   final.gene.names<-c(final.gene.names, rep("NA", (100-length(final.gene.names))))}
   sg_cluster[sg_cluster[,2]==id] <- matrix(c(final.gene.names, rep(id, length(final.gene.names))), ncol=2)
 }}
+
+write.csv(final.read.matrix,"Absolute_counts.tsv",sep="\t")
 
 final.abundance <- final.read.matrix/rowSums(final.read.matrix)
 
