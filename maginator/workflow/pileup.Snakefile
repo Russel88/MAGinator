@@ -36,7 +36,7 @@ rule pileup:
     output:
         os.path.join(WD, 'phylo', 'pileup', '{sample}.mp')
     conda:
-       	"envs/phylo.yaml"
+        "envs/phylo.yaml"
     resources:
         cores = 1,
         mem_gb = 20,

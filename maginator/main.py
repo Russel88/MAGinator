@@ -74,6 +74,10 @@ def cli():
     app.add_argument('--n_signature_genes',help='Number of signature genes used for the abundance matrix [%(default)s]', default=100, type=int)
     app.add_argument('--min_gtdb_markers', help='Minimum GTDBtk marker genes shared between MGS and outgroup for rooting trees [%(default)s]', default=10, type=int)
     app.add_argument('--marker_gene_cluster_prevalence', help='Minimum prevalence of marker genes to be selected for rooting of MGS trees [%(default)s]', default=0.5, type=float)
+
+    app.add_argument('--min_mapped_signature_genes', help='Minimum number of signature genes with reads mapped for the sample to be included in the refinement [%(default)s]', default=3, type=int)
+    app.add_argument('--min_samples', help='Minimum number of samples containing the MAG cluster (more than "min_mapped_signature_genes" present) for the MAG cluster to identidy SG [%(default)s]', default=3, type=int)
+
     app.add_argument('--min_af', help='Minimim allele frequency for calling a base when creating phylogenies [%(default)s]', default=0.8, type=float)
     app.add_argument('--min_depth', help='Minimim read depth for calling a base when creating phylogenies [%(default)s]', default=2, type=int)
     app.add_argument('--min_nonN', help='Minimum fraction of non-N characters of a sample to be included in a phylogeny [%(default)s]', default=0.5, type=float)

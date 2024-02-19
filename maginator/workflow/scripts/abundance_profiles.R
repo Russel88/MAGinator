@@ -18,8 +18,8 @@ colnames(taxonomy) <- c("Cluster","Taxonomy")
 #setting important variables
 gene_index <- seq(1,length(GeneLengths))
 gene_names <- names(GeneLengths)
-n.mapped.minimum <- as.integer(snakemake@params[["min_genes"]]) #The number of genes that needs reads that map to count the cluster as present
-n.genes <- as.integer(snakemake@params[["n_genes"]]) # number of signature genes
+n.mapped.minimum <- as.integer(snakemake@params[["min_mapped_signature_genes"]]) #The number of genes that needs reads that map to count the cluster as present
+n.genes <- 100 # number of signature genes
 
 # inserting NA for the Clusters that do not have a annotation
 taxmat <- matrix("NA", nrow = length(names(Clusterlist)), ncol = 7)

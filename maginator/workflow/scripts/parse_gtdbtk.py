@@ -40,12 +40,13 @@ for clust in os.listdir(snakemake.input[0]):
         tax_bac = pd.read_csv(glob.glob(os.path.join(snakemake.input[0], clust, 'gtdbtk.bac*.summary.tsv'))[0], sep='\t', header=0)  
         if tax_bac.iloc[0,1]=='Unclassified':
             tax_bac=None
+        elif tax_bac.iloc[0,1]=='Unclassified Bacteria':
+            tax_bac=None
     except (IndexError, FileNotFoundError):
         tax_bac = None
     try: 
-        # Include a regex in the filename that detects anything that is gtdbtk.ar\\d+.summary.tsv
         tax_ar = pd.read_csv(glob.glob(os.path.join(snakemake.input[0], clust, 'gtdbtk.ar*.summary.tsv'))[0], sep='\t', header=0)  
-    except (FileNotFoundError,IndexError):
+    except (IndexError, FileNotFoundError):
         tax_ar = None
 
     # Combine
@@ -60,7 +61,7 @@ for clust in os.listdir(snakemake.input[0]):
         
         # Remove unclassified
         classification = [x for x in classification if len(x) == 7]
-       
+        
         # Traverse from species annotation and up
         # Pick the annotation if the most common annotation is above prevalence set by parameter
         level = 6
@@ -155,6 +156,5 @@ def unique_gtdb(domain, output):
                         wfh.write(line[0]+'\t'+line[5]+'\n')
                     nl += 1
 
-# Changed so no matter what version of GTDB-tk is used, the output is the same
 unique_gtdb('bac', snakemake.output[3])
 unique_gtdb('ar', snakemake.output[4])
