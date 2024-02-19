@@ -118,6 +118,8 @@ for (id in names(Clusterlist)){
   sg_cluster[sg_cluster[,2]==id] <- matrix(c(final.gene.names, rep(id, length(final.gene.names))), ncol=2)
 }}
 
+write.csv(final.read.matrix,"Absolute_counts.tsv",sep="\t")
+
 final.abundance <- final.read.matrix/rowSums(final.read.matrix)
 
 final.otu.table <- otu_table(final.abundance, taxa_are_rows = FALSE)
