@@ -16,12 +16,11 @@ stat <- snakemake@params[["stat"]] # the statistic used to calculate the abundan
 pctg <- as.integer(snakemake@params[["percentage"]])/100 # percentage of the SG distribution that will be left out to calculate abundances
 colnames(taxonomy) <- c("Cluster","Taxonomy")
 
-
 #setting important variables
 gene_index <- seq(1,length(GeneLengths))
 gene_names <- names(GeneLengths)
 n.mapped.minimum <- as.integer(snakemake@params[["min_mapped_signature_genes"]]) #The number of genes that needs reads that map to count the cluster as present
-n.genes <- 100 # number of signature genes
+n.genes <- as.integer(snakemake@params[["n_genes"]]) # number of signature genes
 
 # inserting NA for the Clusters that do not have a annotation
 taxmat <- matrix("NA", nrow = length(names(Clusterlist)), ncol = 7)
@@ -89,7 +88,7 @@ for (id in names(Clusterlist)){
   # summing the read counts for the id/cluster/MGS
   if (stat == "sum"){
     abundance <- colSums(Clusterlist[[id]][final.gene.names, ])
-  } else if (stat == "t_avg"){ # Obtain the truncated average of the read counts
+  } else if (stat == "tt_trun"){ # Obtain the truncated average of the read counts
     # Calculate truncated mean for each column
     abundance <- apply(Clusterlist[[id]][final.gene.names, ], 2, function(x) {
       if (all(x == 0)) { # If all values are 0, the truncated mean would return NaN
@@ -99,7 +98,7 @@ for (id in names(Clusterlist)){
         return(mean(x[x >= quantiles[1] & x <= quantiles[2]])) # Should it be also equal??
       }
     })
-  } else if (stat == "low_avg"){ #One tailed truncated mean (only truncated in the top X genes)
+  } else if (stat == "ot_trun"){ #One tailed truncated mean (only truncated in the top X genes)
     # Calculate truncated mean for each column
     abundance <- apply(Clusterlist[[id]][final.gene.names, ], 2, function(x) {
       if (all(x == 0)) { # If all values are 0, the truncated mean would return NaN

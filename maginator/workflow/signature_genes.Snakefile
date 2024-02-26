@@ -32,7 +32,8 @@ rule refinement:
     params:
         functions = "Functions_v4.R",
         min_mapped_signature_genes=param_dict['min_mapped_signature_genes'],
-        min_samples = param_dict['min_samples']
+        min_samples = param_dict['min_samples'],
+        n_genes = param_dict['num_signature_genes']
     resources:
         cores = 1,
         mem_gb = 12,
@@ -52,7 +53,7 @@ rule gene_counts:
     conda:
         "envs/signature_genes.yaml"
     params:
-        n_genes = param_dict['n_signature_genes']
+        n_genes = param_dict['num_signature_genes']
     resources:
         cores = 1,
         mem_gb = 12,
@@ -73,14 +74,12 @@ rule abundance_profile:
         physeq_abundance = os.path.join(WD, 'abundance', 'abundance_phyloseq.RData'),
         tax_matrix = os.path.join(WD, 'tabs', 'tax_matrix.tsv'),
         sg_cluster = os.path.join(WD, 'tabs', 'signature_genes_cluster.tsv')
-    params:
-        min_mapped_signature_genes=param_dict['min_mapped_signature_genes']
     conda:
         "envs/signature_genes.yaml"
     params:
-        n_genes = param_dict['n_signature_genes'],
-        min_genes = param_dict['min_SG_genes'],
-        stat = param_dict['stat'],
+        n_genes = param_dict['num_signature_genes'],
+        min_genes = param_dict['min_mapped_signature_genes'],
+        stat = param_dict['abundance_calculation'],
         percentage = param_dict['tail_percentage'],
     resources:
         cores = 1,
@@ -101,6 +100,7 @@ rule gene_refinement_plots:
     output:
         plot_pdf = os.path.join(WD, 'signature_genes', 'read-count_detected-genes.pdf')
     params:
+        n_genes = param_dict['num_signature_genes'],
         min_samples=param_dict['min_samples']
     conda:
         "envs/signature_genes.yaml"
@@ -108,10 +108,5 @@ rule gene_refinement_plots:
         cores = 1,
         mem_gb = 80,
         runtime = 43200 #12h in s
-    params:
-        stat=param_dict['stat'],
-        min_map = param_dict['min_map'],
-        min_cov = param_dict['min_cov'],
-        map_filter = param_dict['map_filter'],
     script:
         "scripts/gene_refinement_plots.R"

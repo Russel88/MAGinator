@@ -85,12 +85,10 @@ rule prescreening_genes:
     output:
         clusters_sorted = os.path.join(WD, 'signature_genes', 'clusters_sorted.RDS'),
     params:
-        min_mapped_signature_genes = param_dict['min_mapped_signature_genes']
+        min_mapped_signature_genes = param_dict['min_mapped_signature_genes'],
+        n_genes = param_dict['num_signature_genes']
     conda:
         "envs/signature_genes.yaml"
-    params:
-        n_genes = param_dict['n_signature_genes'],
-        min_genes = param_dict['min_SG_genes'],
     resources:
         cores = 1,
         mem_gb = 188,
