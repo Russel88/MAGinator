@@ -1,0 +1,17 @@
+channels:
+ - bioconda
+ - conda-forge
+dependencies:
+ - bbmap=38.96
+ - bwa-mem2=2.2.1
+ - samtools=1.18
+ - r-base=4.2.0
+ - r-tidyverse=2.0.0
+ - python=3.9
+ - msamtools
+ - pandas
+ - pip:
+   - pysam
+   - argparse
+   - futures
+

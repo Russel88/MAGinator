@@ -1,0 +1,8 @@
+channels:
+ - bioconda
+ - conda-forge
+dependencies:
+ - bbmap=38.96
+ - bwa-mem2=2.2.1
+ - samtools=1.18
+
