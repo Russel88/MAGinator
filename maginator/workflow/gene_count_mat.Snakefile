@@ -59,11 +59,6 @@ rule extract_coverage:
         names_file = os.path.join(WD,'mapped_reads','names','{sample}.gene_names')
     conda:
         "envs/filter_geneclusters.yaml"
-    params:
-        #min_reads = param_dict['min_cov'],
-        #min_map = param_dict['min_map'],
-        #benchmark = param_dict['benchmark'],
-        #map_filter = param_dict['map_filter']
     resources:
         cores = 1,
         mem_gb = 20,  # Calculate the total size of input files in GB

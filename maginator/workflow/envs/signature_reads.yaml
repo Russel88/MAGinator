@@ -1,0 +1,11 @@
+name: signature_reads
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - bwa-mem2
+  - samtools
+  - msamtools
+  - r-base
+  - r-tidyverse

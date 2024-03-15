@@ -29,6 +29,7 @@ WORKFLOW_ALIGNMENT = os.path.join(_ROOT, 'workflow', 'alignment.Snakefile')
 WORKFLOW_PHYLO = os.path.join(_ROOT, 'workflow', 'phylo.Snakefile')
 WORKFLOW_GENE_TAX = os.path.join(_ROOT, 'workflow', 'gene_tax.Snakefile')
 WORKFLOW_BENCHMARK = os.path.join(_ROOT, 'workflow', 'benchmark.Snakefile')
+WORKFLOW_SIGNATURE_READS = os.path.join(_ROOT, 'workflow', 'signature_reads.Snakefile')
 
 def cli():
     
@@ -92,6 +93,7 @@ def cli():
     
     ## Benchmarking
     app.add_argument('--benchmark',help='Run MAGinator in benchmarking mode',action='store_true')
+    app.add_argument('--signature_reads',help='Run the signature reads profiling only',action='store_true')
     ########## Workflow ##########
     master = Controller(ap)
     
@@ -121,7 +123,10 @@ def cli():
         # Signature genes
         logging.info('Identifying signature genes')
         logging.debug('Creating a gene count matrix of the readmappings')
-        wf.run(snakefile=WORKFLOW_GENE_COUNT_MAT)
+        if master.signature_reads:
+            wf.run(snakefile=WORKFLOW_SIGNATURE_READS)
+        else:
+            wf.run(snakefile=WORKFLOW_GENE_COUNT_MAT)
         logging.debug('Sorting the matrix to only contain genes, that do not cluster across the Metagenomic Species')
         wf.run(snakefile=WORKFLOW_PRESCREENING_GENES)
         logging.debug('Identifying the signature genes')
