@@ -15,6 +15,21 @@ rule all:
     input:
         os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
 
+rule bam_name_sorting:
+    input:
+        bam = os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.bam')
+    output:
+        bam = os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.name_sorted.bam')
+    conda:
+        "envs/filter_gtdbtk.yaml"
+    resources:
+        cores = 40,
+        mem_gb = 188,
+        runtime = 86400 #1d in s
+    shell:
+        "samtools sort -n --threads {resources.cores} -o {output.bam} {input.bam}"
+
+
 rule filter_bamfile:
     input:
         os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}.name_sorted.bam'),
@@ -35,7 +50,7 @@ rule filter_bamfile:
         msamtools filter -b -l {params.min_len} -p {params.min_iden} -z {params.min_map} --besthit {input} > {output}
         """  
 
-rule unique_profile:
+rule profile: 
     input:
         os.path.join(WD,'mapped_reads', 'bams','{sample}_filtered.bam'),
     output:
@@ -46,15 +61,15 @@ rule unique_profile:
         cores = 8,
         mem_gb = 20,
         runtime = 7200 #2h in s
+    params:
+        multi = param_dict['multi']
     threads: 8
     shell:
         """
-        infile={input}
-        reads=$(samtools view -@ {threads} -c $infile)
-        msamtools profile --label={wildcards.sample} --multi=proportional --unit=ab \
-                          --nolen --total=$reads -o {output}.gz $infile
+        msamtools profile --label={wildcards.sample} --multi={params.multi} --unit=ab \
+                        --nolen -o {output}.gz {input}
         gunzip {output}.gz
-        """ 
+    """
 
 # Create the header for the gene count matrix
 rule create_header:

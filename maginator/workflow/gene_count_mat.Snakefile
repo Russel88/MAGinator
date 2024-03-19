@@ -15,9 +15,25 @@ rule all:
     input:
         os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
 
+
+rule bam_name_sorting:
+    input:
+        bam = os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.bam')
+    output:
+        bam = os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.sorted.bam')
+    conda:
+        "envs/filter_gtdbtk.yaml"
+    resources:
+        cores = 40,
+        mem_gb = 188,
+        runtime = 86400 #1d in s
+    shell:
+        "samtools sort --threads {resources.cores} -o {output.bam} {input.bam}"
+
+
 rule filter_bamfile:
     input:
-        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}.bam'),
+        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}.sorted.bam'),
     output:
         os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}_filtered.bam')
     conda:

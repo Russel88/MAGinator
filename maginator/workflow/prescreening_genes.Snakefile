@@ -20,6 +20,8 @@ rule all:
     input:
         os.path.join(WD, 'genes', 'representative_genes.tsv'),
         os.path.join(WD, 'signature_genes', 'clusters_sorted.RDS')
+        # os.path.join(WD, 'signature_genes', 'cluster.RDS'),
+
 
 # Identifying the genes that cluster across the metagenomic species / species collections
 rule geneID_collectionID:

@@ -23,7 +23,7 @@ with open(param_dict['reads']) as f:
 
 rule all:
     input:
-        expand(os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.name_sorted.bam'), sample=SAMPLES)
+        expand(os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.bam'), sample=SAMPLES)
 
 # Creating a nonredundant catalogue of all the genes
 rule nonredundant_catalogue:
@@ -76,16 +76,3 @@ rule bwa_readmap:
         bwa-mem2 mem -t {resources.cores} {input.index} {input.fastq1} {input.fastq2} | \
         samtools view -T {input.fasta} -b --threads {resources.cores} > {output}
         """
-rule bam_name_sorting:
-    input:
-        bam = os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.bam')
-    output:
-        bam = os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.name_sorted.bam')
-    conda:
-        "envs/filter_gtdbtk.yaml"
-    resources:
-        cores = 40,
-        mem_gb = 188,
-        runtime = 86400 #1d in s
-    shell:
-        "samtools sort -n --threads {resources.cores} -o {output.bam} {input.bam}"

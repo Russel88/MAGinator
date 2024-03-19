@@ -94,6 +94,7 @@ def cli():
     ## Benchmarking
     app.add_argument('--benchmark',help='Run MAGinator in benchmarking mode',action='store_true')
     app.add_argument('--signature_reads',help='Run the signature reads profiling only',action='store_true')
+    app.add_argument('--multi',help='Method used by msamtools to treat multihit inserts [%(default)s]',default='proportional',type=str,choices=['proportional','ignore','all','equal'])
     ########## Workflow ##########
     master = Controller(ap)
     
