@@ -42,3 +42,22 @@ rule parse:
     script:
         "scripts/mpileup.py"
 
+rule allele_frequencies:
+    input:
+        stat=os.path.join(WD, 'phylo', 'stats.tab'),
+        gene=os.path.join(WD, 'phylo', 'stats_genes.tab')
+    output:
+        af_matrix=os.path.join(WD,'tabs','allele_frequencies.tab')
+    params:
+        af_cutoff = param_dict['af_cutoff'],
+        min_signature_genes = param_dict['min_signature_genes'],
+        min_nonN = param_dict['min_nonN'],
+        min_marker_genes = param_dict['min_marker_genes']
+    conda:
+        "envs/signature_genes.yaml"
+    resources:
+        cores=2,
+        mem_gb=190,
+        runtime='172800'
+    script:
+        "scripts/allele_frequency_mat.R"
