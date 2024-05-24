@@ -50,7 +50,7 @@ merge_dup = merge_df2.loc[merge_df2.duplicated(subset='GeneCluster', keep=False)
 
 count_df = pd.DataFrame(merge_dup.groupby('GeneCluster')[['Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species']].value_counts(normalize=True,dropna=False))
 count_df.reset_index(inplace=True)
-count_df.rename(columns={0: 'proportion'}, error="raise", inplace=True)
+count_df = count_df.rename(columns={0: 'proportion'})
 
 # All those above cutoff are consistent at Species level
 species_df = count_df[(count_df["proportion"] > cutoff) & ~(count_df['Species'].isna())]
