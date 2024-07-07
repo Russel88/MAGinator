@@ -19,6 +19,7 @@ WORKFLOW_FILTER = os.path.join(_ROOT, 'workflow', 'filter.Snakefile')
 WORKFLOW_GTDBTK = os.path.join(_ROOT, 'workflow', 'gtdbtk.Snakefile')
 WORKFLOW_PARSE_GTDBTK = os.path.join(_ROOT, 'workflow', 'parse_gtdbtk.Snakefile')
 WORKFLOW_FILTER_GENE_CLUSTERS = os.path.join(_ROOT, 'workflow', 'filter_geneclusters.Snakefile')
+WORKFLOW_SIGNATURE_READS = os.path.join(_ROOT, 'workflow', 'signature_reads.Snakefile')
 WORKFLOW_GENE_COUNT_MAT = os.path.join(_ROOT, 'workflow', 'gene_count_mat.Snakefile')
 WORKFLOW_PRESCREENING_GENES = os.path.join(_ROOT, 'workflow', 'prescreening_genes.Snakefile')
 WORKFLOW_SIGNATURE_GENES = os.path.join(_ROOT, 'workflow', 'signature_genes.Snakefile')
@@ -29,7 +30,6 @@ WORKFLOW_ALIGNMENT = os.path.join(_ROOT, 'workflow', 'alignment.Snakefile')
 WORKFLOW_PHYLO = os.path.join(_ROOT, 'workflow', 'phylo.Snakefile')
 WORKFLOW_GENE_TAX = os.path.join(_ROOT, 'workflow', 'gene_tax.Snakefile')
 WORKFLOW_BENCHMARK = os.path.join(_ROOT, 'workflow', 'benchmark.Snakefile')
-WORKFLOW_SIGNATURE_READS = os.path.join(_ROOT, 'workflow', 'signature_reads.Snakefile')
 
 def cli():
     
@@ -74,6 +74,7 @@ def cli():
     app.add_argument('--min_length',help='Minimum number of aligned basepairs of a read to be included [%(default)s]', default=80, type=int)
     app.add_argument('--min_identity',help='Minimum percentage of identity for a read to be included [%(default)s]', default=95, type=int)	
     app.add_argument('--min_map', help='Minimum percentage of mapped bases for a read to be included [%(default)s]', default=80, type=int)
+    app.add_argument('--multi',help='Method used by msamtools to treat multihit inserts [%(default)s]',default='proportional',type=str,choices=['proportional','ignore','all','equal'])
     app.add_argument('--abundance_calculation', help='Method employed to calculate the absolute abundances [%(default)s]', default='ot_trun', type=str, choices=['sum', 'ot_trun','tt_trun'])
     app.add_argument('--tail_percentage', help='Percentage range for the tail of the truncated mean or low_avg method [%(default)s]', default=10, type=float)
     app.add_argument('--min_gtdb_markers', help='Minimum GTDBtk marker genes shared between MGS and outgroup for rooting trees [%(default)s]', default=10, type=int)
@@ -86,6 +87,7 @@ def cli():
     app.add_argument('--min_nonN', help='Minimum fraction of non-N characters of a sample to be included in a phylogeny [%(default)s]', default=0.5, type=float)
     app.add_argument('--min_marker_genes', help='Minimum marker genes to be detected for inclusion of a sample in a phylogeny [%(default)s]', default=2, type=int)
     app.add_argument('--min_signature_genes', help='Minimum signature genes to be detected for inclusion of a sample in a phylogeny [%(default)s]', default=50, type=int)
+    app.add_argument('--af_cutoff', help='Cutoff for average median allele frequency of SG alignment for determining mixed/pure population of a MAG in a sample [%(default)s]', default=0, type=float)
     app.add_argument('--phylo', help='Software for phylogeny inference. Either fast (fasttree) or slow and more accurate (iqtree) [%(default)s]', default='fasttree', type=str, choices=['fasttree', 'iqtree'])
     app.add_argument('--tax_scope_threshold', help='Threshold for assigning the taxonomic scope of a gene cluster [%(default)s]', default=0.9, type=float)
     app.add_argument('--synteny_adj_cutoff', help='Minimum number of times gene clusters should be adjacent to be included in synteny graph [%(default)s]', default=1, type=int)
@@ -93,8 +95,6 @@ def cli():
     
     ## Benchmarking
     app.add_argument('--benchmark',help='Run MAGinator in benchmarking mode',action='store_true')
-    app.add_argument('--signature_reads',help='Run the signature reads profiling only',action='store_true')
-    app.add_argument('--multi',help='Method used by msamtools to treat multihit inserts [%(default)s]',default='proportional',type=str,choices=['proportional','ignore','all','equal'])
     ########## Workflow ##########
     master = Controller(ap)
     
@@ -124,10 +124,8 @@ def cli():
         # Signature genes
         logging.info('Identifying signature genes')
         logging.debug('Creating a gene count matrix of the readmappings')
-        if master.signature_reads:
-            wf.run(snakefile=WORKFLOW_SIGNATURE_READS)
-        else:
-            wf.run(snakefile=WORKFLOW_GENE_COUNT_MAT)
+        wf.run(snakefile=WORKFLOW_SIGNATURE_READS)
+        #wf.run(snakefile=WORKFLOW_GENE_COUNT_MAT)
         logging.debug('Sorting the matrix to only contain genes, that do not cluster across the Metagenomic Species')
         wf.run(snakefile=WORKFLOW_PRESCREENING_GENES)
         logging.debug('Identifying the signature genes')
