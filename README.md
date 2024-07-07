@@ -150,7 +150,7 @@ This is what MAGinator does with your input (if you want to see all parameters r
 ## Output
 
 * abundance/
-    * abundance_phyloseq.RData - Phyloseq object for R, with abundance and taxonomic data
+    * abundance_phyloseq.RData - Phyloseq object for R, with absolute abundance and taxonomic data
 * clusters/
     * <cluster>/<bin>.fa - Fasta files with nucleotide sequence of bins
 * genes/
