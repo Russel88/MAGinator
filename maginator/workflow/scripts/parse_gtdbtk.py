@@ -39,13 +39,17 @@ for clust in os.listdir(snakemake.input[0]):
     try:
         tax_bac = pd.read_csv(glob.glob(os.path.join(snakemake.input[0], clust, 'gtdbtk.bac*.summary.tsv'))[0], sep='\t', header=0)  
         if tax_bac.iloc[0,1]=='Unclassified':
-            tax_bac=None
+            tax_bac=None    
         elif tax_bac.iloc[0,1]=='Unclassified Bacteria':
             tax_bac=None
     except (IndexError, FileNotFoundError):
         tax_bac = None
     try: 
         tax_ar = pd.read_csv(glob.glob(os.path.join(snakemake.input[0], clust, 'gtdbtk.ar*.summary.tsv'))[0], sep='\t', header=0)  
+        if tax_ar.iloc[0,1]=='Unclassified':
+            tax_ar=None    
+        elif tax_ar.iloc[0,1]=='Unclassified Archaea':
+            tax_ar=None
     except (IndexError, FileNotFoundError):
         tax_ar = None
 
@@ -56,7 +60,6 @@ for clust in os.listdir(snakemake.input[0]):
         tax = None
 
     if tax is not None:
-        
         classification = [x.split(';') for x in tax['classification']]
         
         # Remove unclassified

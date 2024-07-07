@@ -73,7 +73,8 @@ rule abundance_profile:
     output:
         physeq_abundance = os.path.join(WD, 'abundance', 'abundance_phyloseq.RData'),
         tax_matrix = os.path.join(WD, 'tabs', 'tax_matrix.tsv'),
-        sg_cluster = os.path.join(WD, 'tabs', 'signature_genes_cluster.tsv')
+        sg_cluster = os.path.join(WD, 'tabs', 'signature_genes_cluster.tsv'),
+        sg_reads = os.path.join(WD, 'tabs', 'signature_genes_counts.rds')
     conda:
         "envs/signature_genes.yaml"
     params:

@@ -72,4 +72,7 @@ rule bwa_readmap:
         mem_gb = 188,
         runtime = 86400 #1d in s
     shell:
-        "bwa-mem2 mem -t {resources.cores} {input.index} {input.fastq1} {input.fastq2} | samtools view -T {input.fasta} -F 3584  -b --threads {resources.cores} | samtools sort --threads {resources.cores} > {output.bam}; samtools index {output.bam}"
+        """
+        bwa-mem2 mem -t {resources.cores} {input.index} {input.fastq1} {input.fastq2} | \
+        samtools view -T {input.fasta} -b --threads {resources.cores} > {output}
+        """

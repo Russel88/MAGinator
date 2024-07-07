@@ -19,7 +19,7 @@ colnames(taxonomy) <- c("Cluster","Taxonomy")
 #setting important variables
 gene_index <- seq(1,length(GeneLengths))
 gene_names <- names(GeneLengths)
-n.mapped.minimum <- as.integer(snakemake@params[["min_mapped_signature_genes"]]) #The number of genes that needs reads that map to count the cluster as present
+n.mapped.minimum <- as.integer(snakemake@params[["min_genes"]]) #The number of reads that needs reads that map to count the cluster as present
 n.genes <- as.integer(snakemake@params[["n_genes"]]) # number of signature genes
 
 # inserting NA for the Clusters that do not have a annotation
@@ -71,7 +71,7 @@ rownames(final.read.matrix) <- sample.names
 colnames(final.read.matrix) <- names(Clusterlist) 
 
 final.Clusterlist <- Clusterlist
-
+sg_reads <- list()
 for (id in names(Clusterlist)){  
   # Repeat for the final SG
   final.gene.names <- screened_clusters[,3][screened_clusters[,'id']==id][1][[1]]$best
@@ -82,15 +82,13 @@ for (id in names(Clusterlist)){
   
   # The readcounts are divided by the gene length
   final.reads <- final.Clusterlist[[id]][final.gene.names, ] / GeneLengths[final.gene.names]
-  
-  # Maybe introduce some filtering here based on the normalized readcounts per gene?
-
+  sg_reads[[id]] <- final.reads
   # summing the read counts for the id/cluster/MGS
   if (stat == "sum"){
-    abundance <- colSums(Clusterlist[[id]][final.gene.names, ])
+    abundance <- colSums(final.reads)
   } else if (stat == "tt_trun"){ # Obtain the truncated average of the read counts
     # Calculate truncated mean for each column
-    abundance <- apply(Clusterlist[[id]][final.gene.names, ], 2, function(x) {
+    abundance <- apply(final.reads, 2, function(x) {
       if (all(x == 0)) { # If all values are 0, the truncated mean would return NaN
         return(0)
       } else {
@@ -100,7 +98,7 @@ for (id in names(Clusterlist)){
     })
   } else if (stat == "ot_trun"){ #One tailed truncated mean (only truncated in the top X genes)
     # Calculate truncated mean for each column
-    abundance <- apply(Clusterlist[[id]][final.gene.names, ], 2, function(x) {
+    abundance <- apply(final.reads, 2, function(x) {
       if (all(x == 0)) { # If all values are 0, the truncated mean would return NaN
         return(0)
       } else {
@@ -119,7 +117,8 @@ for (id in names(Clusterlist)){
 
 write.csv(final.read.matrix,"Absolute_counts.tsv",sep="\t")
 
-final.abundance <- final.read.matrix/rowSums(final.read.matrix)
+final.abundance <- final.read.matrix
+#/rowSums(final.read.matrix)
 
 final.otu.table <- otu_table(final.abundance, taxa_are_rows = FALSE)
 tax.table <- tax_table(taxmat)
@@ -128,3 +127,4 @@ final.physeq <-  phyloseq(final.otu.table, tax.table)
 
 save(final.physeq, file = snakemake@output[["physeq_abundance"]])
 write.table(sg_cluster, file = snakemake@output[["sg_cluster"]], row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
+saveRDS(sg_reads, snakemake@output[["sg_reads"]])

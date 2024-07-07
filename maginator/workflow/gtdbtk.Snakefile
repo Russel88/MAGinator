@@ -22,7 +22,7 @@ n_samples = int(out.partition(b' ')[0])
 tim = (max(math.ceil(n_samples/30)*60, 3*60)) # time in h
 
 wildcard_constraints:
-    cluster="\d+"
+    cluster="\\d+"
 
 rule all:
     input:
@@ -40,7 +40,7 @@ rule gtdbtk:
         gtdbtk=param_dict['gtdb_db']
     resources:
         cores=8,
-        mem_gb=180,
+        mem_gb=220,
         runtime= tim*60*60
     shell:
         '''

@@ -15,9 +15,25 @@ rule all:
     input:
         os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
 
+
+rule bam_name_sorting:
+    input:
+        bam = os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.bam')
+    output:
+        bam = os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.sorted.bam')
+    conda:
+        "envs/filter_gtdbtk.yaml"
+    resources:
+        cores = 40,
+        mem_gb = 188,
+        runtime = 86400 #1d in s
+    shell:
+        "samtools sort --threads {resources.cores} -o {output.bam} {input.bam}"
+
+
 rule filter_bamfile:
     input:
-        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}.bam'),
+        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}.sorted.bam'),
     output:
         os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}_filtered.bam')
     conda:
@@ -59,11 +75,6 @@ rule extract_coverage:
         names_file = os.path.join(WD,'mapped_reads','names','{sample}.gene_names')
     conda:
         "envs/filter_geneclusters.yaml"
-    params:
-        #min_reads = param_dict['min_cov'],
-        #min_map = param_dict['min_map'],
-        #benchmark = param_dict['benchmark'],
-        #map_filter = param_dict['map_filter']
     resources:
         cores = 1,
         mem_gb = 20,  # Calculate the total size of input files in GB
