@@ -177,6 +177,8 @@ This is what MAGinator does with your input (if you want to see all parameters r
 * signature_genes/ 
     * \- R data files with signature gene optimization
     * read-count_detected-genes.pdf - Figure for each MAG cluster displaying number of identified SG's in each sample along with the number of reads mapped.
+* signature_reads/
+   * profiles - Read count profiles with ambiguous reads redistributed based on the uniquely mapped reads profile
 * tabs/
     * gene_cluster_bins.tab - Table listing which bins each gene cluster was found in
     * gene_cluster_tax_scope.tab - Table listing the taxonomic scope of each gene cluster
