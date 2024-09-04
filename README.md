@@ -87,6 +87,7 @@ The input to the workflow is the reads.csv file. The workflow can be run using s
 ```
 snakemake --use-conda -s reads_to_bins.Snakefile --resources mem_gb=180 --config reads=reads.csv --cores 10 --printshellcmds 
 ```
+Once the binning is done, we recommend using a tool like dRep (https://github.com/MrOlm/drep) to create the species-level clusters. The advantage of dRep is that the clustering parameters can be modified to create clusters that belong to different taxonomic levels. An R script is located in recommended workflow/MAGinator_setup.R, that will create the different input files for MAGinator adapted to the output of dRep.
 
 Preparing data for MAGinator run
 ```
@@ -126,7 +127,13 @@ This is what MAGinator does with your input (if you want to see all parameters r
     * Use --clustering_min_seq_id to toggle the clustering identity
     * Use --clustering_coverage to toggle the clustering coverage
     * Use --clustering_type to toggle whether to cluster on amino acid or nucleotide level
-* Map reads to the non-redundant gene catalogue and create a matrix with gene counts for each sample
+* Map reads to the non-redundant gene catalogue 
+    * Use --min_length to filter for the minimum number of basepairs that must be aligned to keep a read
+    * Use --min_identity to filter for the minimum percentage of identity of mapped read to be kept
+    * Use --min_map to filter for the minimum percentage of a read that has to be mapped to be kept
+* Create a gene count matrix based on a signature reads approach
+    * By default, MAGinator will redistribute ambiguous mapping reads based on the profile of uniquely mapping reads
+    * This can be changed with the --multi option.
 * Pick non-redundant genes that are only found in one MAG cluster each
 * Fit signature gene model and use the resulting signature genes to get the abundance of each MAG cluster
     * Use --min_mapped_signature_genes to change minimum number of signature genes to be detected in the sample to be included in the analysis
@@ -143,7 +150,7 @@ This is what MAGinator does with your input (if you want to see all parameters r
 ## Output
 
 * abundance/
-    * abundance_phyloseq.RData - Phyloseq object for R, with abundance and taxonomic data
+    * abundance_phyloseq.RData - Phyloseq object for R, with absolute abundance and taxonomic data
 * clusters/
     * <cluster>/<bin>.fa - Fasta files with nucleotide sequence of bins
 * genes/
@@ -170,6 +177,8 @@ This is what MAGinator does with your input (if you want to see all parameters r
 * signature_genes/ 
     * \- R data files with signature gene optimization
     * read-count_detected-genes.pdf - Figure for each MAG cluster displaying number of identified SG's in each sample along with the number of reads mapped.
+* signature_reads/
+   * profiles - Read count profiles with ambiguous reads redistributed based on the uniquely mapped reads profile
 * tabs/
     * gene_cluster_bins.tab - Table listing which bins each gene cluster was found in
     * gene_cluster_tax_scope.tab - Table listing the taxonomic scope of each gene cluster

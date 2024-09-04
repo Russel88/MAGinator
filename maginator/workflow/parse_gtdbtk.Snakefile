@@ -35,7 +35,7 @@ rule parse_gtdbtk:
     resources:
         cores=1,
         mem_gb=32,
-        runtime='36000' #10h in s
+        runtime=36000 #10h in s
     script:
         "scripts/parse_gtdbtk.py"
 
@@ -55,7 +55,7 @@ rule repres_genes:
     resources:
         cores = 14,
         mem_gb = 50,
-        runtime = '172800' #2d in s 
+        runtime = 172800 #2d in s 
     params:
         tmp_dir = os.path.join(WD, 'tmp'),
         out_prefix = os.path.join(WD, 'genes', 'all_genes'),
@@ -77,7 +77,7 @@ rule join:
     resources:
         cores = 1,
         mem_gb = 20,
-        runtime = '86400' #1d in s
+        runtime = 86400 #1d in s
     shell:
         "join -1 1 -2 2 <(sort -k1,1 {input.gtdb}) <(sort -k2,2 {input.cluster}) > {output}"
 
@@ -90,6 +90,6 @@ rule collect:
     resources:
         cores = 1,
         mem_gb = 20,
-        runtime = '86400' #1d in s
+        runtime = 86400 #1d in s
     shell:
         "for i in {input}/*/*summary.tsv; do tail -n+2 $i; done | cut -f1,2 > {output}"

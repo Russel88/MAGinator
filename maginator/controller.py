@@ -113,10 +113,10 @@ class Controller(object):
        
         # Check if read files exists
         if not all([os.path.isfile(y) for y in [x[1] for x in read_file]]):
-            logging.error('Cannot find fastq files the forward reads')
+            logging.error('Cannot find the fastq files with the forward reads')
             sys.exit()
         if not all([os.path.isfile(y) for y in [x[2] for x in read_file]]):
-            logging.error('Cannot find fastq files the reverse reads')
+            logging.error('Cannot find the fastq files with the reverse reads')
             sys.exit()
             
     def check_contigs(self):

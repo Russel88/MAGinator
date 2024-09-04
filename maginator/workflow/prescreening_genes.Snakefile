@@ -20,6 +20,8 @@ rule all:
     input:
         os.path.join(WD, 'genes', 'representative_genes.tsv'),
         os.path.join(WD, 'signature_genes', 'clusters_sorted.RDS')
+        # os.path.join(WD, 'signature_genes', 'cluster.RDS'),
+
 
 # Identifying the genes that cluster across the metagenomic species / species collections
 rule geneID_collectionID:
@@ -35,9 +37,10 @@ rule geneID_collectionID:
     resources:
         cores = 1,
         mem_gb = 188,
-        runtime = '43200' #12h in s
+        runtime = 43200 #12h in s
     script: 
         "scripts/species_collections.py"
+
 
 # creating a gene count matrix only containing the genes, that does not cluster across metagenomic species / species collection
 rule sort_genes_across_MGS:
@@ -51,7 +54,7 @@ rule sort_genes_across_MGS:
     resources:
         cores = 1, 
         mem_gb = 188,
-        runtime = '43200' #12h in s
+        runtime = 43200 #12h in s
     script:
         "scripts/sort_gene_mat.py"
 
@@ -71,7 +74,7 @@ rule format_conversion:
     resources:
         cores = 1,
         mem_gb = 188,
-        runtime = '86400' #1d in s
+        runtime = 86400 #1d in s
     script:
         "scripts/matrix2SG_formatconversion.R"
 
@@ -84,12 +87,13 @@ rule prescreening_genes:
     output:
         clusters_sorted = os.path.join(WD, 'signature_genes', 'clusters_sorted.RDS'),
     params:
-        min_mapped_signature_genes = param_dict['min_mapped_signature_genes']
+        min_mapped_signature_genes = param_dict['min_mapped_signature_genes'],
+        n_genes = param_dict['num_signature_genes']
     conda:
         "envs/signature_genes.yaml"
     resources:
         cores = 1,
         mem_gb = 188,
-        runtime = '86400' #1d in s
+        runtime = 86400 #1d in s
     script: 
         "scripts/prescreening_genes.R"

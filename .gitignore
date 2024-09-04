@@ -4,3 +4,4 @@ dist/
 build/
 test/
 .snakemake/
+maginator/workflow/scripts/extra

@@ -32,13 +32,14 @@ rule refinement:
     params:
         functions = "Functions_v4.R",
         min_mapped_signature_genes=param_dict['min_mapped_signature_genes'],
-        min_samples = param_dict['min_samples']
+        min_samples = param_dict['min_samples'],
+        n_genes = param_dict['num_signature_genes']
     resources:
         cores = 1,
         mem_gb = 12,
-        runtime = '43200' #12h in s
+        runtime = 43200 #12h in s
     script: 
-        "scripts/SG_refinement.R"
+        """scripts/SG_refinement.R"""
 
 
 # insert rule for creating the MGS_object.RDS
@@ -51,10 +52,12 @@ rule gene_counts:
         cluster_counts = os.path.join(WD, 'signature_genes','counts', 'cluster_{cluster}_counts.RDS')
     conda:
         "envs/signature_genes.yaml"
+    params:
+        n_genes = param_dict['num_signature_genes']
     resources:
         cores = 1,
         mem_gb = 12,
-        runtime = '43200' #12h in s
+        runtime = 43200 #12h in s
     script:
         "scripts/MGS_counts.R"
 
@@ -70,15 +73,19 @@ rule abundance_profile:
     output:
         physeq_abundance = os.path.join(WD, 'abundance', 'abundance_phyloseq.RData'),
         tax_matrix = os.path.join(WD, 'tabs', 'tax_matrix.tsv'),
-        sg_cluster = os.path.join(WD, 'tabs', 'signature_genes_cluster.tsv')
-    params:
-        min_mapped_signature_genes=param_dict['min_mapped_signature_genes']
+        sg_cluster = os.path.join(WD, 'tabs', 'signature_genes_cluster.tsv'),
+        sg_reads = os.path.join(WD, 'tabs', 'signature_genes_counts.rds')
     conda:
         "envs/signature_genes.yaml"
+    params:
+        n_genes = param_dict['num_signature_genes'],
+        min_genes = param_dict['min_mapped_signature_genes'],
+        stat = param_dict['abundance_calculation'],
+        percentage = param_dict['tail_percentage'],
     resources:
         cores = 1,
         mem_gb = 80,
-        runtime = '43200' #12h in s
+        runtime = 43200 #12h in s
     script:
         "scripts/abundance_profiles.R"
 
@@ -94,12 +101,13 @@ rule gene_refinement_plots:
     output:
         plot_pdf = os.path.join(WD, 'signature_genes', 'read-count_detected-genes.pdf')
     params:
+        n_genes = param_dict['num_signature_genes'],
         min_samples=param_dict['min_samples']
     conda:
         "envs/signature_genes.yaml"
     resources:
         cores = 1,
         mem_gb = 80,
-        runtime = '43200' #12h in s
+        runtime = 43200 #12h in s
     script:
         "scripts/gene_refinement_plots.R"

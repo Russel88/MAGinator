@@ -12,14 +12,15 @@ screened_clusters <- do.call("rbind", lapply(sg_files, readRDS))
 #load(snakemake@input[["MGS_object"]]) # contain the SGs of the Clusters
 Clusterlist <- readRDS(snakemake@input[["R_clusters"]]) # read count mat ofclusters
 taxonomy <- read.csv(snakemake@input[["annotation"]], header=FALSE, sep="\t") # the taxonomy 
+stat <- snakemake@params[["stat"]] # the statistic used to calculate the abundance
+pctg <- as.integer(snakemake@params[["percentage"]])/100 # percentage of the SG distribution that will be left out to calculate abundances
 colnames(taxonomy) <- c("Cluster","Taxonomy")
-
 
 #setting important variables
 gene_index <- seq(1,length(GeneLengths))
 gene_names <- names(GeneLengths)
-n.mapped.minimum <- as.integer(snakemake@params[["min_mapped_signature_genes"]]) #The number of genes that needs reads that map to count the cluster as present
-n.genes <- 100 # number of signature genes
+n.mapped.minimum <- as.integer(snakemake@params[["min_genes"]]) #The number of reads that needs reads that map to count the cluster as present
+n.genes <- as.integer(snakemake@params[["n_genes"]]) # number of signature genes
 
 # inserting NA for the Clusters that do not have a annotation
 taxmat <- matrix("NA", nrow = length(names(Clusterlist)), ncol = 7)
@@ -70,7 +71,7 @@ rownames(final.read.matrix) <- sample.names
 colnames(final.read.matrix) <- names(Clusterlist) 
 
 final.Clusterlist <- Clusterlist
-
+sg_reads <- list()
 for (id in names(Clusterlist)){  
   # Repeat for the final SG
   final.gene.names <- screened_clusters[,3][screened_clusters[,'id']==id][1][[1]]$best
@@ -81,16 +82,43 @@ for (id in names(Clusterlist)){
   
   # The readcounts are divided by the gene length
   final.reads <- final.Clusterlist[[id]][final.gene.names, ] / GeneLengths[final.gene.names]
-  
+  sg_reads[[id]] <- final.reads
   # summing the read counts for the id/cluster/MGS
-  final.read.matrix[, id] <- colSums(final.reads)
+  if (stat == "sum"){
+    abundance <- colSums(final.reads)
+  } else if (stat == "tt_trun"){ # Obtain the truncated average of the read counts
+    # Calculate truncated mean for each column
+    abundance <- apply(final.reads, 2, function(x) {
+      if (all(x == 0)) { # If all values are 0, the truncated mean would return NaN
+        return(0)
+      } else {
+       quantiles <- quantile(x, probs = c(pctg, 1-pctg))
+        return(mean(x[x >= quantiles[1] & x <= quantiles[2]])) # Should it be also equal??
+      }
+    })
+  } else if (stat == "ot_trun"){ #One tailed truncated mean (only truncated in the top X genes)
+    # Calculate truncated mean for each column
+    abundance <- apply(final.reads, 2, function(x) {
+      if (all(x == 0)) { # If all values are 0, the truncated mean would return NaN
+        return(0)
+      } else {
+        quantiles <- quantile(x, probs = c(1-pctg))  # Should it be also equal??
+        return(mean(x[x <= quantiles]))
+      }
+    })
+
+  }
+  final.read.matrix[, id] <- abundance
   if (length(final.gene.names)>0){
-  if (length(final.gene.names)!=100){
+  if (length(final.gene.names)!=n.genes){
   final.gene.names<-c(final.gene.names, rep("NA", (100-length(final.gene.names))))}
   sg_cluster[sg_cluster[,2]==id] <- matrix(c(final.gene.names, rep(id, length(final.gene.names))), ncol=2)
 }}
 
-final.abundance <- final.read.matrix/rowSums(final.read.matrix)
+write.csv(final.read.matrix,"Absolute_counts.tsv",sep="\t")
+
+final.abundance <- final.read.matrix
+#/rowSums(final.read.matrix)
 
 final.otu.table <- otu_table(final.abundance, taxa_are_rows = FALSE)
 tax.table <- tax_table(taxmat)
@@ -99,3 +127,4 @@ final.physeq <-  phyloseq(final.otu.table, tax.table)
 
 save(final.physeq, file = snakemake@output[["physeq_abundance"]])
 write.table(sg_cluster, file = snakemake@output[["sg_cluster"]], row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
+saveRDS(sg_reads, snakemake@output[["sg_reads"]])

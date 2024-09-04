@@ -32,7 +32,7 @@ rule markers:
     resources:
         cores=1,
         mem_gb=10,
-        runtime='36000' #10h in s
+        runtime=36000 #10h in s
     script:
         "scripts/marker_genes.py"
 
@@ -47,7 +47,7 @@ rule fasta1:
     resources:
         cores=1,
         mem_gb=10,
-        runtime='36000' #10h in s
+        runtime=36000 #10h in s
     shell:
         "perl -ne 'if(/^>(\S+)/){{$c=$i{{$1}}}}$c?print:chomp;$i{{$_}}=1 if @ARGV' <(cut -f4 {input.tab} | sort | uniq) {input.fasta} > {output}"
 
@@ -62,7 +62,7 @@ rule fasta2:
     resources:
         cores=1,
         mem_gb=10,
-        runtime='36000' #10h in s
+        runtime=36000 #10h in s
     shell:
         "perl -ne 'if(/^>(\S+)/){{$c=$i{{$1}}}}$c?print:chomp;$i{{$_}}=1 if @ARGV' <(cut -f5 {input.tab} | sort | uniq) {input.fasta} > {output}"
 
@@ -77,7 +77,7 @@ rule fasta3:
     resources:
         cores=1,
         mem_gb=10,
-        runtime='36000' #10h in s
+        runtime=36000 #10h in s
     shell:
         "perl -ne 'if(/^>(\S+)/){{$c=$i{{$1}}}}$c?print:chomp;$i{{$_}}=1 if @ARGV' <(cut -f1 {input.tab}) {input.fasta} > {output}"
 
@@ -93,7 +93,7 @@ rule bed:
     resources:
         cores=1,
         mem_gb=10,
-        runtime='36000' #10h in s
+        runtime=36000 #10h in s
     shell:
         """
         awk '{{print $1"\t0\t1000000"}}' {input.sig} > {output.beds}
@@ -114,7 +114,7 @@ rule uniq:
     resources:
         cores=1,
         mem_gb=10,
-        runtime='36000' #10h in s
+        runtime=36000 #10h in s
     shell:
         """
         cat {input.beds} {input.bedm} | sort | uniq > {output.bed}
@@ -131,7 +131,7 @@ rule index:
     resources:
         cores=1,
         mem_gb=10,
-        runtime='36000' #10h in s
+        runtime=36000 #10h in s
     shell:
         """
         samtools faidx {input}

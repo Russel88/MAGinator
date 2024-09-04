@@ -37,7 +37,7 @@ rule nonredundant_catalogue:
     resources:
         cores = 1,
         mem_gb = 50,
-        runtime = '43200' #12h in s
+        runtime = 43200 #12h in s
     shell:
         "perl -ne 'if(/^>(\S+)/){{$c=$i{{$1}}}}$c?print:chomp;$i{{$_}}=1 if @ARGV' <(cut -f1 {input.clusters} | uniq) {input.genecat} | awk '{{print $1}}' > {output}"
 
@@ -52,7 +52,7 @@ rule bwa_index:
     resources:
         cores = 40,
         mem_gb = 188, 
-        runtime = '86400' #1d in s
+        runtime = 86400 #1d in s
     shell:
         "bwa-mem2 index -p {output.index} {input.fasta}; samtools faidx {input.fasta}; touch {output.index}"
 
@@ -63,8 +63,6 @@ rule bwa_readmap:
         fasta = os.path.join(WD, 'genes', 'all_genes_nonredundant.fasta'),
         fastq1 = lambda wildcards: sample_dict[wildcards.sample][0],
         fastq2 = lambda wildcards: sample_dict[wildcards.sample][1]
-    params:
-        sample = SAMPLES
     output:
         bam = os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.bam')
     conda:
@@ -72,6 +70,9 @@ rule bwa_readmap:
     resources:
         cores = 40,
         mem_gb = 188,
-        runtime = '86400' #1d in s
+        runtime = 86400 #1d in s
     shell:
-        "bwa-mem2 mem -t {resources.cores} {input.index} {input.fastq1} {input.fastq2} | samtools view -T {input.fasta} -F 3584  -b --threads {resources.cores} | samtools sort --threads {resources.cores} > {output.bam}; samtools index {output.bam}"
+        """
+        bwa-mem2 mem -t {resources.cores} {input.index} {input.fastq1} {input.fastq2} | \
+        samtools view -T {input.fasta} -b --threads {resources.cores} > {output}
+        """

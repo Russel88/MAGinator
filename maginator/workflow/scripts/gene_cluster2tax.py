@@ -50,40 +50,41 @@ merge_dup = merge_df2.loc[merge_df2.duplicated(subset='GeneCluster', keep=False)
 
 count_df = pd.DataFrame(merge_dup.groupby('GeneCluster')[['Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species']].value_counts(normalize=True,dropna=False))
 count_df.reset_index(inplace=True)
+count_df = count_df.rename(columns={0: 'proportion'})
 
 # All those above cutoff are consistent at Species level
-species_df = count_df[(count_df[0] > cutoff) & ~(count_df['Species'].isna())]
+species_df = count_df[(count_df["proportion"] > cutoff) & ~(count_df['Species'].isna())]
 
 # Traverse through taxonomy, aggregate and check if cutoff is met
 # Genus level
-tmp_df = count_df[~count_df['GeneCluster'].isin(species_df['GeneCluster'])].groupby(['GeneCluster', 'Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus'], dropna=False)[0].sum().reset_index()
-genus_df = tmp_df[(tmp_df[0] > cutoff) & ~(tmp_df['Genus'].isna())]
+tmp_df = count_df[~count_df['GeneCluster'].isin(species_df['GeneCluster'])].groupby(['GeneCluster', 'Domain', 'Phylum', 'Class', 'Order', 'Family', 'Genus'], dropna=False)["proportion"].sum().reset_index()
+genus_df = tmp_df[(tmp_df["proportion"] > cutoff) & ~(tmp_df['Genus'].isna())]
 
 # Family level
-tmp_df = tmp_df[~tmp_df['GeneCluster'].isin(genus_df['GeneCluster'])].groupby(['GeneCluster', 'Domain', 'Phylum', 'Class', 'Order', 'Family'], dropna=False)[0].sum().reset_index()
-family_df = tmp_df[(tmp_df[0] > cutoff) & ~(tmp_df['Family'].isna())]
+tmp_df = tmp_df[~tmp_df['GeneCluster'].isin(genus_df['GeneCluster'])].groupby(['GeneCluster', 'Domain', 'Phylum', 'Class', 'Order', 'Family'], dropna=False)["proportion"].sum().reset_index()
+family_df = tmp_df[(tmp_df['proportion'] > cutoff) & ~(tmp_df['Family'].isna())]
 
 # Order level
-tmp_df = tmp_df[~tmp_df['GeneCluster'].isin(family_df['GeneCluster'])].groupby(['GeneCluster', 'Domain', 'Phylum', 'Class', 'Order'], dropna=False)[0].sum().reset_index()
-order_df = tmp_df[(tmp_df[0] > cutoff) & ~(tmp_df['Order'].isna())]
+tmp_df = tmp_df[~tmp_df['GeneCluster'].isin(family_df['GeneCluster'])].groupby(['GeneCluster', 'Domain', 'Phylum', 'Class', 'Order'], dropna=False)["proportion"].sum().reset_index()
+order_df = tmp_df[(tmp_df['proportion'] > cutoff) & ~(tmp_df['Order'].isna())]
 
 # Class level
-tmp_df = tmp_df[~tmp_df['GeneCluster'].isin(order_df['GeneCluster'])].groupby(['GeneCluster', 'Domain', 'Phylum', 'Class'], dropna=False)[0].sum().reset_index()
-class_df = tmp_df[(tmp_df[0] > cutoff) & ~(tmp_df['Class'].isna())]
+tmp_df = tmp_df[~tmp_df['GeneCluster'].isin(order_df['GeneCluster'])].groupby(['GeneCluster', 'Domain', 'Phylum', 'Class'], dropna=False)["proportion"].sum().reset_index()
+class_df = tmp_df[(tmp_df['proportion'] > cutoff) & ~(tmp_df['Class'].isna())]
 
 # Phylum level
-tmp_df = tmp_df[~tmp_df['GeneCluster'].isin(class_df['GeneCluster'])].groupby(['GeneCluster', 'Domain', 'Phylum'], dropna=False)[0].sum().reset_index()
-phylum_df = tmp_df[(tmp_df[0] > cutoff) & ~(tmp_df['Phylum'].isna())]
+tmp_df = tmp_df[~tmp_df['GeneCluster'].isin(class_df['GeneCluster'])].groupby(['GeneCluster', 'Domain', 'Phylum'], dropna=False)["proportion"].sum().reset_index()
+phylum_df = tmp_df[(tmp_df['proportion'] > cutoff) & ~(tmp_df['Phylum'].isna())]
 
 # Domain level
-tmp_df = tmp_df[~tmp_df['GeneCluster'].isin(phylum_df['GeneCluster'])].groupby(['GeneCluster', 'Domain'], dropna=False)[0].sum().reset_index()
-domain_df = tmp_df[(tmp_df[0] > cutoff) & ~(tmp_df['Domain'].isna())]
+tmp_df = tmp_df[~tmp_df['GeneCluster'].isin(phylum_df['GeneCluster'])].groupby(['GeneCluster', 'Domain'], dropna=False)["proportion"].sum().reset_index()
+domain_df = tmp_df[(tmp_df['proportion'] > cutoff) & ~(tmp_df['Domain'].isna())]
 
 # No level
-tmp_df = tmp_df[~tmp_df['GeneCluster'].isin(domain_df['GeneCluster'])].groupby(['GeneCluster'])[0].sum().reset_index()
+tmp_df = tmp_df[~tmp_df['GeneCluster'].isin(domain_df['GeneCluster'])].groupby(['GeneCluster'])["proportion"].sum().reset_index()
 
 summary_df = pd.concat([species_df, genus_df, family_df, order_df, class_df, phylum_df, domain_df, tmp_df])
-del summary_df[0]
+del summary_df["proportion"]
 
 summary_df.to_csv(snakemake.output[0], sep='\t', index=False, na_rep='NA')
 
