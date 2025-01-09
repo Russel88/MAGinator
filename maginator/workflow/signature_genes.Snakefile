@@ -72,6 +72,7 @@ rule abundance_profile:
         annotation = os.path.join(WD, 'tabs', 'metagenomicspecies.tab')
     output:
         physeq_abundance = os.path.join(WD, 'abundance', 'abundance_phyloseq.RData'),
+        physeq_rel_abundance = os.path.join(WD, 'abundance', 'relative_abundance_phyloseq.RData'),
         tax_matrix = os.path.join(WD, 'tabs', 'tax_matrix.tsv'),
         sg_cluster = os.path.join(WD, 'tabs', 'signature_genes_cluster.tsv'),
         sg_reads = os.path.join(WD, 'tabs', 'signature_genes_counts.rds')

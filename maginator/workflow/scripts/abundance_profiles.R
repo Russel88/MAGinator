@@ -118,13 +118,16 @@ for (id in names(Clusterlist)){
 write.csv(final.read.matrix,"Absolute_counts.tsv",sep="\t")
 
 final.abundance <- final.read.matrix
-#/rowSums(final.read.matrix)
+relative.abundance <-  final.read.matrix/rowSums(final.read.matrix)
 
 final.otu.table <- otu_table(final.abundance, taxa_are_rows = FALSE)
+relative.otu.table <- otu_table(relative.abundance, taxa_are_rows = FALSE)
 tax.table <- tax_table(taxmat)
 
 final.physeq <-  phyloseq(final.otu.table, tax.table)
+relative.physeq <- phyloseq(relative.otu.table, tax.table)
 
 save(final.physeq, file = snakemake@output[["physeq_abundance"]])
+save(relative.physeq, file = snakemake@output[["physeq_rel_abundance"]])
 write.table(sg_cluster, file = snakemake@output[["sg_cluster"]], row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
 saveRDS(sg_reads, snakemake@output[["sg_reads"]])
