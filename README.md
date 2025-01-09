@@ -136,8 +136,14 @@ This is what MAGinator does with your input (if you want to see all parameters r
     * This can be changed with the --multi option.
 * Pick non-redundant genes that are only found in one MAG cluster each
 * Fit signature gene model and use the resulting signature genes to get the abundance of each MAG cluster
+    * Use --num_signature_genes defines the number of signature genes used for the detection of a MAG cluster
     * Use --min_mapped_signature_genes to change minimum number of signature genes to be detected in the sample to be included in the analysis
     * Use --min_samples to alter the number of samples with the MAG cluster present in order to perform signature gene refinement
+* Selection of genes used for abundance calculations
+    * Use --abundance_calculation to select
+        * "sum": abundance is the sum of reads per bp across the total number of signature genes (num_signature_genes) used for the abundance calculation
+        * "ot_trunc" - one tail truncation: abundance is the average of reads per bp across the signature genes, but excluding the most abundant signature genes as indicated by --tail-percentage 
+        * "tt_trunc" - two tailed truncation: abundance is the average of reads per bp across the signature genes but excluding the most AND LEAST abundant signature genes as indicated by --tail-percentage
 * Prepare for generation of phylogenies for each MAG cluster by finding outgroups and marker genes which will be used for rooting the phylogenies
 * Use the read mappings to collect SNV information for each signature gene and marker gene for each sample
 * Align signature and marker genes, concatenate alignments and infer phylogenetic trees for each MAG cluster
@@ -151,6 +157,7 @@ This is what MAGinator does with your input (if you want to see all parameters r
 
 * abundance/
     * abundance_phyloseq.RData - Phyloseq object for R, with absolute abundance and taxonomic data
+    * relative_abundance_phyloseq.RData - Phyloseq object for R, with relative abundance and taxonomic data
 * clusters/
     * <cluster>/<bin>.fa - Fasta files with nucleotide sequence of bins
 * genes/
