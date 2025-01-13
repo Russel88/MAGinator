@@ -64,7 +64,7 @@ rule repres_genes:
     conda:
         "envs/filter_gtdbtk.yaml"
     shell:
-        "mmseqs easy-linclust --min-seq-id {params.seq_id} -c {params.cov} --threads {threads} {input} {params.out_prefix} {params.tmp_dir}; rm -r {params.tmp_dir};"
+        "mmseqs easy-cluster --cov-mode 1 --min-seq-id {params.seq_id} -c {params.cov} --threads {threads} {input} {params.out_prefix} {params.tmp_dir}; rm -r {params.tmp_dir};"
 
 
 # Add gene clusters to GTDB-tk data
