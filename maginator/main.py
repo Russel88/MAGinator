@@ -5,6 +5,7 @@ import logging
 import os
 import sys
 import pkg_resources
+import subprocess
 
 from os.path import join, dirname, basename
 from shutil import copyfile
@@ -15,20 +16,20 @@ from maginator.workflow import Workflow
 
 # Snakefiles
 _ROOT = os.path.abspath(os.path.dirname(__file__))
-WORKFLOW_FILTER = os.path.join(_ROOT, 'workflow', 'filter.Snakefile')
-WORKFLOW_GTDBTK = os.path.join(_ROOT, 'workflow', 'gtdbtk.Snakefile')
-WORKFLOW_PARSE_GTDBTK = os.path.join(_ROOT, 'workflow', 'parse_gtdbtk.Snakefile')
-WORKFLOW_FILTER_GENE_CLUSTERS = os.path.join(_ROOT, 'workflow', 'filter_geneclusters.Snakefile')
+WORKFLOW_FILTER = os.path.join(_ROOT, 'workflow', '01_filter.Snakefile')
+WORKFLOW_GTDBTK = os.path.join(_ROOT, 'workflow', '02_gtdbtk.Snakefile')
+WORKFLOW_PARSE_GTDBTK = os.path.join(_ROOT, 'workflow', '03_parse_gtdbtk.Snakefile')
+WORKFLOW_FILTER_GENE_CLUSTERS = os.path.join(_ROOT, 'workflow', '04_filter_geneclusters.Snakefile')
 WORKFLOW_SIGNATURE_READS = os.path.join(_ROOT, 'workflow', 'signature_reads.Snakefile')
-WORKFLOW_GENE_COUNT_MAT = os.path.join(_ROOT, 'workflow', 'gene_count_mat.Snakefile')
-WORKFLOW_PRESCREENING_GENES = os.path.join(_ROOT, 'workflow', 'prescreening_genes.Snakefile')
-WORKFLOW_SIGNATURE_GENES = os.path.join(_ROOT, 'workflow', 'signature_genes.Snakefile')
-WORKFLOW_OUTGROUP = os.path.join(_ROOT, 'workflow', 'outgroup.Snakefile')
-WORKFLOW_PILEUP = os.path.join(_ROOT, 'workflow', 'pileup.Snakefile')
-WORKFLOW_PILEUP_PARSE = os.path.join(_ROOT, 'workflow', 'pileup_parse.Snakefile')
-WORKFLOW_ALIGNMENT = os.path.join(_ROOT, 'workflow', 'alignment.Snakefile')
-WORKFLOW_PHYLO = os.path.join(_ROOT, 'workflow', 'phylo.Snakefile')
-WORKFLOW_GENE_TAX = os.path.join(_ROOT, 'workflow', 'gene_tax.Snakefile')
+WORKFLOW_GENE_COUNT_MAT = os.path.join(_ROOT, 'workflow', '05_gene_count_mat.Snakefile')
+WORKFLOW_PRESCREENING_GENES = os.path.join(_ROOT, 'workflow', '06_prescreening_genes.Snakefile')
+WORKFLOW_SIGNATURE_GENES = os.path.join(_ROOT, 'workflow', '07_signature_genes.Snakefile')
+WORKFLOW_OUTGROUP = os.path.join(_ROOT, 'workflow', '08_outgroup.Snakefile')
+WORKFLOW_PILEUP = os.path.join(_ROOT, 'workflow', '09_pileup.Snakefile')
+WORKFLOW_PILEUP_PARSE = os.path.join(_ROOT, 'workflow', '10_pileup_parse.Snakefile')
+WORKFLOW_ALIGNMENT = os.path.join(_ROOT, 'workflow', '11_alignment.Snakefile')
+WORKFLOW_PHYLO = os.path.join(_ROOT, 'workflow', '12_phylo.Snakefile')
+WORKFLOW_GENE_TAX = os.path.join(_ROOT, 'workflow', '13_gene_tax.Snakefile')
 WORKFLOW_BENCHMARK = os.path.join(_ROOT, 'workflow', 'benchmark.Snakefile')
 
 def cli():
@@ -97,13 +98,13 @@ def cli():
     app.add_argument('--benchmark',help='Run MAGinator in benchmarking mode',action='store_true')
     ########## Workflow ##########
     master = Controller(ap)
-    
     wf = Workflow(master)
     
     # If only 1 snakemake command should be run
     if master.snake:
         logging.info('Only running '+master.snake+' snakefile')
         wf.run(snakefile=globals()['WORKFLOW_'+master.snake])
+        
     # If not, run the actual workflow
     else:
    

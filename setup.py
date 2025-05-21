@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="maginator", 
-    version="1.0.1",
+    version="1.0.2",
     author="Jakob Russel & Trine Zachariasen",
     author_email="russel2620@gmail.com,trine_zachariasen@hotmail.com",
     description="MAGinator: Abundance, strain, and functional profiling of MAGs",
@@ -20,9 +20,10 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Development Status :: 4 - Beta"],
-    python_requires='>=3.5',
+    python_requires='>=3.12',
     install_requires=[
-        "setuptools"],
+        "setuptools",
+        "snakemake-executor-plugin-cluster-generic"],
     entry_points = {
         'console_scripts': ['maginator = maginator.main:cli']
     },

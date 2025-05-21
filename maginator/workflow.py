@@ -73,30 +73,16 @@ class Workflow(object):
                     '--local-cores', str(self.max_cores)]
                 
         if self.cluster == 'qsub':
-            
-            cluster_cmd = 'qsub' + ' ' + self.cluster_info
-            cluster_cmd = cluster_cmd + ' -e ' + self.output + 'logs/cluster_err' + ' -o ' + self.output + 'logs/cluster_out'
-            cluster_cmd = self.add_info(cluster_cmd)
-
             # Final snakemake command
-            cmd += ['--cluster', cluster_cmd]
-
+            cmd += ['--executor', 'cluster-generic', '--cluster-generic-submit-cmd', '"qsub', '-l',self.cluster_info, '-e', self.output+'logs/cluster_err', '-o', self.output+'logs/cluster_out"']
+            
         if self.cluster == 'slurm':
-            
-            cluster_cmd = 'sbatch' + ' ' + self.cluster_info
-            cluster_cmd = cluster_cmd + ' -e ' + self.output + 'logs/cluster_err/%j.err' + ' -o ' + self.output + 'logs/cluster_out/%j.out'
-            cluster_cmd = self.add_info(cluster_cmd)
-            
             # Final snakemake command
-            cmd += ['--cluster', cluster_cmd]
+            cmd += ['--executor','cluster-generic','--cluster-generic-submit-cmd', '"sbatch',self.cluster_info,'-e',self.output+'logs/cluster_err/%j.err','-o',self.output+'logs/cluster_out/%j.out"']
 
-        if self.cluster == 'drmaa':
-            
-            cluster_cmd = self.add_info(cluster_cmd)
-            
+        if self.cluster == 'drmaa':            
             # Final snakemake command
-            cmd += ['--cluster', cluster_cmd,
-                    '--drmaa-log-dir', self.output+'logs/drmaa']
+            cmd += ['--executor cluster-generic', '--cluster-generic-submit-cmd','--drmaa-log-dir', self.output+'logs/drmaa']
         
         # Only install conda envs if only_conda
         if self.only_conda:
@@ -110,7 +96,8 @@ class Workflow(object):
 
         logging.debug(' '.join(cmd))
         # Start snakemake process and read stdout and stderr (also save in logger)
-        process = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, text=True)
+        process = subprocess.Popen(' '.join(cmd), stderr=subprocess.STDOUT, stdout=subprocess.PIPE, text=True,shell=True)
+
         if self.log_lvl == 'DEBUG':
             for line in iter(process.stdout.readline, ""):
                 logging.debug(line.strip())

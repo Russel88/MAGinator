@@ -23,9 +23,9 @@ conda activate maginator
 pip install maginator
 ```
 
-Furthermore, MAGinator also needs the GTDB-tk database downloaded. Here we download release 214. If you don't already have it, you can run the following:
+Furthermore, MAGinator also needs the GTDB-tk database downloaded. Here we download release 220. If you don't already have it, you can run the following:
 ```sh
-wget https://data.ace.uq.edu.au/public/gtdb/data/releases/release214/214.1/auxillary_files/gtdbtk_r214_data.tar.gz
+wget https://data.ace.uq.edu.au/public/gtdb/data/releases/release220/220.0/auxillary_files/gtdbtk_package/full_package/gtdbtk_r220_data.tar.gz
 tar xvzf *.tar.gz
 ```
 
@@ -39,7 +39,7 @@ MAGinator needs 3 input files:
 
 Run MAGinator:
 ```sh
-maginator -v vamb_clusters.tsv -r reads.csv -c contigs.fasta -o my_output -g "/path/to/GTDB-Tk/database/release214/"
+maginator -v vamb_clusters.tsv -r reads.csv -c contigs.fasta -o my_output -g "/path/to/GTDB-Tk/database/release220/"
 ```
 
 A testset can be found in the test_data directory. 
@@ -53,7 +53,7 @@ MAGinator can run on compute clusters using qsub (torque), sbatch (slurm), or dr
 
 A qsub MAGinator can for example be run with the following command (... indicates required arguments, see above):
 ```sh
-maginator ... --cluster qsub --cluster_info "-l nodes=1:ppn={cores}:thinnode,mem={memory}gb,walltime={runtime}"
+maginator ... --cluster qsub --cluster_info "nodes=1:ppn={resources.cores},mem={resources.mem_gb}gb,walltime={resources.runtime}"
 ```
 
 ## Test data
@@ -67,9 +67,9 @@ A test set can be found in the maginator/test_data directory.
 
 MAGinator can been run on the test data on a slurm server with the following command:
 ```sh
-maginator --vamb_clusters clusters.tsv --reads reads.csv --contigs contigs.fasta --gtdb_db data/release214/ --output test_out --cluster slurm --cluster_info "-n {cores} --mem {mem_gb}gb -t {runtime}" --max_mem 180
+maginator --vamb_clusters clusters.tsv --reads reads.csv --contigs contigs.fasta --gtdb_db data/release220/ --output test_out --max_mem 180
 ```
-The expected output can be found as a zipped file on Zenodo: https://doi.org/10.5281/zenodo.8279036. MAGinator has been run on the test data (using GTDB-tk db release207_v2) on a slurm server.
+The expected output can be found as a zipped file on Zenodo: https://doi.org/10.5281/zenodo.8279036, where MAGinator has been run on the test data (using GTDB-tk db release207_v2) on a slurm server.
 
 On the compute cluster each job have had access to 180gb RAM, with the following time consumption: 
 real	72m27.379s

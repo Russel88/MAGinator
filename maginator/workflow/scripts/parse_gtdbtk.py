@@ -34,7 +34,6 @@ tax_list = []
 gene_path_list = []
 gene_path_prot_list = []
 for clust in os.listdir(snakemake.input[0]):
-
     # Try reading both bacterial and archaeal summaries. Read the file using a regex that detects anything that is gtdbtk.bac\\d+.summary.tsv
     try:
         tax_bac = pd.read_csv(glob.glob(os.path.join(snakemake.input[0], clust, 'gtdbtk.bac*.summary.tsv'))[0], sep='\t', header=0)  
@@ -52,19 +51,15 @@ for clust in os.listdir(snakemake.input[0]):
             tax_ar=None
     except (IndexError, FileNotFoundError):
         tax_ar = None
-
     # Combine
     try:
         tax = pd.concat([tax_bac, tax_ar])
     except Exception:
         tax = None
-
     if tax is not None:
         classification = [x.split(';') for x in tax['classification']]
-        
         # Remove unclassified
         classification = [x for x in classification if len(x) == 7]
-        
         # Traverse from species annotation and up
         # Pick the annotation if the most common annotation is above prevalence set by parameter
         level = 6
@@ -81,15 +76,13 @@ for clust in os.listdir(snakemake.input[0]):
                 break
             else:
                 level -= 1
-
         tax_list.append([[clust], final_annot])
 
-    # Collect gene sequence paths
-    gene_path = os.path.join(snakemake.input[0], clust, 'identify', 'intermediate_results', 'marker_genes')
-
-    for bin_id in os.listdir(gene_path):
-        gene_path_list.append(os.path.join(gene_path, bin_id, bin_id+'_protein.fna'))
-        gene_path_prot_list.append(os.path.join(gene_path, bin_id, bin_id+'_protein.faa'))
+# Collect gene sequence paths
+gene_path = os.path.join(snakemake.input[0], 'identify', 'intermediate_results', 'marker_genes')
+for bin_id in os.listdir(gene_path):
+    gene_path_list.append(os.path.join(gene_path, bin_id, bin_id+'_protein.fna'))
+    gene_path_prot_list.append(os.path.join(gene_path, bin_id, bin_id+'_protein.faa'))
 
 # If similar at species level, then aggregate
 species_list = []
@@ -111,24 +104,29 @@ for clust in tax_list:
     else:
         mgs_list.append(clust)
 
+
 # Write metagenomicspecies file
 with open(snakemake.output[0], 'w') as fh:
     for mgs in mgs_list:
-        rep = min([int(x) for x in mgs[0]])
+        rep = min(mgs[0])
+        try:
+            int(rep)
+        except ValueError:
+            continue  # Skip this entry if rep is not an integer
+        if rep=="classify":
+            continue
         fh.write('{}\t{}\t{}\n'.format(str(rep), mgs[1], ','.join(mgs[0])))
 
-# Write genes
-with open(snakemake.output[1], 'wb') as wfh:
-    for f in gene_path_list:
-        with open(f, 'rb') as rfh:
-            shutil.copyfileobj(rfh, wfh)
 
 #write genes as proteins
-with open(snakemake.output[5], 'wb') as wfh:
-    for f in gene_path_prot_list:
-        with open(f, 'rb') as rfh:
-            shutil.copyfileobj(rfh, wfh)
+def concatenate_files(input_files, output_file):
+    with open(output_file, 'wb') as write_file:
+        for path in input_files:
+            with open(path, 'rb') as read_file:
+                shutil.copyfileobj(read_file, write_file)
 
+concatenate_files(gene_path_list, snakemake.output[1])
+concatenate_files(gene_path_prot_list, snakemake.output[5])
 
 # Collect marker gene info for phylogenetic analyses
 ## Get contig-bin info
@@ -138,7 +136,7 @@ vamb = {x[1]: x[0] for x in vamb}
 
 ## Find all GTDB marker files
 with open(snakemake.output[2], 'w') as wfh:
-    for f in glob.glob(os.path.join(snakemake.input[0], '*', 'identify', 'intermediate_results', 'marker_genes', '*', '*tophit.tsv')):
+    for f in glob.glob(os.path.join(snakemake.input[0], 'identify', 'intermediate_results', 'marker_genes', '*', '*tophit.tsv')):
         with open(f, 'r') as rfh:
             nl = 0
             for ll in rfh:
@@ -150,7 +148,7 @@ with open(snakemake.output[2], 'w') as wfh:
 # Collect all unique markers for phylogenetic analyses
 def unique_gtdb(domain, output):
     with open(output, 'w') as wfh:
-        for f in glob.glob(os.path.join(snakemake.input[0], '*', 'identify', 'gtdbtk.'+domain+'*.markers_summary.tsv')):
+        for f in glob.glob(os.path.join(snakemake.input[0], 'identify', 'gtdbtk.'+domain+'*.markers_summary.tsv')):
             with open(f, 'r') as rfh:
                 nl = 0
                 for ll in rfh:

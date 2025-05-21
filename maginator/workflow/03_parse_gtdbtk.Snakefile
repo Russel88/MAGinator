@@ -15,10 +15,54 @@ rule all:
         os.path.join(WD, 'phylo', 'intermediate', 'gtdb_markers_bins_geneID.tsv'),
         os.path.join(WD, 'phylo', 'intermediate', 'gtdbtk_summary.tsv')
 
+rule split_gtdbtk:
+    input:
+        os.path.join(WD, 'gtdbtk', 'gtdbtk.bac120.summary.tsv')
+    output:
+        os.path.join(WD, 'gtdbtk', 'done.txt')
+    resources:
+        cores=1,
+        mem_gb=32,
+        runtime=36000
+    run:
+        from collections import defaultdict
+
+        input_file = input[0]
+        done_file = output[0]
+        outdir = os.path.dirname(done_file)
+
+        with open(input_file, 'r') as f:
+            lines = f.readlines()
+
+        header = lines[0].rstrip('\n')
+        suffix_to_lines = defaultdict(list)
+
+        for line in lines[1:]:
+            line = line.rstrip('\n')
+            if not line.strip():
+                continue
+            genome = line.split('\t')[0]
+            suffix = genome.split('_')[-1]
+            suffix_to_lines[suffix].append(line)
+
+        for suffix, grouped_lines in suffix_to_lines.items():
+            dir_path = os.path.join(outdir, suffix)
+            os.makedirs(dir_path, exist_ok=True)
+            out_path = os.path.join(dir_path, 'gtdbtk.bac120.summary.tsv')
+            with open(out_path, 'w') as out_f:
+                out_f.write(header + '\n')
+                for l in grouped_lines:
+                    out_f.write(l + '\n')
+
+        with open(done_file, 'w') as f:
+            f.write("done\n")
+
+
 rule parse_gtdbtk:
     input:
         os.path.join(WD, 'gtdbtk'),
-        ancient(WD)
+        ancient(WD),
+        ancient(os.path.join(WD, 'gtdbtk','done.txt'))
     output:
         os.path.join(WD, 'tabs', 'metagenomicspecies.tab'),
         os.path.join(WD, 'genes', 'all_genes.fna'),
@@ -84,7 +128,7 @@ rule join:
 # Collect GTDB-tk summary info
 rule collect:
     input:
-        os.path.join(WD, 'gtdbtk')
+        os.path.join(WD, 'gtdbtk','gtdbtk.bac120.summary.tsv')
     output:
         os.path.join(WD, 'phylo', 'intermediate', 'gtdbtk_summary.tsv')
     resources:
@@ -92,4 +136,4 @@ rule collect:
         mem_gb = 20,
         runtime = 86400 #1d in s
     shell:
-        "for i in {input}/*/*summary.tsv; do tail -n+2 $i; done | cut -f1,2 > {output}"
+        "cat {input} | cut -f1,2 > {output}"
