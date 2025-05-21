@@ -46,9 +46,11 @@ for cluster in cluster_set:
 
     try:
         os.mkdir(clust_path)
+        os.mkdir(snakemake.output[1])
     except Exception:
         pass
 
     for bin_id in bins:
         SeqIO.write(bin_contigs[bin_id], os.path.join(snakemake.output[0], str(cluster), bin_id+'.fa'), "fasta")
+        SeqIO.write(bin_contigs[bin_id], os.path.join(snakemake.output[1], bin_id+'.fa'), "fasta")
 

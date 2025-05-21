@@ -21,8 +21,6 @@ n_contigs = int(out.partition(b' ')[0])
 mem = math.ceil(n_contigs/1000000)*30
 if mem > int(param_dict['max_mem']):
     mem = int(param_dict['max_mem'])
-## time is 1 hour per million
-tim = str(max(1800, min(math.ceil(n_contigs/100000)*60*60, 72000))) # runtime in seconds, max 20h, min 30min
 
 rule all:
     input:
@@ -34,6 +32,7 @@ rule bin_filter:
         CONTIGS
     output:
         directory(F_DIR),
+        directory(os.path.join(WD,'combined_clusters'))
     params:
         binsize=param_dict['binsize']
     conda:
@@ -41,7 +40,7 @@ rule bin_filter:
     resources:
         cores=1,
         mem_gb=mem,
-        runtime=tim
+        runtime=24*60*60
     script:
         "scripts/filter.py"
 

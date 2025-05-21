@@ -130,7 +130,7 @@ rule gene_count_matrix:
         "envs/filter_geneclusters.yaml"
     resources:
         cores = 1,
-        mem_gb = 188,
-        runtime = '3600' #1h in s
+        mem_gb = 40,
+        runtime = '216000' #1h
     shell:
         "paste {input.gene_names} {input.readcounts} | cat {input.header} - > {output}; sed -i '$d' {output}"
