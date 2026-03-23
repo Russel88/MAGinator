@@ -19,7 +19,7 @@ rule gene_tax:
     input:
         tax=os.path.join(WD, 'tabs', 'tax_matrix.tsv'),
         mgs=os.path.join(WD, 'tabs', 'metagenomicspecies.tab'),
-        cluster=os.path.join(WD, 'genes', 'all_genes_cluster.tsv'),
+        cluster=os.path.join(WD, 'genes', 'cluster_representatives.tsv'),
         vamb=VAMB
     output:
         os.path.join(WD, 'tabs', 'gene_cluster_tax_scope.tab'),
@@ -37,7 +37,7 @@ rule gene_tax:
 
 rule synteny_graph:
     input:
-        cluster=os.path.join(WD, 'genes', 'all_genes_cluster.tsv'),
+        cluster=os.path.join(WD, 'genes', 'cluster_representatives.tsv'),
         faa=os.path.join(WD, 'genes', 'all_genes.faa')
     output:
         graph=os.path.join(WD, 'genes', 'synteny', 'graph.tab'),

@@ -129,6 +129,8 @@ and a set as value
 which contains the marker genes present in a fraction higher than "marker_gene_cluster_prevalence" in the cluster
 '''
 marker_genes_dict = {}
+clusters_to_drop = []
+
 for clust in set(tax_cl['cluster']):
 
     # List of bins in cluster
@@ -148,9 +150,13 @@ for clust in set(tax_cl['cluster']):
     marker_list_prev = [k for k, v in marker_list_count.items() if v/len(bin_list) >= marker_gene_cluster_prevalence]
 
     if len(marker_list_prev) == 0:
-        sys.exit('No shared marker genes above prevalence threshold for cluster '+str(clust))
+        clusters_to_drop.append(clust)
+        continue
+#        sys.exit('No shared marker genes above prevalence threshold for cluster '+str(clust))
 
     marker_genes_dict[clust] = set(marker_list_prev)
+
+tax_cl = tax_cl[~tax_cl['cluster'].isin(clusters_to_drop)]
 
 #######################################################################################################################
 # Find roots that are sharing marker genes
@@ -191,6 +197,7 @@ for clust in set(tax_cl['cluster']):
             break
     
     final_roots[clust] = root_bin
+
 
 #######################################################################################################################
 # Find the geneIDs for the marker genes for the clusters and roots (bins, redundant gene catalog)

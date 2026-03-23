@@ -28,7 +28,7 @@ rule gtdbtk:
         gtdbtk=param_dict['gtdb_db']
     resources:
         cores=10,
-        mem_gb=180,
+        mem_gb=188,
         runtime=24*60*60*60
     shell:
         '''

@@ -16,55 +16,30 @@ rule all:
         os.path.join(WD, 'genes', 'matrix', 'gene_count_matrix.tsv')
 
 
+# filtering and sorting BAM files. Counting reads to genes
 rule bam_name_sorting:
     input:
         bam = os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.bam')
     output:
-        bam = os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.sorted.bam')
-    conda:
-        "envs/filter_gtdbtk.yaml"
-    resources:
-        cores = 40,
-        mem_gb = 188,
-        runtime = 86400 #1d in s
-    shell:
-        "samtools sort --threads {resources.cores} -o {output.bam} {input.bam}"
-
-
-rule filter_bamfile:
-    input:
-        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}.sorted.bam'),
-    output:
-        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}_filtered.bam')
+        bam = os.path.join(WD, 'mapped_reads', 'bams', 'gene_counts_{sample}.sorted.bam'),
+        filt_bam = os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}_filtered.bam'),
+        cov = os.path.join(WD,'mapped_reads','coverage','{sample}.coverage')
     conda:
         "envs/filter_geneclusters.yaml"
     resources:
-        cores = 1,
-        mem_gb = 20,
-        runtime = 7200 #2h in s
-    params: 
+        cores = 10,
+        mem_gb = 47,
+        runtime = 86400 #1d in s
+    params:
         min_map = param_dict['min_map'],
         min_iden = param_dict['min_identity'],
-        min_len = param_dict['min_length'],
+        min_len = param_dict['min_length']
     shell:
         """
-        msamtools filter -b -l {params.min_len} -p {params.min_iden} -z {params.min_map} {input} > {output}
-        """  
-
-# Use samtools to count the genes for each sample
-rule gene_coverage:
-    input:
-        os.path.join(WD,'mapped_reads', 'bams','gene_counts_{sample}_filtered.bam'),
-    output:
-        os.path.join(WD,'mapped_reads','coverage','{sample}.coverage')
-    conda:
-        "envs/filter_geneclusters.yaml"
-    resources:
-        cores = 1,
-        mem_gb = 20,
-        runtime = 7200 #2h in s
-    shell:
-        "samtools coverage {input} > {output}"
+        samtools sort --threads {resources.cores} -o {output.bam} {input.bam};
+        msamtools filter -b -l {params.min_len} -p {params.min_iden} -z {params.min_map} {output.bam} > {output.filt_bam};
+        samtools coverage {output.filt_bam} > {output.cov}
+        """
 
 #Modifying the gene count matrix so genes that do not reach a threshold of mapped counts are set to 0   (Find a way to include the gene name as output)
 rule extract_coverage:
@@ -93,7 +68,7 @@ rule clear_gene_names:
     resources:
         cores = 1,
         mem_gb = 5,
-        runtime = '3600' #1h in s
+        runtime = 3600 #1h in s
     params:
         names_dir = os.path.join(WD, 'mapped_reads', 'names')    
     shell:
@@ -108,7 +83,7 @@ rule create_header:
     resources:
         cores = 1,
         mem_gb = 20,
-        runtime = '3600' #1h in s
+        runtime = 3600 #1h in s
     run:
         header = "Gene"
         for f in input:
@@ -131,6 +106,6 @@ rule gene_count_matrix:
     resources:
         cores = 1,
         mem_gb = 40,
-        runtime = '216000' #1h
+        runtime = 216000 #1h
     shell:
         "paste {input.gene_names} {input.readcounts} | cat {input.header} - > {output}; sed -i '$d' {output}"

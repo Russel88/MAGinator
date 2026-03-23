@@ -29,7 +29,7 @@ rule all:
 rule nonredundant_catalogue:
     input:
         genecat = os.path.join(WD, 'genes', 'all_genes.fna'),
-        clusters = os.path.join(WD, 'genes', 'all_genes_cluster.tsv')
+        clusters = os.path.join(WD, 'genes', 'cluster_representatives.tsv')
     output:
         os.path.join(WD, 'genes', 'all_genes_nonredundant.fasta')
     conda:
@@ -68,8 +68,8 @@ rule bwa_readmap:
     conda:
         "envs/filter_gtdbtk.yaml"
     resources:
-        cores = 40,
-        mem_gb = 188,
+        cores = 10,
+        mem_gb = 47,
         runtime = 86400 #1d in s
     shell:
         """

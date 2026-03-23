@@ -27,7 +27,7 @@ rule all:
 rule geneID_collectionID:
     input: 
         os.path.join(WD, 'tabs', 'metagenomicspecies.tab'),
-        os.path.join(WD, 'genes', 'all_genes_cluster.tsv'),
+        os.path.join(WD, 'genes', 'cluster_representatives.tsv'),
         param_dict['vamb_clusters']
     output:
         os.path.join(WD, 'genes', 'representative_genes.tsv'),
@@ -53,7 +53,7 @@ rule sort_genes_across_MGS:
         "envs/signature_genes.yaml" 
     resources:
         cores = 1, 
-        mem_gb = 188,
+        mem_gb = 180,
         runtime = 43200 #12h in s
     script:
         "scripts/sort_gene_mat.py"
@@ -73,7 +73,7 @@ rule format_conversion:
         "envs/signature_genes.yaml" 
     resources:
         cores = 1,
-        mem_gb = 188,
+        mem_gb = 180,
         runtime = 86400 #1d in s
     script:
         "scripts/matrix2SG_formatconversion.R"
@@ -93,7 +93,7 @@ rule prescreening_genes:
         "envs/signature_genes.yaml"
     resources:
         cores = 1,
-        mem_gb = 188,
+        mem_gb = 180,
         runtime = 86400 #1d in s
     script: 
         "scripts/prescreening_genes.R"

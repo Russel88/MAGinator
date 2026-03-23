@@ -108,14 +108,44 @@ rule repres_genes:
     conda:
         "envs/filter_gtdbtk.yaml"
     shell:
-        "mmseqs easy-linclust --min-seq-id {params.seq_id} -c {params.cov} --threads {threads} {input} {params.out_prefix} {params.tmp_dir}; rm -r {params.tmp_dir};"
+        "mmseqs easy-cluster --cov-mode 1 --min-seq-id {params.seq_id} -c {params.cov} --threads {threads} {input} {params.out_prefix} {params.tmp_dir}; rm -r {params.tmp_dir};"
 
+# Get all gene lengths
+rule gene_length:
+    input:
+        sequence_type_cluster
+    output:
+        lengths = os.path.join(WD, 'genes', 'genes_lengths.tab')
+    resources:
+        cores = 1,
+        mem_gb = 50,
+        runtime = 172800 #2d in s 
+    shell:
+        """
+        awk '/^>/{{if (seq) print id"\\t"length(seq); id=substr($1,2); seq=""}} !/^>/{{seq=seq$0}} END{{print id"\\t"length(seq)}}' {input} > {output.lengths}
+        """
+
+# Get better representative genes from mmseqs2 (excluding partial genes)
+rule rep_refinement:
+    input:
+        tsv = os.path.join(WD, 'genes', 'all_genes_cluster.tsv'),
+        genes = sequence_type_cluster,
+        lengths = os.path.join(WD, 'genes', 'genes_lengths.tab')
+    output:
+        nr_genes = os.path.join(WD, 'genes', 'cluster_nr.faa'),
+        corrected_tsv = os.path.join(WD, 'genes', 'cluster_representatives.tsv') # optimized representative file
+    resources:
+        cores = 1,
+        mem_gb = 50,
+        runtime = 172800 #2d in s 
+    script:
+        "scripts/refine_representatives.py"
 
 # Add gene clusters to GTDB-tk data
 rule join:
     input:
         gtdb = os.path.join(WD, 'phylo', 'intermediate', 'gtdb_markers.tab'),
-        cluster = os.path.join(WD, 'genes', 'all_genes_cluster.tsv')
+        cluster = os.path.join(WD, 'genes', 'cluster_representatives.tsv')
     output:
         os.path.join(WD, 'phylo', 'intermediate', 'gtdb_markers_bins_geneID.tsv')
     resources:
